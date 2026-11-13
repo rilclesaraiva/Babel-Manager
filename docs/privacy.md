@@ -4,7 +4,7 @@ Last updated: 2026-11-13
 
 ## Who is responsible
 
-Babel Manager is an open-source app maintained by the project maintainer (GitHub user `rilclesaraiva`). Contact: [open an issue](https://github.com/rilclesaraiva/Babel-Manager/issues).
+Babel Manager is an open-source app maintained by the project maintainer (GitHub user `rilclesaraiva`). Contact: [open an issue](https://github.com/rilclesaraiva/Babel-Manager/issues) or saraivarilcle@gmail.com.
 
 ## What the app does with your data
 

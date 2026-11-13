@@ -62,4 +62,8 @@ To build from source you need JDK 17 and the Android SDK:
 
 ## Contact
 
-Questions, bugs and ideas: [open an issue](../../issues).
+Questions, bugs and ideas: [open an issue](../../issues) or write to saraivarilcle@gmail.com.
+
+## Support
+
+Like the project? You can support it on [Buy Me a Coffee](https://buymeacoffee.com/saraivarilcle).

@@ -6,8 +6,8 @@ Babel Manager — gerenciador de senhas para Android. O cofre fica só no aparel
 - Nome nos arquivos: `babelmanager` (ex: babelmanager_v1.2.0.apk; título da Release: "Babel Manager v1.2.0")
 
 ## Mantenedor
-- Nome: rilclesaraiva · Contato: issues
-- Apoio: nenhum · Licença: GPL-3.0
+- Nome: rilclesaraiva · Contato: issues e saraivarilcle@gmail.com
+- Apoio: https://buymeacoffee.com/saraivarilcle (só no README; no app nunca citar doação) · Licença: GPL-3.0
 - Segredos ficam em: Google Drive/Babel Manager/
 - País (assinatura, `C=`): BR
 
@@ -72,6 +72,7 @@ Babel Manager — gerenciador de senhas para Android. O cofre fica só no aparel
 - Sem confirmação: nada de bump de versão ou mover [Unreleased].
 - A IA nunca cria tag nem Release: o commit `chore(release): vX.Y.Z` na main basta,
   e o CI cria a tag e publica quando vê versão nova com seção no CHANGELOG.
+- Sempre dar ao mantenedor o link do run do CI **daquele commit** (`https://github.com/rilclesaraiva/Babel-Manager/actions/runs/<id>`, seção Artifacts), conferindo que o id é do commit entregue; nunca link de outro run, de artefato de conversa ou do repositório.
 - Toda atualização vai para os artefatos do Actions (build para vistoria) e a IA
   avisa com o link. O mantenedor vistoria e só então pede o release público.
 - Entre a vistoria e o commit de release, só mudam versão e CHANGELOG; mudou código, nova vistoria.
@@ -101,12 +102,11 @@ Babel Manager — gerenciador de senhas para Android. O cofre fica só no aparel
 ## Contexto atual
 - Foco: primeira versão (0.0.0 → primeiro release a calcular pelo [Unreleased]).
 - Problemas conhecidos:
-  - A sessão que criou o projeto não tinha Android SDK nem acesso ao Maven: **nada foi compilado ainda**. Versões de plugins e bibliotecas (`libs.versions.toml`) e as APIs do Material 3 Expressive foram escritas sem verificação; se o primeiro CI falhar, corrigir é a prioridade.
+  - A sessão que criou o projeto não tinha Android SDK nem acesso ao Maven: **nada foi compilado pela sessão** (o CI compilou e passou depois). Versões de plugins e bibliotecas (`libs.versions.toml`) e as APIs do Material 3 Expressive foram escritas sem verificação; se o primeiro CI falhar, corrigir é a prioridade.
   - Versões das actions do `ci.yml` seguem as do documento de estrutura e não foram conferidas.
   - Sem preenchimento automático (AutofillService): ainda não existe.
   - A lista de palavras do gerador é própria e pequena (572 palavras, ≈ 9,2 bits por palavra); a entropia mostrada é calculada a partir dela. Candidato: trocar por uma lista maior.
   - O check-up só encontra senhas repetidas e fracas; não verifica vazamentos.
-  - O keystore de assinatura ainda não foi gerado (precisa do nome público do mantenedor e do repositório).
 
 ## Nota de build (M3 Expressive)
 - As APIs Expressive (`MaterialExpressiveTheme`, `ToggleButton`, `LoadingIndicator`, `LargeFlexibleTopAppBar`) só são públicas no `material3` **1.5.0-alpha**; na 1.4.0 são internas. Versão fixada em `libs.versions.toml` (`material3 = "1.5.0-alpha10"`), fora do BOM.
