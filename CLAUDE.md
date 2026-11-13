@@ -41,6 +41,7 @@ Babel Manager — gerenciador de senhas para Android. O cofre fica só no aparel
 - Seguir as convenções da stack. Nenhuma dependência nova sem justificar.
   - `androidx.biometric`: único jeito suportado de usar o BiometricPrompt com CryptoObject.
   - `material-icons-extended`: ícones; o R8 remove os não usados.
+  - `androidx.fragment`: fixada explicitamente porque `biometric` 1.1.0 puxa fragment 1.2.5, que lança `IllegalArgumentException` (código de requisição) ao abrir os seletores de arquivo via Activity Result API. Não remover enquanto o `biometric` não exigir fragment ≥ 1.3.
   - KDF: PBKDF2 da plataforma (zero dependência). Os parâmetros ficam no arquivo do cofre, então trocar para Argon2id no futuro não quebra cofres existentes.
 
 ## Regras de segurança do produto

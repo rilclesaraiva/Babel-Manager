@@ -14,6 +14,9 @@
 - About screen and update notices from public GitHub Releases.
 - Material 3 Expressive interface, English and Brazilian Portuguese.
 
+### Fixed
+- Crash when choosing a backup location, restoring a backup or importing passwords (an outdated transitive `fragment` library broke the system file pickers).
+
 ### Known issues
 - Not compiled or tested outside CI yet.
 - No autofill service yet.

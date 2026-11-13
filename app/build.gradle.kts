@@ -72,6 +72,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.biometric)
+    implementation(libs.androidx.fragment) // biometric 1.1.0 traz fragment 1.2.5, que quebra os seletores de arquivo
     implementation(libs.kotlinx.coroutines.android)
 
     testImplementation(libs.junit)
