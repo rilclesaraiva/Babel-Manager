@@ -4,7 +4,7 @@ Last updated: 2026-11-13
 
 ## License
 
-Babel Manager is free software released under the [GNU General Public License v3.0](https://github.com/OWNER/REPO/blob/main/LICENSE). You may use, study, change and share it under that license.
+Babel Manager is free software released under the [GNU General Public License v3.0](https://github.com/rilclesaraiva/Babel-Manager/blob/main/LICENSE). You may use, study, change and share it under that license.
 
 ## No warranty
 
@@ -27,4 +27,4 @@ Backup locations, GitHub and the websites you open from the app are run by other
 
 ## Changes
 
-These terms may be updated with the app. The date above shows the latest change. Questions: [open an issue](https://github.com/OWNER/REPO/issues).
+These terms may be updated with the app. The date above shows the latest change. Questions: [open an issue](https://github.com/rilclesaraiva/Babel-Manager/issues).

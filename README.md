@@ -19,7 +19,7 @@ An Android password manager that keeps your vault encrypted on your device, and 
 - The backup copy is encrypted before it leaves the app, and it is written to the location you pick through Android's document picker. What that provider does with the file follows its own policy.
 - **There is no master password recovery.** If you forget it, nobody can open your vault.
 
-Details in the [privacy policy](https://OWNER.github.io/REPO/privacy).
+Details in the [privacy policy](https://rilclesaraiva.github.io/Babel-Manager/privacy).
 
 ## 🤖 Built with AI ("vibe coding")
 
@@ -58,7 +58,7 @@ To build from source you need JDK 17 and the Android SDK:
 
 ## Legal
 
-[Privacy policy](https://OWNER.github.io/REPO/privacy) · [Terms of use](https://OWNER.github.io/REPO/terms)
+[Privacy policy](https://rilclesaraiva.github.io/Babel-Manager/privacy) · [Terms of use](https://rilclesaraiva.github.io/Babel-Manager/terms)
 
 ## Contact
 

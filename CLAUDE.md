@@ -6,7 +6,7 @@ Babel Manager — gerenciador de senhas para Android. O cofre fica só no aparel
 - Nome nos arquivos: `babelmanager` (ex: babelmanager_v1.2.0.apk; título da Release: "Babel Manager v1.2.0")
 
 ## Mantenedor
-- Nome: OWNER (**pendente:** usuário do GitHub; trocar aqui, em `gradle.properties` e no `O=` do keystore) · Contato: issues
+- Nome: rilclesaraiva · Contato: issues
 - Apoio: nenhum · Licença: GPL-3.0
 - Segredos ficam em: Google Drive/Babel Manager/
 - País (assinatura, `C=`): BR
@@ -23,7 +23,7 @@ Babel Manager — gerenciador de senhas para Android. O cofre fica só no aparel
 - Sobre: entrada própria nos ajustes (versão lida do build, código-fonte, novidades,
   issues, legal e apoio)
 - Atualizações: sim, via Releases públicas. Repositório em `babel.repo` (`gradle.properties`);
-  enquanto for `OWNER/REPO` o aviso fica desligado e os links do Sobre ficam ocultos.
+  enquanto `babel.repo` for `OWNER/REPO` o aviso fica desligado (hoje: `rilclesaraiva/Babel-Manager`) e os links do Sobre ficam ocultos.
   Consulta ao abrir e no máximo a cada 10 min ao voltar, com ETag; "Agora não" só na
   sessão; sino adia 1 semana / 1 mês ou pula a versão; controles em Ajustes → Sistema
 
