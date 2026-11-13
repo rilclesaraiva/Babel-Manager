@@ -9,13 +9,14 @@ An Android password manager that keeps your vault encrypted on your device, and 
 - Add, edit, search and delete passwords; sensitive clipboard that clears itself.
 - Password generator (random or memorable words) and a check-up for reused and weak passwords.
 - Backup to **a place you choose** (local folder, Google Drive or any Android document provider): an encrypted copy, saved after each change or on demand. Restore from a backup file.
+- Autofill service for apps and browsers: Android asks you to unlock, then you pick the entry (suggestions first). Saving new passwords from other apps is not supported yet.
 - Import from CSV (Google Password Manager, Chrome, Bitwarden and similar) and Bitwarden JSON.
 - Auto-lock, screenshot blocking, Material 3 Expressive design, English and Brazilian Portuguese.
 
 ## Privacy and permissions
 
 - Your vault is stored in the app's private storage, encrypted. There is no account and no server of its own.
-- Permissions: `INTERNET`, used only to ask GitHub for the latest public release (update notice), and `USE_BIOMETRIC`.
+- Permissions: `INTERNET`, used only to ask GitHub for the latest public release (update notice), and `USE_BIOMETRIC`. If you pick Babel Manager as your autofill service, Android lets it read the login fields of the screen you are on, only to fill them; nothing is stored or sent.
 - The backup copy is encrypted before it leaves the app, and it is written to the location you pick through Android's document picker. What that provider does with the file follows its own policy.
 - **There is no master password recovery.** If you forget it, nobody can open your vault.
 

@@ -1,6 +1,10 @@
 package com.babelmanager.app.features.settings
 
+import android.content.ActivityNotFoundException
+import android.content.Intent
 import android.net.Uri
+import android.provider.Settings as SystemSettings
+import android.view.autofill.AutofillManager
 import android.text.format.DateUtils
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -37,6 +41,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.babelmanager.app.R
 import com.babelmanager.app.core.ui.PasswordField
@@ -83,6 +89,13 @@ fun SettingsScreen(
     val settings by vm.settings.collectAsStateWithLifecycle()
     val snackbar = remember { SnackbarHostState() }
     val biometricAvailable = remember { vm.biometricAvailable(context) }
+
+    // O ajuste do sistema fica fora do app: reler ao voltar para mostrar se já está ativo.
+    val autofillManager = remember { context.getSystemService(AutofillManager::class.java) }
+    var autofillOn by remember { mutableStateOf(autofillManager?.hasEnabledAutofillServices() == true) }
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
+        autofillOn = autofillManager?.hasEnabledAutofillServices() == true
+    }
 
     var showAutoLock by rememberSaveable { mutableStateOf(false) }
     var showClipboard by rememberSaveable { mutableStateOf(false) }
@@ -151,6 +164,23 @@ fun SettingsScreen(
                 title = stringResource(R.string.settings_clipboard),
                 summary = stringResource(clipboardOptions.first { it.first == settings.clipboardClearSeconds }.second),
                 onClick = { showClipboard = true },
+            )
+            SettingsItem(
+                title = stringResource(R.string.settings_autofill),
+                summary = stringResource(if (autofillOn) R.string.settings_autofill_on else R.string.settings_autofill_off),
+                onClick = {
+                    vm.beforePicker()
+                    try {
+                        context.startActivity(
+                            Intent(
+                                SystemSettings.ACTION_REQUEST_SET_AUTOFILL_SERVICE,
+                                Uri.parse("package:${context.packageName}"),
+                            ),
+                        )
+                    } catch (e: ActivityNotFoundException) {
+                        // Aparelho sem essa tela de ajustes: nada a fazer.
+                    }
+                },
             )
             SettingsItem(
                 title = stringResource(R.string.settings_change_password),

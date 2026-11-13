@@ -31,6 +31,7 @@ Babel Manager — gerenciador de senhas para Android. O cofre fica só no aparel
 - Cofre = um arquivo JSON em `filesDir/vault.babel`: parâmetros de KDF no cabeçalho + conteúdo cifrado (AES-256-GCM; chave por PBKDF2-HMAC-SHA256, 600 mil iterações). A chave só existe em memória com o cofre aberto.
 - Biometria: o Keystore (chave exigindo biometria forte) cifra a chave do cofre; o resultado fica nas preferências. Trocar a senha mestra ou restaurar backup desliga a biometria.
 - Backup: cópia do arquivo **cifrado** no local escolhido via Storage Access Framework (`BackupRepository`). `allowBackup=false`: o Android não copia o cofre por conta própria.
+- Autofill: `BabelAutofillService` (entrada, raiz do pacote) só responde com "Preencher com o Babel Manager"; o sistema abre `AutofillActivity`, que tranca/destranca (mesma `AutoLock` do app) e devolve o `Dataset` da entrada escolhida. Nada do cofre aparece na lista do sistema. Campos: `data/autofill/FieldParser.kt`; sugestões por domínio/pacote: `EntryMatcher.kt` (testado). Não salva senhas novas.
 - Sem servidor. A única chamada de rede é a consulta da última Release no GitHub (`UpdateRepository`).
 - Segurança de tela: `FLAG_SECURE` ligado por padrão; trava automática por tempo em segundo plano (`AutoLock`); área de transferência marcada como sensível e limpa depois de um tempo.
 
@@ -105,7 +106,7 @@ Babel Manager — gerenciador de senhas para Android. O cofre fica só no aparel
 - Problemas conhecidos:
   - A sessão que criou o projeto não tinha Android SDK nem acesso ao Maven: **nada foi compilado pela sessão** (o CI compilou e passou depois). Versões de plugins e bibliotecas (`libs.versions.toml`) e as APIs do Material 3 Expressive foram escritas sem verificação; se o primeiro CI falhar, corrigir é a prioridade.
   - Versões das actions do `ci.yml` seguem as do documento de estrutura e não foram conferidas.
-  - Sem preenchimento automático (AutofillService): ainda não existe.
+  - Autofill só preenche (sem `onSaveRequest`) e não usa o Credential Manager (passkeys). Heurística de campos pode falhar em telas incomuns.
   - A lista de palavras do gerador é própria e pequena (572 palavras, ≈ 9,2 bits por palavra); a entropia mostrada é calculada a partir dela. Candidato: trocar por uma lista maior.
   - O check-up só encontra senhas repetidas e fracas; não verifica vazamentos.
 

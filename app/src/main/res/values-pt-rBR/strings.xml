@@ -140,6 +140,14 @@
     <string name="delete_vault_body">Todas as senhas deste aparelho serão apagadas. Cópias de backup feitas em outros lugares não são afetadas. Isso não pode ser desfeito.</string>
     <string name="msg_biometric_enabled">Desbloqueio por biometria ligado.</string>
     <string name="msg_biometric_failed">Não foi possível ligar a biometria.</string>
+    <string name="autofill_presentation">Preencher com o Babel Manager</string>
+    <string name="autofill_pick_title">Escolha uma entrada</string>
+    <string name="autofill_suggested">Sugeridas</string>
+    <string name="autofill_all">Todas as entradas</string>
+    <string name="autofill_empty">Nenhuma entrada encontrada.</string>
+    <string name="settings_autofill">Serviço de preenchimento automático</string>
+    <string name="settings_autofill_on">Ativo. Preenche senhas em apps e navegadores.</string>
+    <string name="settings_autofill_off">Desativado. Toque para escolher o Babel Manager.</string>
     <string name="msg_backup_location_set">Local do backup salvo.</string>
     <string name="msg_backup_done">Backup salvo.</string>
     <string name="msg_backup_failed">O backup falhou.</string>
