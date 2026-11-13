@@ -30,6 +30,15 @@ class AutoLock(
         if (clock() - stopped >= settings.current.autoLockSeconds * 1000L) vault.lock()
     }
 
+    /**
+     * Para quem oferece dados sem abrir a tela (serviço de preenchimento): tranca se o app já ficou
+     * fora tempo demais. Não mexe no relógio, então o próximo [onStart] segue valendo.
+     */
+    fun checkExpired() {
+        val stopped = stoppedAt ?: return
+        if (clock() - stopped >= settings.current.autoLockSeconds * 1000L) vault.lock()
+    }
+
     /** Chamado antes de abrir o seletor de arquivos do sistema, que tira o app da tela por um instante. */
     fun suppressNext() {
         skipNext = true

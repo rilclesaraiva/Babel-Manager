@@ -11,7 +11,9 @@ class ParsedForm(
     val passwordIds: List<AutofillId>,
     val packageName: String?,
     val webDomain: String?,
-)
+) {
+    val allIds: List<AutofillId> get() = listOfNotNull(usernameId) + passwordIds
+}
 
 /** Lê a estrutura da tela e acha usuário e senha. Heurística simples: dicas explícitas primeiro. */
 object FieldParser {

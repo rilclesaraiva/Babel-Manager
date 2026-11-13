@@ -12,7 +12,7 @@
 - Change the master password; delete the vault.
 - Automatic lock when the app stays in the background, and screenshot blocking (on by default).
 - About screen and update notices from public GitHub Releases.
-- Autofill service: appears in Android's preferred service list, asks for unlock and lets you choose the entry to fill in apps and browsers (saving new passwords is not supported yet). Quick access in Settings.
+- Autofill service: appears in Android's preferred service list. With the vault unlocked, matching entries show up directly in the system suggestions and in keyboard inline suggestions; when locked it asks for unlock first, and "Other entries…" opens the full list (saving new passwords is not supported yet). Quick access in Settings.
 - Material 3 Expressive interface, English and Brazilian Portuguese.
 
 ### Fixed

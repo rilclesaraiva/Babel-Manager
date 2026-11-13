@@ -3,13 +3,11 @@ package com.babelmanager.app
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.service.autofill.Dataset
+import android.os.Parcelable
 import android.service.autofill.FillResponse
 import android.view.WindowManager
 import android.view.autofill.AutofillId
 import android.view.autofill.AutofillManager
-import android.view.autofill.AutofillValue
-import android.widget.RemoteViews
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
@@ -51,6 +49,7 @@ import com.babelmanager.app.core.ui.BabelTheme
 import com.babelmanager.app.core.ui.EntryAvatar
 import com.babelmanager.app.core.ui.SectionHeader
 import com.babelmanager.app.data.autofill.EntryMatcher
+import com.babelmanager.app.data.autofill.ParsedForm
 import com.babelmanager.app.data.vault.Entry
 import com.babelmanager.app.data.vault.VaultRepository
 import com.babelmanager.app.features.lock.LockScreen
@@ -74,6 +73,9 @@ class AutofillActivity : FragmentActivity() {
         val passwordIds = IntentCompat.getParcelableArrayListExtra(intent, EXTRA_PASSWORD_IDS, AutofillId::class.java).orEmpty()
         val pkg = intent.getStringExtra(EXTRA_PACKAGE)
         val domain = intent.getStringExtra(EXTRA_DOMAIN)
+        val pickAny = intent.getBooleanExtra(EXTRA_PICK_ANY, false)
+        val datasetMode = intent.getBooleanExtra(EXTRA_DATASET_MODE, false)
+        val form = ParsedForm(usernameId, passwordIds, pkg, domain)
 
         setContent {
             BabelTheme {
@@ -81,7 +83,9 @@ class AutofillActivity : FragmentActivity() {
                     c = container,
                     packageName = pkg,
                     webDomain = domain,
-                    onPick = { entry -> deliver(entry, usernameId, passwordIds) },
+                    // Uma única sugestão certa: preenche sem mostrar lista (a não ser que a pessoa tenha pedido "Outras").
+                    autoPick = !pickAny,
+                    onPick = { entry -> deliver(entry, form, datasetMode) },
                     onCancel = ::finish,
                 )
             }
@@ -99,28 +103,16 @@ class AutofillActivity : FragmentActivity() {
         if (!isChangingConfigurations) container.autoLock.onStop()
     }
 
-    private fun deliver(entry: Entry, usernameId: AutofillId?, passwordIds: List<AutofillId>) {
-        val label = RemoteViews(packageName, R.layout.autofill_item)
-            .apply { setTextViewText(R.id.autofill_text, entry.title) }
-        val dataset = Dataset.Builder(label)
-        var any = false
-        if (usernameId != null && entry.username.isNotEmpty()) {
-            dataset.setValue(usernameId, AutofillValue.forText(entry.username))
-            any = true
-        }
-        if (entry.password.isNotEmpty()) {
-            for (id in passwordIds) {
-                dataset.setValue(id, AutofillValue.forText(entry.password))
-                any = true
-            }
-        }
-        if (!any) {
+    private fun deliver(entry: Entry, form: ParsedForm, datasetMode: Boolean) {
+        val dataset = AutofillResponses.entryDataset(this, entry, form, null, 0)
+        if (dataset == null) {
             setResult(Activity.RESULT_CANCELED)
             finish()
             return
         }
-        val response = FillResponse.Builder().addDataset(dataset.build()).build()
-        setResult(RESULT_OK, Intent().putExtra(AutofillManager.EXTRA_AUTHENTICATION_RESULT, response))
+        // Autenticação do item "Outras entradas…" devolve um Dataset; a da resposta inteira, um FillResponse.
+        val result: Parcelable = if (datasetMode) dataset else FillResponse.Builder().addDataset(dataset).build()
+        setResult(RESULT_OK, Intent().putExtra(AutofillManager.EXTRA_AUTHENTICATION_RESULT, result))
         finish()
     }
 
@@ -129,6 +121,8 @@ class AutofillActivity : FragmentActivity() {
         const val EXTRA_PASSWORD_IDS = "babel.autofill.password_ids"
         const val EXTRA_PACKAGE = "babel.autofill.package"
         const val EXTRA_DOMAIN = "babel.autofill.domain"
+        const val EXTRA_PICK_ANY = "babel.autofill.pick_any"
+        const val EXTRA_DATASET_MODE = "babel.autofill.dataset_mode"
     }
 }
 
@@ -137,6 +131,7 @@ private fun AutofillRoot(
     c: AppContainer,
     packageName: String?,
     webDomain: String?,
+    autoPick: Boolean,
     onPick: (Entry) -> Unit,
     onCancel: () -> Unit,
 ) {
@@ -146,7 +141,7 @@ private fun AutofillRoot(
         when (state) {
             VaultRepository.State.Unlocked -> {
                 val entries by c.vault.entries.collectAsStateWithLifecycle()
-                EntryChooser(entries, packageName, webDomain, onPick)
+                EntryChooser(entries, packageName, webDomain, autoPick, onPick)
             }
             VaultRepository.State.Locked -> {
                 val lockVm: LockViewModel = viewModel(
@@ -166,11 +161,20 @@ private fun EntryChooser(
     entries: List<Entry>,
     packageName: String?,
     webDomain: String?,
+    autoPick: Boolean,
     onPick: (Entry) -> Unit,
 ) {
     var query by rememberSaveable { mutableStateOf("") }
     val (suggested, others) = remember(entries, packageName, webDomain) {
         EntryMatcher.split(entries, packageName, webDomain)
+    }
+    var autoPicked by remember { mutableStateOf(false) }
+    LaunchedEffect(suggested, autoPick) {
+        val only = suggested.singleOrNull()
+        if (autoPick && only != null && !autoPicked) {
+            autoPicked = true
+            onPick(only)
+        }
     }
     val q = query.trim()
     fun Entry.matchesQuery() = title.contains(q, ignoreCase = true) || username.contains(q, ignoreCase = true)

@@ -143,6 +143,7 @@
     <string name="autofill_presentation">Preencher com o Babel Manager</string>
     <string name="autofill_pick_title">Escolha uma entrada</string>
     <string name="autofill_suggested">Sugeridas</string>
+    <string name="autofill_other">Outras entradas…</string>
     <string name="autofill_all">Todas as entradas</string>
     <string name="autofill_empty">Nenhuma entrada encontrada.</string>
     <string name="settings_autofill">Serviço de preenchimento automático</string>

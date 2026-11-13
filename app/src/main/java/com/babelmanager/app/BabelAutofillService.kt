@@ -1,7 +1,5 @@
 package com.babelmanager.app
 
-import android.app.PendingIntent
-import android.content.Intent
 import android.os.CancellationSignal
 import android.service.autofill.AutofillService
 import android.service.autofill.FillCallback
@@ -9,14 +7,16 @@ import android.service.autofill.FillRequest
 import android.service.autofill.FillResponse
 import android.service.autofill.SaveCallback
 import android.service.autofill.SaveRequest
-import android.widget.RemoteViews
+import com.babelmanager.app.data.autofill.EntryMatcher
 import com.babelmanager.app.data.autofill.FieldParser
-import java.util.concurrent.atomic.AtomicInteger
+import com.babelmanager.app.data.vault.VaultRepository
 
 /**
- * Serviço de preenchimento automático. Nunca mostra dados do cofre na lista do sistema:
- * responde só com "Preencher com o Babel Manager", que abre a tela do app (desbloqueio e escolha da
- * entrada). Salvar senhas novas ainda não é suportado.
+ * Serviço de preenchimento automático.
+ * - Cofre trancado: só "Preencher com o Babel Manager", que abre o app para desbloquear.
+ * - Cofre aberto: oferece direto as entradas que combinam com o site/app (título e usuário; a senha
+ *   nunca aparece na lista), mais "Outras entradas…" para escolher qualquer uma.
+ * Salvar senhas novas ainda não é suportado.
  */
 class BabelAutofillService : AutofillService() {
 
@@ -28,23 +28,27 @@ class BabelAutofillService : AutofillService() {
             return
         }
 
-        val intent = Intent(this, AutofillActivity::class.java)
-            .putExtra(AutofillActivity.EXTRA_USERNAME_ID, form.usernameId)
-            .putParcelableArrayListExtra(AutofillActivity.EXTRA_PASSWORD_IDS, ArrayList(form.passwordIds))
-            .putExtra(AutofillActivity.EXTRA_PACKAGE, form.packageName)
-            .putExtra(AutofillActivity.EXTRA_DOMAIN, form.webDomain)
-        // O sistema acrescenta dados ao Intent: o PendingIntent precisa ser mutável.
-        val sender = PendingIntent.getActivity(
-            this,
-            nextCode.incrementAndGet(),
-            intent,
-            PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_MUTABLE,
-        ).intentSender
+        val container = (application as BabelApp).container
+        container.autoLock.checkExpired() // não oferecer dados se o app já deveria estar trancado
+        val inline = request.inlineSuggestionsRequest
 
-        val presentation = RemoteViews(packageName, R.layout.autofill_item)
-            .apply { setTextViewText(R.id.autofill_text, getString(R.string.autofill_presentation)) }
-        val ids = (listOfNotNull(form.usernameId) + form.passwordIds).toTypedArray()
-        callback.onSuccess(FillResponse.Builder().setAuthentication(ids, sender, presentation).build())
+        if (container.vault.state.value != VaultRepository.State.Unlocked) {
+            callback.onSuccess(AutofillResponses.authResponse(this, form, inline))
+            return
+        }
+
+        val (suggested, _) = EntryMatcher.split(container.vault.entries.value, form.packageName, form.webDomain)
+        val datasets = suggested.mapIndexedNotNull { i, entry -> AutofillResponses.entryDataset(this, entry, form, inline, i) }
+            .take(MAX_SUGGESTIONS)
+        if (datasets.isEmpty()) {
+            callback.onSuccess(AutofillResponses.authResponse(this, form, inline))
+            return
+        }
+
+        val response = FillResponse.Builder()
+        datasets.forEach(response::addDataset)
+        response.addDataset(AutofillResponses.otherDataset(this, form, inline, datasets.size))
+        callback.onSuccess(response.build())
     }
 
     override fun onSaveRequest(request: SaveRequest, callback: SaveCallback) {
@@ -52,6 +56,6 @@ class BabelAutofillService : AutofillService() {
     }
 
     private companion object {
-        val nextCode = AtomicInteger(0)
+        const val MAX_SUGGESTIONS = 4
     }
 }

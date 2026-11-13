@@ -31,7 +31,7 @@ Babel Manager — gerenciador de senhas para Android. O cofre fica só no aparel
 - Cofre = um arquivo JSON em `filesDir/vault.babel`: parâmetros de KDF no cabeçalho + conteúdo cifrado (AES-256-GCM; chave por PBKDF2-HMAC-SHA256, 600 mil iterações). A chave só existe em memória com o cofre aberto.
 - Biometria: o Keystore (chave exigindo biometria forte) cifra a chave do cofre; o resultado fica nas preferências. Trocar a senha mestra ou restaurar backup desliga a biometria.
 - Backup: cópia do arquivo **cifrado** no local escolhido via Storage Access Framework (`BackupRepository`). `allowBackup=false`: o Android não copia o cofre por conta própria.
-- Autofill: `BabelAutofillService` (entrada, raiz do pacote) só responde com "Preencher com o Babel Manager"; o sistema abre `AutofillActivity`, que tranca/destranca (mesma `AutoLock` do app) e devolve o `Dataset` da entrada escolhida. Nada do cofre aparece na lista do sistema. Campos: `data/autofill/FieldParser.kt`; sugestões por domínio/pacote: `EntryMatcher.kt` (testado). Não salva senhas novas.
+- Autofill: `BabelAutofillService` (entrada, raiz do pacote). Cofre trancado: só "Preencher com o Babel Manager", que abre `AutofillActivity` (desbloqueio; se houver uma única sugestão, preenche sem mostrar lista). Cofre aberto (depois de `AutoLock.checkExpired()`): oferece direto as entradas que combinam (título e usuário, **nunca a senha em texto de apresentação**), em lista suspensa e inline no teclado (`AutofillResponses.kt`), mais "Outras entradas…" (autenticação de dataset → lista completa). Campos: `data/autofill/FieldParser.kt`; sugestões por domínio/pacote: `EntryMatcher.kt` (testado). Não salva senhas novas.
 - Sem servidor. A única chamada de rede é a consulta da última Release no GitHub (`UpdateRepository`).
 - Segurança de tela: `FLAG_SECURE` ligado por padrão; trava automática por tempo em segundo plano (`AutoLock`); área de transferência marcada como sensível e limpa depois de um tempo.
 
@@ -43,6 +43,7 @@ Babel Manager — gerenciador de senhas para Android. O cofre fica só no aparel
   - `androidx.biometric`: único jeito suportado de usar o BiometricPrompt com CryptoObject.
   - `material-icons-extended`: ícones; o R8 remove os não usados.
   - `androidx.fragment`: fixada explicitamente porque `biometric` 1.1.0 puxa fragment 1.2.5, que lança `IllegalArgumentException` (código de requisição) ao abrir os seletores de arquivo via Activity Result API. Não remover enquanto o `biometric` não exigir fragment ≥ 1.3.
+  - `androidx.autofill`: só para montar as sugestões embutidas no teclado (`InlineSuggestionUi`); sem ela o Android só mostraria a lista suspensa.
   - KDF: PBKDF2 da plataforma (zero dependência). Os parâmetros ficam no arquivo do cofre, então trocar para Argon2id no futuro não quebra cofres existentes.
 
 ## Regras de segurança do produto
