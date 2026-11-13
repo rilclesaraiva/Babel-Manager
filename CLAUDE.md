@@ -107,3 +107,8 @@ Babel Manager — gerenciador de senhas para Android. O cofre fica só no aparel
   - A lista de palavras do gerador é própria e pequena (572 palavras, ≈ 9,2 bits por palavra); a entropia mostrada é calculada a partir dela. Candidato: trocar por uma lista maior.
   - O check-up só encontra senhas repetidas e fracas; não verifica vazamentos.
   - O keystore de assinatura ainda não foi gerado (precisa do nome público do mantenedor e do repositório).
+
+## Nota de build (M3 Expressive)
+- As APIs Expressive (`MaterialExpressiveTheme`, `ToggleButton`, `LoadingIndicator`, `LargeFlexibleTopAppBar`) só são públicas no `material3` **1.5.0-alpha**; na 1.4.0 são internas. Versão fixada em `libs.versions.toml` (`material3 = "1.5.0-alpha10"`), fora do BOM.
+- Alphas mais novas (ex.: alpha29) exigem `compileSdk` 37 e AGP mais novo. Subir só junto com o AGP.
+- Primeira rodada do CI verde com esta combinação (build, testes e release pulado por falta de seção 0.0.0).
