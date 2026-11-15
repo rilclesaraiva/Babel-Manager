@@ -41,7 +41,9 @@ object FieldParser {
         val firstPassword = fields.indexOfFirst { it.isPassword }
         val usernameField = if (firstPassword >= 0) {
             val before = fields.subList(0, firstPassword)
-            before.lastOrNull { it.isUsername } ?: before.lastOrNull { it.isText }
+            // A ordem da lista nem sempre é a da tela (no Firefox a senha pode vir antes): um campo claramente de
+            // usuário vale em qualquer posição; sem ele, o último campo de texto antes da senha.
+            before.lastOrNull { it.isUsername } ?: fields.firstOrNull { it.isUsername } ?: before.lastOrNull { it.isText }
         } else {
             fields.firstOrNull { it.isUsername }
         }
