@@ -1,5 +1,6 @@
 package com.babelmanager.app.features.settings
 
+import com.babelmanager.app.core.ui.PageTitle
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
@@ -132,7 +133,6 @@ fun SettingsScreen(
     }
 
     TabScaffold(
-        title = stringResource(R.string.tab_settings),
         modifier = modifier,
         snackbarHostState = snackbar,
     ) { padding ->
@@ -142,6 +142,7 @@ fun SettingsScreen(
                 .padding(PaddingValues(top = padding.calculateTopPadding(), bottom = padding.calculateBottomPadding()))
                 .verticalScroll(rememberScrollState()),
         ) {
+            PageTitle(stringResource(R.string.tab_settings))
             // ── Segurança ──
             SectionHeader(stringResource(R.string.settings_security))
             SettingsItem(
@@ -264,8 +265,6 @@ fun SettingsScreen(
                 title = stringResource(R.string.settings_delete_vault),
                 onClick = { showDeleteVault = true },
             )
-
-            HorizontalDivider(Modifier.padding(vertical = 8.dp))
 
             // ── Atualizações e Sobre: cartões agrupados ──
             GroupLabel(stringResource(R.string.settings_system))

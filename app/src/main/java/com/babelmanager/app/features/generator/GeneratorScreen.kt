@@ -1,5 +1,6 @@
 package com.babelmanager.app.features.generator
 
+import com.babelmanager.app.core.ui.PageTitle
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -84,15 +85,17 @@ fun GeneratorScreen(clipboardSeconds: Int, modifier: Modifier = Modifier) {
     val bits = if (memorable) generator.memorableEntropyBits(memorableOptions) else generator.randomEntropyBits(randomOptions)
     val strength = Strength(bits, StrengthLevel.fromBits(bits))
 
-    TabScaffold(title = stringResource(R.string.tab_generator), modifier = modifier) { padding ->
+    TabScaffold(modifier = modifier) { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(PaddingValues(top = padding.calculateTopPadding(), bottom = padding.calculateBottomPadding()))
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp, vertical = 8.dp),
+                .padding(horizontal = 16.dp)
+                .padding(bottom = 8.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
+            PageTitle(stringResource(R.string.tab_generator), containerPadding = 16.dp)
             Surface(
                 modifier = Modifier.fillMaxWidth(),
                 shape = MaterialTheme.shapes.extraLarge,

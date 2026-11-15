@@ -1,5 +1,9 @@
 package com.babelmanager.app.features.vault
 
+import androidx.compose.material3.Button
+import androidx.compose.foundation.layout.fillMaxSize
+import com.babelmanager.app.core.ui.PageTitle
+import com.babelmanager.app.core.ui.PageScaffold
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -64,46 +68,45 @@ fun EntryEditScreen(
     var showAppPicker by rememberSaveable { mutableStateOf(false) }
     val appPackage = AppUri.packageOf(url)
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(stringResource(if (initial == null) R.string.add_password else R.string.edit_password))
+    PageScaffold(
+        onBack = onClose,
+        backIcon = Icons.Outlined.Close,
+        backDescription = stringResource(R.string.cancel),
+        floatingActions = {
+            Button(
+                enabled = title.isNotBlank(),
+                onClick = {
+                    onSave(
+                        Entry(
+                            id = initial?.id ?: UUID.randomUUID().toString(),
+                            title = title.trim(),
+                            username = username.trim(),
+                            password = password,
+                            url = url.trim(),
+                            note = note,
+                            createdAt = initial?.createdAt ?: 0L,
+                        ),
+                    )
                 },
-                navigationIcon = {
-                    IconButton(onClick = onClose) {
-                        Icon(Icons.Outlined.Close, contentDescription = stringResource(R.string.cancel))
-                    }
-                },
-                actions = {
-                    TextButton(
-                        enabled = title.isNotBlank(),
-                        onClick = {
-                            onSave(
-                                Entry(
-                                    id = initial?.id ?: UUID.randomUUID().toString(),
-                                    title = title.trim(),
-                                    username = username.trim(),
-                                    password = password,
-                                    url = url.trim(),
-                                    note = note,
-                                    createdAt = initial?.createdAt ?: 0L,
-                                ),
-                            )
-                        },
-                    ) { Text(stringResource(R.string.save)) }
-                },
-            )
+            ) { Text(stringResource(R.string.save)) }
         },
     ) { padding ->
         Column(
             modifier = Modifier
-                .padding(padding)
+                .fillMaxSize()
                 .imePadding()
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp, vertical = 8.dp),
+                .padding(padding)
+                .padding(horizontal = 16.dp)
+                .padding(bottom = 8.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
+            PageTitle(
+                title = stringResource(if (initial == null) R.string.add_password else R.string.edit_password),
+                hasBack = true,
+                endInset = 120.dp,
+                containerPadding = 16.dp,
+            )
             OutlinedTextField(
                 value = title,
                 onValueChange = { title = it },

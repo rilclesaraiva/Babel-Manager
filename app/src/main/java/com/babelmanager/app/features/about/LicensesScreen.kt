@@ -1,5 +1,6 @@
 package com.babelmanager.app.features.about
 
+import androidx.compose.foundation.layout.fillMaxSize
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.layout.Column
@@ -26,6 +27,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.babelmanager.app.R
 import com.babelmanager.app.core.ui.GroupItem
+import com.babelmanager.app.core.ui.PageScaffold
+import com.babelmanager.app.core.ui.PageTitle
 import com.babelmanager.app.core.ui.GroupedItems
 
 private class Credit(val name: String, val license: String, val url: String)
@@ -40,43 +43,26 @@ private val CREDITS = listOf(
     Credit("GitHub (update check and developer photo)", "GitHub Terms of Service", "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service"),
 )
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LicensesScreen(onBack: () -> Unit) {
     val context = LocalContext.current
-    val scroll = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-    Scaffold(
-        modifier = Modifier.nestedScroll(scroll.nestedScrollConnection),
-        topBar = {
-            LargeTopAppBar(
-                title = { Text(stringResource(R.string.about_licenses)) },
-                navigationIcon = {
-                    FilledTonalIconButton(
-                        onClick = onBack,
-                        colors = IconButtonDefaults.filledTonalIconButtonColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
-                    ) {
-                        Icon(Icons.AutoMirrored.Outlined.ArrowBack, contentDescription = stringResource(R.string.back))
-                    }
-                },
-                scrollBehavior = scroll,
-            )
-        },
-    ) { padding ->
+    PageScaffold(onBack = onBack) { padding ->
         Column(
             modifier = Modifier
-                .padding(padding)
+                .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp)
+                .padding(padding)
                 .padding(bottom = 24.dp),
         ) {
+            PageTitle(stringResource(R.string.about_licenses), hasBack = true)
             Text(
                 stringResource(R.string.about_licenses_body),
-                modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp),
+                modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             GroupedItems(
-                modifier = Modifier.padding(top = 8.dp),
+                modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp),
                 items = CREDITS.map { credit ->
                     GroupItem(
                         title = credit.name,

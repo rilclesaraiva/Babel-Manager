@@ -1,5 +1,6 @@
 package com.babelmanager.app.features.checkup
 
+import com.babelmanager.app.core.ui.PageTitle
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -38,15 +39,16 @@ fun CheckupScreen(
 ) {
     val report = remember(entries) { PasswordHealth.analyze(entries) }
 
-    TabScaffold(title = stringResource(R.string.tab_checkup), modifier = modifier) { padding ->
+    TabScaffold(modifier = modifier) { padding ->
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = androidx.compose.foundation.layout.PaddingValues(
-                top = padding.calculateTopPadding() + 8.dp,
+                top = padding.calculateTopPadding(),
                 bottom = padding.calculateBottomPadding() + 16.dp,
             ),
             verticalArrangement = Arrangement.spacedBy(2.dp),
         ) {
+            item { PageTitle(stringResource(R.string.tab_checkup)) }
             item {
                 SummaryCard(report)
             }

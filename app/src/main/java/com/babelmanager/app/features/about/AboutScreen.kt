@@ -56,6 +56,8 @@ import com.babelmanager.app.R
 import com.babelmanager.app.core.ui.EntryAvatar
 import com.babelmanager.app.core.ui.GroupItem
 import com.babelmanager.app.core.ui.GroupLabel
+import com.babelmanager.app.core.ui.PageScaffold
+import com.babelmanager.app.core.ui.PageTitle
 import com.babelmanager.app.core.ui.GroupedItems
 import com.babelmanager.app.data.about.AvatarStore
 import com.babelmanager.app.data.update.UpdateRepository
@@ -70,35 +72,19 @@ private val pagesUrl: String
         return "https://$owner.github.io/$name"
     }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AboutScreen(onBack: () -> Unit, onLicenses: () -> Unit) {
     val context = LocalContext.current
-    val scroll = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val colors = MaterialTheme.colorScheme
-    Scaffold(
-        modifier = Modifier.nestedScroll(scroll.nestedScrollConnection),
-        topBar = {
-            LargeTopAppBar(
-                title = { Text(stringResource(R.string.about_screen_title)) },
-                navigationIcon = {
-                    FilledTonalIconButton(
-                        onClick = onBack,
-                        colors = IconButtonDefaults.filledTonalIconButtonColors(containerColor = colors.surfaceContainerHigh),
-                    ) {
-                        Icon(Icons.AutoMirrored.Outlined.ArrowBack, contentDescription = stringResource(R.string.back))
-                    }
-                },
-                scrollBehavior = scroll,
-            )
-        },
-    ) { padding ->
+    PageScaffold(onBack = onBack) { padding ->
         Column(
             modifier = Modifier
-                .padding(padding)
+                .fillMaxSize()
                 .verticalScroll(rememberScrollState())
+                .padding(padding)
                 .padding(bottom = 24.dp),
         ) {
+            PageTitle(stringResource(R.string.about_screen_title), hasBack = true)
             // Cabeçalho: ícone, nome, versão e tipo de build (lidos do build) e a descrição.
             Column(
                 modifier = Modifier

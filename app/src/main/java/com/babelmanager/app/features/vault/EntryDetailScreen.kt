@@ -1,5 +1,10 @@
 package com.babelmanager.app.features.vault
 
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import com.babelmanager.app.core.ui.PageScaffold
 import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
@@ -70,25 +75,18 @@ fun EntryDetailScreen(
         Toast.makeText(context, R.string.copied, Toast.LENGTH_SHORT).show()
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {},
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Outlined.ArrowBack, contentDescription = stringResource(R.string.back))
-                    }
-                },
-            )
-        },
-    ) { padding ->
+    PageScaffold(onBack = onBack) { padding ->
         Column(
             modifier = Modifier
-                .padding(padding)
+                .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp, vertical = 8.dp),
+                .padding(padding)
+                .padding(horizontal = 16.dp)
+                .padding(bottom = 8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
+            // Espaço do voltar parado no canto (o título é o nome da entrada, logo abaixo).
+            Spacer(Modifier.statusBarsPadding().height(64.dp))
             Row(
                 modifier = Modifier.padding(start = 8.dp, bottom = 16.dp),
                 verticalAlignment = Alignment.CenterVertically,

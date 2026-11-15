@@ -1,5 +1,9 @@
 package com.babelmanager.app.features.update
 
+import androidx.compose.foundation.layout.Box
+import com.babelmanager.app.core.ui.FloatingCircleButton
+import com.babelmanager.app.core.ui.PageTitle
+import com.babelmanager.app.core.ui.PageScaffold
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
@@ -56,45 +60,48 @@ fun UpdatePrompt(
         properties = DialogProperties(usePlatformDefaultWidth = false, decorFitsSystemWindows = false),
     ) {
         Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
-            Scaffold(
-                topBar = {
-                    TopAppBar(
-                        title = { Text(stringResource(R.string.update_available)) },
-                        navigationIcon = {
-                            IconButton(onClick = onDismiss) {
-                                Icon(Icons.Outlined.Close, contentDescription = stringResource(R.string.not_now))
-                            }
-                        },
-                        actions = {
-                            IconButton(onClick = { menu = true }) {
-                                Icon(Icons.Outlined.Notifications, contentDescription = stringResource(R.string.update_remind_menu))
-                            }
-                            DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
-                                DropdownMenuItem(
-                                    text = { Text(stringResource(R.string.update_snooze_week)) },
-                                    onClick = { menu = false; onSnoozeWeek() },
-                                )
-                                DropdownMenuItem(
-                                    text = { Text(stringResource(R.string.update_snooze_month)) },
-                                    onClick = { menu = false; onSnoozeMonth() },
-                                )
-                                DropdownMenuItem(
-                                    text = { Text(stringResource(R.string.update_skip_version)) },
-                                    onClick = { menu = false; onSkip() },
-                                )
-                            }
-                        },
-                    )
+            PageScaffold(
+                onBack = onDismiss,
+                backIcon = Icons.Outlined.Close,
+                backDescription = stringResource(R.string.not_now),
+                floatingActions = {
+                    Box {
+                        FloatingCircleButton(
+                            icon = Icons.Outlined.Notifications,
+                            contentDescription = stringResource(R.string.update_remind_menu),
+                            onClick = { menu = true },
+                        )
+                        DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.update_snooze_week)) },
+                                onClick = { menu = false; onSnoozeWeek() },
+                            )
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.update_snooze_month)) },
+                                onClick = { menu = false; onSnoozeMonth() },
+                            )
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.update_skip_version)) },
+                                onClick = { menu = false; onSkip() },
+                            )
+                        }
+                    }
                 },
             ) { padding ->
                 Column(
                     modifier = Modifier
-                        .padding(padding)
                         .fillMaxSize()
+                        .padding(padding)
                         .padding(horizontal = 20.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
-                    Text(release.version, style = MaterialTheme.typography.headlineMedium)
+                    PageTitle(
+                        title = stringResource(R.string.update_available),
+                        hasBack = true,
+                        endInset = 72.dp,
+                        containerPadding = 20.dp,
+                    )
+                    Text(release.version, style = MaterialTheme.typography.titleLarge)
                     Column(
                         modifier = Modifier
                             .weight(1f)

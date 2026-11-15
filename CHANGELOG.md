@@ -12,13 +12,14 @@
 - Change the master password; delete the vault.
 - Automatic lock when the app stays in the background, and screenshot blocking (on by default).
 - About screen and update notices from public GitHub Releases.
-- Redesigned Updates and About: grouped cards with icon badges, large collapsing title, version and build chips, developer card with the maintainer's GitHub photo, and a Licenses and credits screen.
+- Redesigned Updates and About: grouped cards with icon badges, version and build chips, developer card with the maintainer's GitHub photo, and a Licenses and credits screen.
 - App picker on entries: choose an installed app (icon, name, search) instead of a website; the entry shows the app with a remove button and autofill suggests it in that app.
 - Autofill service: appears in Android's preferred service list. With the vault unlocked, matching entries show up directly in the system suggestions and in keyboard inline suggestions; when locked it asks for unlock first, and "Other entries…" opens the full list (saving new passwords is not supported yet). Quick access in Settings.
 - Material 3 Expressive interface, English and Brazilian Portuguese.
 
 ### Fixed
 - Crash when choosing a backup location, restoring a backup or importing passwords (an outdated transitive `fragment` library broke the system file pickers).
+- Top of every screen: no more pinned top bar or floating back button covering titles. The title is now the first line of the page and scrolls with it; only the back button stays in the corner and the title starts after it (same pattern as BoomListener and Joule Arc).
 
 ### Known issues
 - Not compiled or tested outside CI yet.

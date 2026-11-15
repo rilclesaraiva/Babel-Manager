@@ -22,6 +22,7 @@ Babel Manager — gerenciador de senhas para Android. O cofre fica só no aparel
 - Ícone: `app/src/main/res/drawable/ic_launcher_foreground.xml` (+ `_monochrome` e fundo), só muda se o mantenedor pedir
 - Sobre: entrada própria nos ajustes (versão lida do build, código-fonte, novidades,
   issues, legal e apoio). Visual em cartões agrupados (`core/ui/Grouped.kt`: `GroupLabel`, `GroupedItems`), igual ao dos outros apps do mantenedor (BoomListener, Joule Arc); Atualizações e Sobre nos Ajustes usam o mesmo estilo. Licenças em tela própria (`LicensesScreen`, lista fixa: atualizar ao mudar dependências).
+- Topo das telas: **sem barra presa** (nada de `TopAppBar`). `core/ui/PageChrome.kt`: o título (`PageTitle`) é a primeira linha do que rola; telas de dentro usam `PageScaffold` (voltar parado no canto, `FloatingCircleButton`; ações no canto oposto) e o título começa em `BackButtonInset` (`hasBack = true`) para o botão nunca cobrir o título. Telas de aba usam `TabScaffold` e põem o `PageTitle` como primeiro item da lista. Igual ao BoomListener e ao Joule Arc; não voltar a usar `TopAppBar`/`LargeTopAppBar`.
 - Atualizações: sim, via Releases públicas. Repositório em `babel.repo` (`gradle.properties`);
   enquanto `babel.repo` for `OWNER/REPO` o aviso fica desligado (hoje: `rilclesaraiva/Babel-Manager`) e os links do Sobre ficam ocultos.
   Consulta ao abrir e no máximo a cada 10 min ao voltar, com ETag; "Agora não" só na

@@ -1,5 +1,6 @@
 package com.babelmanager.app.features.vault
 
+import com.babelmanager.app.core.ui.PageTitle
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -60,13 +61,7 @@ fun VaultListScreen(
     var bannerDismissed by rememberSaveable { mutableStateOf(false) }
 
     TabScaffold(
-        title = stringResource(R.string.app_name),
         modifier = modifier,
-        actions = {
-            IconButton(onClick = onLock) {
-                Icon(Icons.Outlined.Lock, contentDescription = stringResource(R.string.lock_now))
-            }
-        },
         floatingActionButton = {
             FloatingActionButton(onClick = onAdd) {
                 Icon(Icons.Outlined.Add, contentDescription = stringResource(R.string.add_password))
@@ -76,11 +71,18 @@ fun VaultListScreen(
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(
-                top = padding.calculateTopPadding() + 8.dp,
+                top = padding.calculateTopPadding(),
                 bottom = padding.calculateBottomPadding() + 96.dp,
             ),
             verticalArrangement = Arrangement.spacedBy(2.dp),
         ) {
+            item {
+                PageTitle(stringResource(R.string.app_name)) {
+                    IconButton(onClick = onLock) {
+                        Icon(Icons.Outlined.Lock, contentDescription = stringResource(R.string.lock_now))
+                    }
+                }
+            }
             item {
                 OutlinedTextField(
                     value = query,
