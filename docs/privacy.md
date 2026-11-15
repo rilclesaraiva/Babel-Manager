@@ -13,6 +13,7 @@ Babel Manager is an open-source app maintained by the project maintainer (GitHub
 - **Biometric unlock (optional):** if you turn it on, a key protected by the Android Keystore holds an encrypted copy of the vault key on your device. Your fingerprint or face data stays in Android and is never read by the app.
 - **Settings and caches** stored on your device: your preferences, the location you chose for backup, and the cached answer of the update check.
 - **Autofill (optional):** if you choose Babel Manager as your autofill service in Android settings, Android sends the app the structure of a login screen (which fields exist, and the app or website name) when you tap a field. The app uses it only to fill the entry you pick. While the vault is locked, Android's suggestion list shows only "Fill with Babel Manager". While the vault is unlocked, it also lists the title and username of the entries that match the site or app (the password is never displayed in the list); those names are handed to Android and, for inline suggestions, to your keyboard app, which handles them under its own policy. The app never stores that screen information and never sends it anywhere.
+- **App picker (optional):** when you link an entry to an app, the app reads the list of installed apps that have a launcher icon (name and icon), only on your device, only to show the picker and the chosen app. That list is not stored and is never sent anywhere. Only the package name you choose is saved, inside the encrypted vault.
 - **Clipboard:** when you copy a field, the app puts it on the clipboard marked as sensitive and clears it after the time you choose, if Android allows.
 
 ## Backup
@@ -27,6 +28,7 @@ The only network request made by the app is to ask GitHub (`api.github.com`) for
 
 - `INTERNET`: only for the update check above.
 - `USE_BIOMETRIC`: only for biometric unlock.
+- Visibility of launcher apps (`<queries>` for apps with a launcher icon): only for the app picker. The app does not request `QUERY_ALL_PACKAGES`.
 - Autofill service (`BIND_AUTOFILL_SERVICE`, granted by Android only when you select the app as your service): only to fill logins.
 
 ## Third-party code

@@ -1,5 +1,6 @@
 package com.babelmanager.app
 
+import com.babelmanager.app.data.autofill.AppUri
 import com.babelmanager.app.data.autofill.EntryMatcher
 import com.babelmanager.app.data.vault.Entry
 import org.junit.Assert.assertEquals
@@ -35,6 +36,18 @@ class EntryMatcherTest {
         assertTrue(EntryMatcher.matches(e("Spotify"), "com.spotify.music", null))
         assertFalse(EntryMatcher.matches(e("Netflix"), "com.spotify.music", null))
         assertFalse(EntryMatcher.matches(e("Android"), "com.android.chrome", null))
+    }
+
+    @Test fun appUriRoundTripsAndOnlyMatchesItsOwnApp() {
+        assertEquals("androidapp://com.spotify.music", AppUri.of("com.spotify.music"))
+        assertEquals("com.spotify.music", AppUri.packageOf(" androidapp://com.spotify.music "))
+        assertEquals(null, AppUri.packageOf("https://spotify.com"))
+        assertEquals(null, AppUri.packageOf("androidapp://"))
+        val app = e("Spotify", AppUri.of("com.spotify.music"))
+        assertTrue(EntryMatcher.matches(app, "com.spotify.music", null))
+        assertFalse(EntryMatcher.matches(app, "com.spotify.lite", null))
+        // um pacote com cara de domínio não pode casar com site
+        assertFalse(EntryMatcher.matches(e("X", AppUri.of("exemplo.com")), null, "exemplo.com"))
     }
 
     @Test fun splitPutsSuggestedFirstAndSortsByTitle() {

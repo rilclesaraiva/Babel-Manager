@@ -30,6 +30,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -44,6 +45,8 @@ import androidx.compose.ui.unit.dp
 import com.babelmanager.app.R
 import com.babelmanager.app.core.ui.EntryAvatar
 import com.babelmanager.app.core.util.ClipboardUtil
+import com.babelmanager.app.data.apps.InstalledApps
+import com.babelmanager.app.data.autofill.AppUri
 import com.babelmanager.app.data.vault.Entry
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -110,7 +113,18 @@ fun EntryDetailScreen(
                     onCopy = { copy("password", entry.password) },
                 )
             }
-            if (entry.url.isNotEmpty()) {
+            val appPackage = AppUri.packageOf(entry.url)
+            if (appPackage != null) {
+                val apps = remember { InstalledApps(context.packageManager, context.packageName) }
+                val launch = remember(appPackage) { apps.launchIntent(appPackage) }
+                FieldCard(
+                    label = stringResource(R.string.entry_app),
+                    value = remember(appPackage) { apps.label(appPackage) ?: appPackage },
+                    onCopy = { copy("app", appPackage) },
+                    onOpen = launch?.let { intent -> { runCatching { context.startActivity(intent) } } },
+                    openLabel = R.string.open_app,
+                )
+            } else if (entry.url.isNotEmpty()) {
                 FieldCard(
                     label = stringResource(R.string.website),
                     value = entry.url,
@@ -169,6 +183,7 @@ private fun FieldCard(
     masked: Boolean = false,
     onCopy: (() -> Unit)? = null,
     onOpen: (() -> Unit)? = null,
+    openLabel: Int = R.string.open_website,
 ) {
     var visible by rememberSaveable { mutableStateOf(false) }
     Surface(
@@ -198,7 +213,7 @@ private fun FieldCard(
             }
             if (onOpen != null) {
                 IconButton(onClick = onOpen) {
-                    Icon(Icons.AutoMirrored.Outlined.OpenInNew, contentDescription = stringResource(R.string.open_website))
+                    Icon(Icons.AutoMirrored.Outlined.OpenInNew, contentDescription = stringResource(openLabel))
                 }
             }
             if (onCopy != null) {

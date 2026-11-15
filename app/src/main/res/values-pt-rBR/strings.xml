@@ -140,6 +140,11 @@
     <string name="delete_vault_body">Todas as senhas deste aparelho serão apagadas. Cópias de backup feitas em outros lugares não são afetadas. Isso não pode ser desfeito.</string>
     <string name="msg_biometric_enabled">Desbloqueio por biometria ligado.</string>
     <string name="msg_biometric_failed">Não foi possível ligar a biometria.</string>
+    <string name="entry_app">App</string>
+    <string name="select_app">Selecionar app</string>
+    <string name="remove_app">Remover app</string>
+    <string name="open_app">Abrir app</string>
+    <string name="app_picker_empty">Nenhum app encontrado.</string>
     <string name="autofill_presentation">Preencher com o Babel Manager</string>
     <string name="autofill_pick_title">Escolha uma entrada</string>
     <string name="autofill_suggested">Sugeridas</string>

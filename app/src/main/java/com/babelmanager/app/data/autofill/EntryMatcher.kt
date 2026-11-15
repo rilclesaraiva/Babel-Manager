@@ -8,6 +8,19 @@ import com.babelmanager.app.data.vault.Entry
  * App: procura o nome do pacote no endereço (ex: `androidapp://com.exemplo.app`) ou no título.
  * É só uma sugestão: a pessoa sempre escolhe a entrada na tela do Babel Manager.
  */
+/** Endereço de entrada que aponta para um app Android: `androidapp://com.exemplo.app`. */
+object AppUri {
+    const val PREFIX = "androidapp://"
+
+    fun of(packageName: String): String = PREFIX + packageName
+
+    fun packageOf(url: String): String? {
+        val t = url.trim()
+        if (!t.startsWith(PREFIX, ignoreCase = true)) return null
+        return t.substring(PREFIX.length).trim().ifEmpty { null }
+    }
+}
+
 object EntryMatcher {
 
     private val SECOND_LEVEL = setOf("com", "net", "org", "gov", "edu", "co", "ac")
@@ -30,13 +43,16 @@ object EntryMatcher {
 
     fun matches(entry: Entry, packageName: String?, webDomain: String?): Boolean {
         val url = entry.url.trim()
+        val entryApp = AppUri.packageOf(url)
         if (!webDomain.isNullOrBlank()) {
+            if (entryApp != null) return false // entrada de app nunca combina com site
             val wanted = hostOf(webDomain)
             val have = hostOf(url)
             return have.isNotEmpty() && wanted.isNotEmpty() && baseDomain(have) == baseDomain(wanted)
         }
         if (packageName.isNullOrBlank()) return false
         val pkg = packageName.lowercase()
+        if (entryApp != null) return entryApp.lowercase() == pkg
         if (url.lowercase().contains(pkg)) return true
         val tokens = pkg.split('.').filter { it.length >= 4 && it !in GENERIC_TOKENS }
         val haystack = (entry.title + " " + hostOf(url)).lowercase()

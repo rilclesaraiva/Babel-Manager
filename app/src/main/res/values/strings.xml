@@ -140,6 +140,11 @@
     <string name="delete_vault_body">All passwords on this device will be erased. Backup copies you made elsewhere are not touched. This can\'t be undone.</string>
     <string name="msg_biometric_enabled">Biometric unlock is on.</string>
     <string name="msg_biometric_failed">Couldn\'t turn on biometric unlock.</string>
+    <string name="entry_app">App</string>
+    <string name="select_app">Select app</string>
+    <string name="remove_app">Remove app</string>
+    <string name="open_app">Open app</string>
+    <string name="app_picker_empty">No apps found.</string>
     <string name="autofill_presentation">Fill with Babel Manager</string>
     <string name="autofill_pick_title">Choose an entry</string>
     <string name="autofill_suggested">Suggested</string>
