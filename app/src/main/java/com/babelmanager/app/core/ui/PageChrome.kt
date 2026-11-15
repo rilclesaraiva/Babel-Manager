@@ -40,7 +40,7 @@ import com.babelmanager.app.R
 // ficam parados no canto, por cima da página. O título começa depois do voltar
 // ([BackButtonInset]) para o botão nunca ficar por cima dele.
 
-/** Largura que o título deixa livre à esquerda para não ficar por baixo do [BackButton] (8 + 48 + folga). */
+/** Largura que o título deixa livre à esquerda para não ficar por baixo do [BackButton] (8 + 56 + folga). */
 val BackButtonInset = 72.dp
 
 /** Botão redondo, levemente transparente, parado sobre a página. */
@@ -56,7 +56,7 @@ fun FloatingCircleButton(
         shape = CircleShape,
         color = MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.9f),
         contentColor = MaterialTheme.colorScheme.onSurface,
-        modifier = modifier.size(48.dp),
+        modifier = modifier.size(56.dp),
     ) {
         Box(contentAlignment = Alignment.Center) {
             Icon(icon, contentDescription)
@@ -85,7 +85,7 @@ fun PageTitle(
         modifier = modifier
             .fillMaxWidth()
             .statusBarsPadding()
-            .heightIn(min = 72.dp)
+            .heightIn(min = 80.dp)
             .padding(
                 start = ((if (hasBack) BackButtonInset else 16.dp) - containerPadding).coerceAtLeast(0.dp),
                 end = (endInset - containerPadding).coerceAtLeast(0.dp),
@@ -94,7 +94,7 @@ fun PageTitle(
     ) {
         Text(
             title,
-            style = MaterialTheme.typography.headlineMedium,
+            style = MaterialTheme.typography.headlineLarge,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(1f),

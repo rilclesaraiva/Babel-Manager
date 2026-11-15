@@ -41,6 +41,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -95,12 +96,12 @@ fun AboutScreen(onBack: () -> Unit, onLicenses: () -> Unit) {
             ) {
                 Box(
                     modifier = Modifier
-                        .size(150.dp)
+                        .size(120.dp)
                         .clip(CircleShape)
                         .background(colorResource(R.color.ic_launcher_background)),
                     contentAlignment = Alignment.Center,
                 ) {
-                    Image(painterResource(R.drawable.ic_launcher_foreground), contentDescription = null, modifier = Modifier.fillMaxSize())
+                    Image(painterResource(R.drawable.ic_launcher_foreground), contentDescription = null, modifier = Modifier.fillMaxSize().scale(1.35f))
                 }
                 Text(stringResource(R.string.app_name), style = MaterialTheme.typography.displaySmall, textAlign = TextAlign.Center)
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -117,11 +118,11 @@ fun AboutScreen(onBack: () -> Unit, onLicenses: () -> Unit) {
 
             if (repoConfigured) {
                 GroupLabel(stringResource(R.string.about_developer))
-                DeveloperCard(context, Modifier.padding(horizontal = 16.dp))
+                DeveloperCard(context, Modifier.padding(horizontal = 24.dp))
 
                 GroupLabel(stringResource(R.string.about_project))
                 GroupedItems(
-                    modifier = Modifier.padding(horizontal = 16.dp),
+                    modifier = Modifier.padding(horizontal = 24.dp),
                     items = listOf(
                         GroupItem(
                             title = stringResource(R.string.about_source),
@@ -153,7 +154,7 @@ fun AboutScreen(onBack: () -> Unit, onLicenses: () -> Unit) {
 
             GroupLabel(stringResource(R.string.about_legal))
             GroupedItems(
-                modifier = Modifier.padding(horizontal = 16.dp),
+                modifier = Modifier.padding(horizontal = 24.dp),
                 items = buildList {
                     if (repoConfigured) {
                         add(
@@ -186,7 +187,7 @@ fun AboutScreen(onBack: () -> Unit, onLicenses: () -> Unit) {
 
             if (repoConfigured) {
                 GroupedItems(
-                    modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp),
+                    modifier = Modifier.padding(start = 24.dp, end = 24.dp, top = 16.dp),
                     items = listOf(
                         GroupItem(
                             title = stringResource(R.string.about_support_title),
@@ -208,9 +209,8 @@ private fun Pill(text: String) {
     Surface(shape = CircleShape, color = MaterialTheme.colorScheme.surfaceContainerHigh) {
         Text(
             text,
-            modifier = Modifier.padding(horizontal = 18.dp, vertical = 10.dp),
+            modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
             style = MaterialTheme.typography.labelLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }
 }
@@ -222,20 +222,20 @@ private fun DeveloperCard(context: Context, modifier: Modifier = Modifier) {
     val avatar by produceState<ImageBitmap?>(null) { value = store.load()?.asImageBitmap() }
     Surface(
         onClick = { open(context, "https://github.com/${BuildConfig.DEVELOPER}") },
-        shape = androidx.compose.foundation.shape.RoundedCornerShape(28.dp),
-        color = MaterialTheme.colorScheme.surfaceContainer,
+        shape = androidx.compose.foundation.shape.RoundedCornerShape(32.dp),
+        color = MaterialTheme.colorScheme.surfaceContainerLow,
         modifier = modifier.fillMaxWidth(),
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp),
+            modifier = Modifier.padding(horizontal = 20.dp, vertical = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             val photo = avatar
             if (photo != null) {
-                Image(photo, contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.size(64.dp).clip(CircleShape))
+                Image(photo, contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.size(52.dp).clip(CircleShape))
             } else {
-                EntryAvatar(BuildConfig.DEVELOPER, size = 64)
+                EntryAvatar(BuildConfig.DEVELOPER, size = 52)
             }
             Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 Text(BuildConfig.DEVELOPER, style = MaterialTheme.typography.titleLarge)

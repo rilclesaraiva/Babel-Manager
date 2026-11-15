@@ -20,6 +20,7 @@
 - Material 3 Expressive interface, English and Brazilian Portuguese.
 
 ### Fixed
+- About screen and shared UI now use the same sizes as the maintainer's other apps (Intruphon): bold type weights, 56 dp back button, 80 dp page title, 32 dp cards with 52 dp icon badges, sentence-case group labels, 120 dp header icon.
 - Autofill suggestions no longer vanish after the first few typed characters: the open-vault entries now carry the same explicit prefix filter as the locked ones (a flat prefix list instead of nested groups).
 - Autofill finds the username field even when the browser lists the password field first (seen on Firefox).
 - Autofill now recognizes the Google sign-in identifier field (`identifier`), which has no label or e-mail type, so the system Google login screen gets suggestions.

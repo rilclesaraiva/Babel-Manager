@@ -19,11 +19,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 
-/** Título de grupo em caixa alta, na cor de destaque (Atualizações, Sobre, Legal…). */
+/** Título de grupo na cor de destaque (Atualizações, Sobre, Legal…). */
 @Composable
 fun GroupLabel(text: String, modifier: Modifier = Modifier) {
     Text(
-        text = text.uppercase(),
+        text = text,
         modifier = modifier.padding(start = 24.dp, end = 16.dp, top = 24.dp, bottom = 8.dp),
         style = MaterialTheme.typography.labelLarge,
         color = MaterialTheme.colorScheme.primary,
@@ -32,7 +32,7 @@ fun GroupLabel(text: String, modifier: Modifier = Modifier) {
 
 /** Círculo com ícone, usado à esquerda dos itens agrupados. */
 @Composable
-fun IconBadge(icon: ImageVector, container: Color, content: Color, modifier: Modifier = Modifier, size: Int = 48) {
+fun IconBadge(icon: ImageVector, container: Color, content: Color, modifier: Modifier = Modifier, size: Int = 52) {
     Surface(modifier = modifier.size(size.dp), shape = CircleShape, color = container, contentColor = content) {
         Row(horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
             Icon(icon, contentDescription = null, modifier = Modifier.size((size / 2).dp))
@@ -55,7 +55,7 @@ class GroupItem(
 fun GroupedItems(items: List<GroupItem>, modifier: Modifier = Modifier) {
     Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(2.dp)) {
         items.forEachIndexed { index, item ->
-            val big = 28.dp
+            val big = 32.dp
             val small = 6.dp
             val shape = RoundedCornerShape(
                 topStart = if (index == 0) big else small,
@@ -65,7 +65,7 @@ fun GroupedItems(items: List<GroupItem>, modifier: Modifier = Modifier) {
             )
             val body: @Composable () -> Unit = {
                 Row(
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp),
+                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 16.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
@@ -85,9 +85,9 @@ fun GroupedItems(items: List<GroupItem>, modifier: Modifier = Modifier) {
             }
             val click = item.onClick
             if (click != null) {
-                Surface(onClick = click, shape = shape, color = MaterialTheme.colorScheme.surfaceContainer, modifier = Modifier.fillMaxWidth()) { body() }
+                Surface(onClick = click, shape = shape, color = MaterialTheme.colorScheme.surfaceContainerLow, modifier = Modifier.fillMaxWidth()) { body() }
             } else {
-                Surface(shape = shape, color = MaterialTheme.colorScheme.surfaceContainer, modifier = Modifier.fillMaxWidth()) { body() }
+                Surface(shape = shape, color = MaterialTheme.colorScheme.surfaceContainerLow, modifier = Modifier.fillMaxWidth()) { body() }
             }
         }
     }
