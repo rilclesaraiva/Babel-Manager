@@ -11,6 +11,10 @@ class ParsedForm(
     val passwordIds: List<AutofillId>,
     val packageName: String?,
     val webDomain: String?,
+    /** Texto que já está no campo de usuário (ex.: e-mail preenchido pela página); vazio se nada. */
+    val usernameText: String = "",
+    /** Algum campo de senha já tem texto. */
+    val passwordHasText: Boolean = false,
 ) {
     val allIds: List<AutofillId> get() = listOfNotNull(usernameId) + passwordIds
 }
@@ -18,7 +22,13 @@ class ParsedForm(
 /** Lê a estrutura da tela e acha usuário e senha. Heurística simples: dicas explícitas primeiro. */
 object FieldParser {
 
-    private class Field(val id: AutofillId, val isPassword: Boolean, val isUsername: Boolean, val isText: Boolean)
+    private class Field(
+        val id: AutofillId,
+        val isPassword: Boolean,
+        val isUsername: Boolean,
+        val isText: Boolean,
+        val text: String,
+    )
 
     private val USER_WORDS = listOf("user", "usuario", "usuário", "login", "email", "e-mail", "mail", "cpf", "account", "conta")
 
@@ -29,19 +39,23 @@ object FieldParser {
             walk(structure.getWindowNodeAt(i).rootViewNode, fields, domains, 0)
         }
         val firstPassword = fields.indexOfFirst { it.isPassword }
-        val username = if (firstPassword >= 0) {
+        val usernameField = if (firstPassword >= 0) {
             val before = fields.subList(0, firstPassword)
-            (before.lastOrNull { it.isUsername } ?: before.lastOrNull { it.isText })?.id
+            before.lastOrNull { it.isUsername } ?: before.lastOrNull { it.isText }
         } else {
-            fields.firstOrNull { it.isUsername }?.id
+            fields.firstOrNull { it.isUsername }
         }
-        val passwords = fields.filter { it.isPassword }.take(MAX_PASSWORD_FIELDS).map { it.id }
+        val username = usernameField?.id
+        val passwordFields = fields.filter { it.isPassword }.take(MAX_PASSWORD_FIELDS)
+        val passwords = passwordFields.map { it.id }
         if (username == null && passwords.isEmpty()) return null
         return ParsedForm(
             usernameId = username,
             passwordIds = passwords,
             packageName = structure.activityComponent?.packageName,
             webDomain = domains.firstOrNull(),
+            usernameText = usernameField?.text.orEmpty(),
+            passwordHasText = passwordFields.any { it.text.isNotEmpty() },
         )
     }
 
@@ -57,6 +71,8 @@ object FieldParser {
 
     private fun classify(node: AssistStructure.ViewNode, id: AutofillId): Field? {
         val hints = node.autofillHints?.map { it.lowercase() }.orEmpty()
+        val value = node.autofillValue
+        val current = (if (value != null && value.isText) value.textValue else node.text)?.toString().orEmpty()
         val inputClass = node.inputType and InputType.TYPE_MASK_CLASS
         val variation = node.inputType and InputType.TYPE_MASK_VARIATION
         val html = node.htmlInfo
@@ -70,7 +86,7 @@ object FieldParser {
             "password" in autocomplete ||
             (inputClass == InputType.TYPE_CLASS_TEXT && variation in PASSWORD_VARIATIONS) ||
             (inputClass == InputType.TYPE_CLASS_NUMBER && variation == InputType.TYPE_NUMBER_VARIATION_PASSWORD)
-        if (password) return Field(id, isPassword = true, isUsername = false, isText = false)
+        if (password) return Field(id, isPassword = true, isUsername = false, isText = false, text = if (current.isEmpty()) "" else "*") // só importa se há texto; a senha não é guardada
 
         // Em páginas web o <input> muitas vezes vem sem `type` (padrão = texto) e sem inputType.
         val text = inputClass == InputType.TYPE_CLASS_TEXT ||
@@ -91,7 +107,7 @@ object FieldParser {
             variation == InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS ||
             variation == InputType.TYPE_TEXT_VARIATION_WEB_EMAIL_ADDRESS ||
             USER_WORDS.any { it in label }
-        return Field(id, isPassword = false, isUsername = username, isText = true)
+        return Field(id, isPassword = false, isUsername = username, isText = true, text = current)
     }
 
     private val SEARCH_WORDS = listOf("search", "pesquis", "busca", "buscar")

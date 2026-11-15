@@ -25,6 +25,7 @@
 - Update notices is now a bottom sheet with a choice (notify normally, not for a week, not for a month); before, tapping it did nothing when notices were on.
 - Autofill: login fields on web pages whose inputs have no explicit type (or only a name/placeholder/aria-label) are now recognized, so the username is filled too. Autofill is only offered on screens that look like a login (a password field, or a field that is clearly a username/email); search boxes and other plain text fields no longer get "Fill with Babel Manager".
 - Autofill suggestions that need unlocking now hide once you start typing (Android 13+): in the username field they stay only while the text is the beginning of that entry's username or title; elsewhere only while the field is empty.
+- Autofill also reads what is already in the username field when the screen is opened (e.g. an e-mail the page pre-filled): it only suggests entries that start with that text, and offers nothing when a password is already typed.
 
 ### Known issues
 - Not compiled or tested outside CI yet.
