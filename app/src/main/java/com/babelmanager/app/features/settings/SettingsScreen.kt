@@ -29,6 +29,17 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
+import androidx.compose.material.icons.outlined.Download
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material.icons.outlined.NotificationsOff
+import androidx.compose.material3.Icon
+import com.babelmanager.app.BuildConfig
+import com.babelmanager.app.core.ui.GroupItem
+import com.babelmanager.app.core.ui.GroupLabel
+import com.babelmanager.app.core.ui.GroupedItems
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -256,40 +267,55 @@ fun SettingsScreen(
 
             HorizontalDivider(Modifier.padding(vertical = 8.dp))
 
-            // ── Sistema (atualizações) ──
-            SectionHeader(stringResource(R.string.settings_system))
-            SettingsItem(
-                title = stringResource(R.string.settings_check_updates),
-                summary = stringResource(
-                    when {
-                        !updateEnabled -> R.string.update_not_configured
-                        updateChecking -> R.string.update_checking
-                        else -> R.string.settings_check_updates_summary
-                    },
+            // ── Atualizações e Sobre: cartões agrupados ──
+            GroupLabel(stringResource(R.string.settings_system))
+            GroupedItems(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                items = listOf(
+                    GroupItem(
+                        title = stringResource(R.string.settings_check_updates),
+                        summary = stringResource(
+                            when {
+                                !updateEnabled -> R.string.update_not_configured
+                                updateChecking -> R.string.update_checking
+                                else -> R.string.settings_check_updates_summary
+                            },
+                        ),
+                        icon = Icons.Outlined.Download,
+                        onClick = if (updateEnabled && !updateChecking) onCheckUpdates else null,
+                    ),
+                    GroupItem(
+                        title = stringResource(R.string.settings_update_notices),
+                        summary = when (updatePostpone.kind) {
+                            PostponeKind.None -> stringResource(R.string.settings_update_notices_on)
+                            PostponeKind.Snoozed -> stringResource(
+                                R.string.settings_update_notices_snoozed,
+                                DateFormat.getDateInstance(DateFormat.MEDIUM).format(Date(updatePostpone.untilMillis)),
+                            )
+                            PostponeKind.Skipped -> stringResource(
+                                R.string.settings_update_notices_skipped,
+                                updatePostpone.version.orEmpty(),
+                            )
+                        },
+                        icon = if (updatePostpone.kind == PostponeKind.None) Icons.Outlined.Notifications else Icons.Outlined.NotificationsOff,
+                        onClick = if (updatePostpone.kind != PostponeKind.None) onUndoPostpone else null,
+                    ),
                 ),
-                onClick = if (updateEnabled && !updateChecking) onCheckUpdates else null,
-            )
-            SettingsItem(
-                title = stringResource(R.string.settings_update_notices),
-                summary = when (updatePostpone.kind) {
-                    PostponeKind.None -> stringResource(R.string.settings_update_notices_on)
-                    PostponeKind.Snoozed -> stringResource(
-                        R.string.settings_update_notices_snoozed,
-                        DateFormat.getDateInstance(DateFormat.MEDIUM).format(Date(updatePostpone.untilMillis)),
-                    )
-                    PostponeKind.Skipped -> stringResource(
-                        R.string.settings_update_notices_skipped,
-                        updatePostpone.version.orEmpty(),
-                    )
-                },
-                onClick = if (updatePostpone.kind != PostponeKind.None) onUndoPostpone else null,
             )
 
-            HorizontalDivider(Modifier.padding(vertical = 8.dp))
-
-            // ── Sobre (categoria própria) ──
-            SectionHeader(stringResource(R.string.settings_about_section))
-            SettingsItem(title = stringResource(R.string.about_title), onClick = onAbout)
+            GroupLabel(stringResource(R.string.settings_about_section))
+            GroupedItems(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                items = listOf(
+                    GroupItem(
+                        title = stringResource(R.string.about_title),
+                        summary = stringResource(R.string.about_entry_summary, BuildConfig.VERSION_NAME),
+                        icon = Icons.Outlined.Info,
+                        onClick = onAbout,
+                        trailing = { Icon(Icons.AutoMirrored.Outlined.KeyboardArrowRight, contentDescription = null) },
+                    ),
+                ),
+            )
         }
     }
 

@@ -44,15 +44,16 @@ object EntryMatcher {
     fun matches(entry: Entry, packageName: String?, webDomain: String?): Boolean {
         val url = entry.url.trim()
         val entryApp = AppUri.packageOf(url)
+        // Entrada de app compara só o pacote (apps híbridos com WebView também informam um domínio);
+        // e nunca combina com um site quando não há pacote.
+        if (entryApp != null) return !packageName.isNullOrBlank() && entryApp.equals(packageName, ignoreCase = true)
         if (!webDomain.isNullOrBlank()) {
-            if (entryApp != null) return false // entrada de app nunca combina com site
             val wanted = hostOf(webDomain)
             val have = hostOf(url)
             return have.isNotEmpty() && wanted.isNotEmpty() && baseDomain(have) == baseDomain(wanted)
         }
         if (packageName.isNullOrBlank()) return false
         val pkg = packageName.lowercase()
-        if (entryApp != null) return entryApp.lowercase() == pkg
         if (url.lowercase().contains(pkg)) return true
         val tokens = pkg.split('.').filter { it.length >= 4 && it !in GENERIC_TOKENS }
         val haystack = (entry.title + " " + hostOf(url)).lowercase()

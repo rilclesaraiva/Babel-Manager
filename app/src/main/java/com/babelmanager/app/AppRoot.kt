@@ -35,6 +35,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.compose.runtime.LaunchedEffect
 import com.babelmanager.app.data.vault.VaultRepository
 import com.babelmanager.app.features.about.AboutScreen
+import com.babelmanager.app.features.about.LicensesScreen
 import com.babelmanager.app.features.checkup.CheckupScreen
 import com.babelmanager.app.features.generator.GeneratorScreen
 import com.babelmanager.app.features.lock.LockScreen
@@ -54,6 +55,7 @@ private const val GENERATOR = "generator"
 private const val CHECKUP = "checkup"
 private const val SETTINGS = "settings"
 private const val ABOUT = "about"
+private const val LICENSES = "licenses"
 private const val DETAIL = "detail:"
 private const val EDIT = "edit:"
 private val TABS = listOf(VAULT, GENERATOR, CHECKUP, SETTINGS)
@@ -190,7 +192,8 @@ private fun MainContent(c: AppContainer, updateVm: UpdateViewModel, updateState:
             )
         }
 
-        route == ABOUT -> AboutScreen(onBack = ::pop)
+        route == ABOUT -> AboutScreen(onBack = ::pop, onLicenses = { push(LICENSES) })
+        route == LICENSES -> LicensesScreen(onBack = ::pop)
     }
 }
 

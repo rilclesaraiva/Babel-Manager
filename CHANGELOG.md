@@ -12,6 +12,7 @@
 - Change the master password; delete the vault.
 - Automatic lock when the app stays in the background, and screenshot blocking (on by default).
 - About screen and update notices from public GitHub Releases.
+- Redesigned Updates and About: grouped cards with icon badges, large collapsing title, version and build chips, developer card with the maintainer's GitHub photo, and a Licenses and credits screen.
 - App picker on entries: choose an installed app (icon, name, search) instead of a website; the entry shows the app with a remove button and autofill suggests it in that app.
 - Autofill service: appears in Android's preferred service list. With the vault unlocked, matching entries show up directly in the system suggestions and in keyboard inline suggestions; when locked it asks for unlock first, and "Other entries…" opens the full list (saving new passwords is not supported yet). Quick access in Settings.
 - Material 3 Expressive interface, English and Brazilian Portuguese.

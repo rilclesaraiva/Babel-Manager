@@ -22,11 +22,11 @@ If you choose a backup location, the app writes an **encrypted** copy of your va
 
 ## Network requests
 
-The only network request made by the app is to ask GitHub (`api.github.com`) for the latest public release, when the app opens and when you return to it (at most every 10 minutes), or when you tap "Check for updates". GitHub receives your IP address and a user-agent that contains the app version, and handles them under [its own privacy statement](https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement). No vault data is part of this request. If you use "Open website" on an entry, or the project links in About, your browser opens that address.
+The app makes two kinds of network request, both to GitHub. (1) It asks GitHub (`api.github.com`) for the latest public release, when the app opens and when you return to it (at most every 10 minutes), or when you tap "Check for updates". (2) When you open the About screen, it downloads the public profile photo of the project maintainer from `github.com` (cached on your device for 7 days); the request contains only the maintainer's username. GitHub receives your IP address and a user-agent that contains the app version, and handles them under [its own privacy statement](https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement). No vault data is part of these requests. If you use "Open website" on an entry, or the project links in About, your browser opens that address.
 
 ## Permissions
 
-- `INTERNET`: only for the update check above.
+- `INTERNET`: only for the update check and the maintainer's photo on the About screen.
 - `USE_BIOMETRIC`: only for biometric unlock.
 - Visibility of launcher apps (`<queries>` for apps with a launcher icon): only for the app picker. The app does not request `QUERY_ALL_PACKAGES`.
 - Autofill service (`BIND_AUTOFILL_SERVICE`, granted by Android only when you select the app as your service): only to fill logins.

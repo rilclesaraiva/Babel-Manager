@@ -46,6 +46,8 @@ class EntryMatcherTest {
         val app = e("Spotify", AppUri.of("com.spotify.music"))
         assertTrue(EntryMatcher.matches(app, "com.spotify.music", null))
         assertFalse(EntryMatcher.matches(app, "com.spotify.lite", null))
+        // app híbrido (WebView) que também informa domínio: o pacote ainda vale
+        assertTrue(EntryMatcher.matches(app, "com.spotify.music", "open.spotify.com"))
         // um pacote com cara de domínio não pode casar com site
         assertFalse(EntryMatcher.matches(e("X", AppUri.of("exemplo.com")), null, "exemplo.com"))
     }

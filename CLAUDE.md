@@ -21,7 +21,7 @@ Babel Manager — gerenciador de senhas para Android. O cofre fica só no aparel
 - Pacote (Android): `com.babelmanager.app`, fixo · R8 ativo no release (sem ofuscação), nunca desligar
 - Ícone: `app/src/main/res/drawable/ic_launcher_foreground.xml` (+ `_monochrome` e fundo), só muda se o mantenedor pedir
 - Sobre: entrada própria nos ajustes (versão lida do build, código-fonte, novidades,
-  issues, legal e apoio)
+  issues, legal e apoio). Visual em cartões agrupados (`core/ui/Grouped.kt`: `GroupLabel`, `GroupedItems`), igual ao dos outros apps do mantenedor (BoomListener, Joule Arc); Atualizações e Sobre nos Ajustes usam o mesmo estilo. Licenças em tela própria (`LicensesScreen`, lista fixa: atualizar ao mudar dependências).
 - Atualizações: sim, via Releases públicas. Repositório em `babel.repo` (`gradle.properties`);
   enquanto `babel.repo` for `OWNER/REPO` o aviso fica desligado (hoje: `rilclesaraiva/Babel-Manager`) e os links do Sobre ficam ocultos.
   Consulta ao abrir e no máximo a cada 10 min ao voltar, com ETag; "Agora não" só na
@@ -33,7 +33,7 @@ Babel Manager — gerenciador de senhas para Android. O cofre fica só no aparel
 - Backup: cópia do arquivo **cifrado** no local escolhido via Storage Access Framework (`BackupRepository`). `allowBackup=false`: o Android não copia o cofre por conta própria.
 - Autofill: `BabelAutofillService` (entrada, raiz do pacote). Cofre trancado: só "Preencher com o Babel Manager", que abre `AutofillActivity` (desbloqueio; se houver uma única sugestão, preenche sem mostrar lista). Cofre aberto (depois de `AutoLock.checkExpired()`): oferece direto as entradas que combinam (título e usuário, **nunca a senha em texto de apresentação**), em lista suspensa e inline no teclado (`AutofillResponses.kt`), mais "Outras entradas…" (autenticação de dataset → lista completa). **Toda autenticação é de dataset** (o app devolve um `Dataset`, que o Android preenche direto); autenticação da resposta inteira devolveria uma lista para tocar de novo. Campos: `data/autofill/FieldParser.kt`; sugestões por domínio/pacote: `EntryMatcher.kt` (testado). Não salva senhas novas.
 - Entrada ligada a app: o campo `url` guarda `androidapp://<pacote>` (`AppUri`, em `EntryMatcher.kt`); seletor em `features/vault/AppUi.kt` e leitura em `data/apps/InstalledApps.kt`. Visibilidade por `<queries>` de apps com ícone de lançador, **sem** `QUERY_ALL_PACKAGES`. Entrada de app nunca combina com site.
-- Sem servidor. A única chamada de rede é a consulta da última Release no GitHub (`UpdateRepository`).
+- Sem servidor. Chamadas de rede (todas ao GitHub): última Release (`UpdateRepository`) e foto do mantenedor no Sobre (`AvatarStore`). Nada do cofre vai nelas.
 - Segurança de tela: `FLAG_SECURE` ligado por padrão; trava automática por tempo em segundo plano (`AutoLock`); área de transferência marcada como sensível e limpa depois de um tempo.
 
 ## Regras de estrutura
@@ -49,7 +49,7 @@ Babel Manager — gerenciador de senhas para Android. O cofre fica só no aparel
 
 ## Regras de segurança do produto
 - Nunca registrar (log) senha, chave ou conteúdo do cofre. Nunca enviar nada do cofre para fora do aparelho, exceto a cópia cifrada que a pessoa mandou gravar no local de backup que ela escolheu.
-- `INTERNET` só serve para o aviso de atualização. Qualquer outra chamada de rede muda a política de privacidade no mesmo commit.
+- `INTERNET` só serve para o aviso de atualização e para a foto pública do mantenedor na tela Sobre (`AvatarStore`, github.com/<usuário>.png, cache de 7 dias). Qualquer outra chamada de rede muda a política de privacidade no mesmo commit.
 - O arquivo em disco nunca contém texto aberto. Exportar CSV é sempre uma ação explícita, com aviso.
 
 ## Fluxo de trabalho
