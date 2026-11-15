@@ -97,13 +97,17 @@ internal object AutofillResponses {
         val builder = Dataset.Builder(view(context, entry.title, entry.username))
         var any = false
         val usernameId = form.usernameId
+        // Filtro explícito (em vez da regra padrão do sistema): no campo de usuário a sugestão fica enquanto o
+        // texto digitado for o começo do usuário/título; na senha, só com o campo vazio.
+        @Suppress("DEPRECATION")
         if (usernameId != null && entry.username.isNotEmpty()) {
-            builder.setValue(usernameId, AutofillValue.forText(entry.username))
+            builder.setValue(usernameId, AutofillValue.forText(entry.username), startsLike(listOf(entry.username, entry.title)))
             any = true
         }
         if (entry.password.isNotEmpty()) {
             for (id in form.passwordIds) {
-                builder.setValue(id, AutofillValue.forText(entry.password))
+                @Suppress("DEPRECATION")
+                builder.setValue(id, AutofillValue.forText(entry.password), EMPTY_ONLY)
                 any = true
             }
         }
@@ -145,15 +149,18 @@ internal object AutofillResponses {
 
     private val EMPTY_ONLY: Pattern = Pattern.compile("")
 
-    /** Casa com o texto vazio e com qualquer começo (sem diferenciar maiúsculas) de um dos [texts]. */
+    /**
+     * Casa com o texto vazio e com qualquer começo (sem diferenciar maiúsculas) de um dos [texts].
+     * Lista plana de prefixos, sem grupos aninhados: simples para qualquer motor de regex.
+     */
     private fun startsLike(texts: List<String>): Pattern {
-        val alternatives = texts.filter { it.isNotBlank() }.map { text ->
-            var acc = ""
-            for (c in text.take(MAX_MATCH_CHARS).reversed()) acc = "(?:" + Pattern.quote(c.toString()) + acc + ")?"
-            acc
+        val prefixes = LinkedHashSet<String>()
+        for (text in texts.filter { it.isNotBlank() }) {
+            val t = text.take(MAX_MATCH_CHARS)
+            for (n in 1..t.length) prefixes += t.substring(0, n)
         }
-        if (alternatives.isEmpty()) return EMPTY_ONLY
-        return Pattern.compile(alternatives.joinToString("|") { "(?:$it)" }, Pattern.CASE_INSENSITIVE)
+        if (prefixes.isEmpty()) return EMPTY_ONLY
+        return Pattern.compile("(?:|" + prefixes.joinToString("|") { Pattern.quote(it) } + ")", Pattern.CASE_INSENSITIVE)
     }
 
     private const val MAX_MATCH_CHARS = 64
