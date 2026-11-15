@@ -1,6 +1,5 @@
 package com.babelmanager.app.features.generator
 
-import com.babelmanager.app.core.ui.PageTitle
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -52,12 +51,11 @@ import com.babelmanager.app.core.security.Separator
 import com.babelmanager.app.core.security.Strength
 import com.babelmanager.app.core.security.StrengthLevel
 import com.babelmanager.app.core.ui.StrengthIndicator
-import com.babelmanager.app.core.ui.TabScaffold
 import com.babelmanager.app.core.util.ClipboardUtil
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun GeneratorScreen(clipboardSeconds: Int, modifier: Modifier = Modifier) {
+fun GeneratorSection(clipboardSeconds: Int, modifier: Modifier = Modifier) {
     val context = LocalContext.current
     val generator = remember { PasswordGenerator() }
 
@@ -85,17 +83,10 @@ fun GeneratorScreen(clipboardSeconds: Int, modifier: Modifier = Modifier) {
     val bits = if (memorable) generator.memorableEntropyBits(memorableOptions) else generator.randomEntropyBits(randomOptions)
     val strength = Strength(bits, StrengthLevel.fromBits(bits))
 
-    TabScaffold(modifier = modifier) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(PaddingValues(top = padding.calculateTopPadding(), bottom = padding.calculateBottomPadding()))
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp)
-                .padding(bottom = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
-            PageTitle(stringResource(R.string.tab_generator), containerPadding = 16.dp)
+    Column(
+        modifier = modifier.padding(horizontal = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+    ) {
             Surface(
                 modifier = Modifier.fillMaxWidth(),
                 shape = MaterialTheme.shapes.extraLarge,
@@ -158,7 +149,6 @@ fun GeneratorScreen(clipboardSeconds: Int, modifier: Modifier = Modifier) {
                 }
             }
         }
-    }
 }
 
 @Composable

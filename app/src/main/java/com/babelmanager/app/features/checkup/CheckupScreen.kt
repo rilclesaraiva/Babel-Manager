@@ -1,14 +1,10 @@
 package com.babelmanager.app.features.checkup
 
-import com.babelmanager.app.core.ui.PageTitle
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.WarningAmber
@@ -28,81 +24,58 @@ import androidx.compose.ui.unit.dp
 import com.babelmanager.app.R
 import com.babelmanager.app.core.ui.EntryAvatar
 import com.babelmanager.app.core.ui.SectionHeader
-import com.babelmanager.app.core.ui.TabScaffold
 import com.babelmanager.app.data.vault.Entry
 
+/** Resultado do check-up (senhas repetidas e fracas), para a tela de ferramentas. Sem rolagem própria. */
 @Composable
-fun CheckupScreen(
+fun CheckupSection(
     entries: List<Entry>,
     onOpen: (Entry) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val report = remember(entries) { PasswordHealth.analyze(entries) }
 
-    TabScaffold(modifier = modifier) { padding ->
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = androidx.compose.foundation.layout.PaddingValues(
-                top = padding.calculateTopPadding(),
-                bottom = padding.calculateBottomPadding() + 16.dp,
-            ),
-            verticalArrangement = Arrangement.spacedBy(2.dp),
-        ) {
-            item { PageTitle(stringResource(R.string.tab_checkup)) }
-            item {
-                SummaryCard(report)
-            }
-            if (report.reusedGroups.isNotEmpty()) {
-                item {
-                    Column {
-                        SectionHeader(
-                            pluralStringResource(R.plurals.checkup_reused, report.reusedCount, report.reusedCount),
-                        )
-                        Text(
-                            stringResource(R.string.checkup_reused_hint),
-                            modifier = Modifier.padding(horizontal = 16.dp),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                }
-                report.reusedGroups.forEach { group ->
-                    item {
-                        Text(
-                            pluralStringResource(R.plurals.checkup_same_password, group.size, group.size),
-                            modifier = Modifier.padding(start = 16.dp, top = 12.dp, bottom = 4.dp),
-                            style = MaterialTheme.typography.labelLarge,
-                        )
-                    }
-                    items(group, key = { "reused-${it.id}" }) { EntryRow(it, onOpen) }
-                }
-            }
-            if (report.weak.isNotEmpty()) {
-                item {
-                    Column {
-                        SectionHeader(
-                            pluralStringResource(R.plurals.checkup_weak, report.weak.size, report.weak.size),
-                            modifier = Modifier.padding(top = 16.dp),
-                        )
-                        Text(
-                            stringResource(R.string.checkup_weak_hint),
-                            modifier = Modifier.padding(horizontal = 16.dp),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                }
-                items(report.weak, key = { "weak-${it.id}" }) { EntryRow(it, onOpen) }
-            }
-            item {
+    Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        SummaryCard(report)
+        if (report.reusedGroups.isNotEmpty()) {
+            SectionHeader(
+                pluralStringResource(R.plurals.checkup_reused, report.reusedCount, report.reusedCount),
+                modifier = Modifier.padding(top = 8.dp),
+            )
+            Text(
+                stringResource(R.string.checkup_reused_hint),
+                modifier = Modifier.padding(horizontal = 16.dp),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            report.reusedGroups.forEach { group ->
                 Text(
-                    stringResource(R.string.checkup_local_note),
-                    modifier = Modifier.padding(16.dp),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    pluralStringResource(R.plurals.checkup_same_password, group.size, group.size),
+                    modifier = Modifier.padding(start = 16.dp, top = 12.dp, bottom = 4.dp),
+                    style = MaterialTheme.typography.labelLarge,
                 )
+                group.forEach { EntryRow(it, onOpen) }
             }
         }
+        if (report.weak.isNotEmpty()) {
+            SectionHeader(
+                pluralStringResource(R.plurals.checkup_weak, report.weak.size, report.weak.size),
+                modifier = Modifier.padding(top = 16.dp),
+            )
+            Text(
+                stringResource(R.string.checkup_weak_hint),
+                modifier = Modifier.padding(horizontal = 16.dp),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            report.weak.forEach { EntryRow(it, onOpen) }
+        }
+        Text(
+            stringResource(R.string.checkup_local_note),
+            modifier = Modifier.padding(16.dp),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
     }
 }
 

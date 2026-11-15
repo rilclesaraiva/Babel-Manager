@@ -66,7 +66,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.babelmanager.app.R
 import com.babelmanager.app.core.ui.PasswordField
 import com.babelmanager.app.core.ui.SectionHeader
-import com.babelmanager.app.core.ui.TabScaffold
+import com.babelmanager.app.core.ui.PageScaffold
 import com.babelmanager.app.core.ui.UiMessage
 import com.babelmanager.app.core.ui.findActivity
 import com.babelmanager.app.core.ui.getString
@@ -103,6 +103,7 @@ fun SettingsScreen(
     onUndoPostpone: () -> Unit,
     onSnooze: (Int) -> Unit,
     onAbout: () -> Unit,
+    onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var showNotices by rememberSaveable { mutableStateOf(false) }
@@ -143,7 +144,8 @@ fun SettingsScreen(
         if (uri != null) vm.exportCsv(uri)
     }
 
-    TabScaffold(
+    PageScaffold(
+        onBack = onBack,
         modifier = modifier,
         snackbarHostState = snackbar,
     ) { padding ->
@@ -153,7 +155,7 @@ fun SettingsScreen(
                 .padding(PaddingValues(top = padding.calculateTopPadding(), bottom = padding.calculateBottomPadding()))
                 .verticalScroll(rememberScrollState()),
         ) {
-            PageTitle(stringResource(R.string.tab_settings))
+            PageTitle(stringResource(R.string.tab_settings), hasBack = true)
             // ── Segurança ──
             SectionHeader(stringResource(R.string.settings_security))
             SettingsItem(

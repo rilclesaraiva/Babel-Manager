@@ -15,7 +15,8 @@
     <string name="hide_password">Hide password</string>
     <string name="open_website">Open website</string>
     <string name="error_generic">Something went wrong. Please try again.</string>
-    <string name="tab_vault">Passwords</string>
+    <string name="tools_title">Tools</string>
+    <string name="tools_summary">Password generator and check-up</string>
     <string name="tab_generator">Generator</string>
     <string name="tab_checkup">Check-up</string>
     <string name="tab_settings">Settings</string>

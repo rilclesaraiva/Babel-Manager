@@ -23,6 +23,8 @@ import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -40,7 +42,7 @@ import com.babelmanager.app.R
 // ficam parados no canto, por cima da página. O título começa depois do voltar
 // ([BackButtonInset]) para o botão nunca ficar por cima dele.
 
-/** Largura que o título deixa livre à esquerda para não ficar por baixo do [BackButton] (8 + 56 + folga). */
+/** Largura que o título deixa livre à esquerda para não ficar por baixo do [BackButton] (8 + 48 + folga). */
 val BackButtonInset = 72.dp
 
 /** Botão redondo, levemente transparente, parado sobre a página. */
@@ -56,7 +58,7 @@ fun FloatingCircleButton(
         shape = CircleShape,
         color = MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.9f),
         contentColor = MaterialTheme.colorScheme.onSurface,
-        modifier = modifier.size(56.dp),
+        modifier = modifier.size(48.dp),
     ) {
         Box(contentAlignment = Alignment.Center) {
             Icon(icon, contentDescription)
@@ -115,10 +117,12 @@ fun PageScaffold(
     backIcon: ImageVector = Icons.AutoMirrored.Outlined.ArrowBack,
     backDescription: String = stringResource(R.string.back),
     floatingActions: @Composable RowScope.() -> Unit = {},
+    snackbarHostState: SnackbarHostState? = null,
     content: @Composable (PaddingValues) -> Unit,
 ) {
     Scaffold(
         modifier = modifier,
+        snackbarHost = { snackbarHostState?.let { SnackbarHost(it) } },
         containerColor = MaterialTheme.colorScheme.background,
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
     ) {

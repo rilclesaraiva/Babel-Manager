@@ -70,6 +70,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(libs.androidx.navigation.compose) // NavHost: transição entre telas e voltar preditivo
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.biometric)
     implementation(libs.androidx.autofill) // sugestões embutidas no teclado (inline suggestions)

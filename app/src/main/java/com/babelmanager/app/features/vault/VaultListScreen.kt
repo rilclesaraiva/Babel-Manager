@@ -15,6 +15,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.outlined.Build
+import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
+import androidx.compose.foundation.layout.statusBarsPadding
+import com.babelmanager.app.core.ui.FloatingCircleButton
+import com.babelmanager.app.core.ui.GroupItem
+import com.babelmanager.app.core.ui.GroupedItems
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.Card
@@ -56,6 +63,8 @@ fun VaultListScreen(
     onOpen: (Entry) -> Unit,
     onAdd: () -> Unit,
     onLock: () -> Unit,
+    onOpenTools: () -> Unit,
+    onOpenSettings: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var bannerDismissed by rememberSaveable { mutableStateOf(false) }
@@ -68,6 +77,7 @@ fun VaultListScreen(
             }
         },
     ) { padding ->
+        Box(Modifier.fillMaxSize()) {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(
@@ -77,11 +87,26 @@ fun VaultListScreen(
             verticalArrangement = Arrangement.spacedBy(2.dp),
         ) {
             item {
-                PageTitle(stringResource(R.string.app_name)) {
-                    IconButton(onClick = onLock) {
-                        Icon(Icons.Outlined.Lock, contentDescription = stringResource(R.string.lock_now))
-                    }
-                }
+                // Bloqueio e Ajustes ficam parados no canto (flutuantes); o título deixa a folga deles.
+                PageTitle(stringResource(R.string.app_name), endInset = 120.dp)
+            }
+            item {
+                GroupedItems(
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+                    items = listOf(
+                        GroupItem(
+                            title = stringResource(R.string.tools_title),
+                            summary = stringResource(R.string.tools_summary),
+                            icon = Icons.Outlined.Build,
+                            badgeContainer = MaterialTheme.colorScheme.primaryContainer,
+                            badgeContent = MaterialTheme.colorScheme.onPrimaryContainer,
+                            onClick = onOpenTools,
+                            trailing = {
+                                Icon(Icons.AutoMirrored.Outlined.KeyboardArrowRight, contentDescription = null)
+                            },
+                        ),
+                    ),
+                )
             }
             item {
                 OutlinedTextField(
@@ -148,6 +173,14 @@ fun VaultListScreen(
                     modifier = Modifier.clickable { onOpen(entry) },
                 )
             }
+        }
+        Row(
+            modifier = Modifier.align(Alignment.TopEnd).statusBarsPadding().padding(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            FloatingCircleButton(Icons.Outlined.Lock, stringResource(R.string.lock_now), onLock)
+            FloatingCircleButton(Icons.Outlined.Settings, stringResource(R.string.tab_settings), onOpenSettings)
+        }
         }
     }
 }

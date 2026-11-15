@@ -15,7 +15,8 @@
     <string name="hide_password">Ocultar senha</string>
     <string name="open_website">Abrir site</string>
     <string name="error_generic">Algo deu errado. Tente novamente.</string>
-    <string name="tab_vault">Senhas</string>
+    <string name="tools_title">Ferramentas</string>
+    <string name="tools_summary">Gerador de senhas e check-up</string>
     <string name="tab_generator">Gerador</string>
     <string name="tab_checkup">Check-up</string>
     <string name="tab_settings">Configurações</string>
