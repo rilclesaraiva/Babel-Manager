@@ -1,9 +1,6 @@
 package com.babelmanager.app
 
 import java.util.regex.Pattern
-import android.service.autofill.Field
-import android.service.autofill.Presentations
-import android.os.Build
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
@@ -133,25 +130,16 @@ internal object AutofillResponses {
         entryId: String? = null,
         matchTexts: List<String> = emptyList(),
     ): Dataset {
-        val menu = view(context, title, subtitle)
-        val inlinePresentation = inline(context, request, index, title, subtitle)
-        val sender = authSender(context, form, pickAny, entryId)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            val presentations = Presentations.Builder().setMenuPresentation(menu)
-                .also { b -> inlinePresentation?.let(b::setInlinePresentation) }
-                .build()
-            val builder = Dataset.Builder(presentations)
-            for (id in form.allIds) {
-                val pattern = if (id == form.usernameId) startsLike(matchTexts) else EMPTY_ONLY
-                builder.setField(id, Field.Builder().setFilter(pattern).build())
-            }
-            builder.setAuthentication(sender)
-            return builder.build()
+        val builder = Dataset.Builder(view(context, title, subtitle))
+        // setValue(id, null, filtro) existe desde o Android 8 e vale em qualquer versão: o sistema esconde o item
+        // quando o texto do campo não casa com o filtro (o formato novo com Field só existe no Android 13+).
+        for (id in form.allIds) {
+            val pattern = if (id == form.usernameId) startsLike(matchTexts) else EMPTY_ONLY
+            @Suppress("DEPRECATION")
+            builder.setValue(id, null, pattern)
         }
-        val builder = Dataset.Builder(menu)
-        for (id in form.allIds) builder.setValue(id, null)
-        builder.setAuthentication(sender)
-        inlinePresentation?.let(builder::setInlinePresentation)
+        builder.setAuthentication(authSender(context, form, pickAny, entryId))
+        inline(context, request, index, title, subtitle)?.let(builder::setInlinePresentation)
         return builder.build()
     }
 
