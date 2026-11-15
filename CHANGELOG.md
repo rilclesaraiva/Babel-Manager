@@ -20,6 +20,7 @@
 - Material 3 Expressive interface, English and Brazilian Portuguese.
 
 ### Fixed
+- Autofill now recognizes the Google sign-in identifier field (`identifier`), which has no label or e-mail type, so the system Google login screen gets suggestions.
 - Crash when choosing a backup location, restoring a backup or importing passwords (an outdated transitive `fragment` library broke the system file pickers).
 - Top of every screen: no more pinned top bar or floating back button covering titles. The title is now the first line of the page and scrolls with it; only the back button stays in the corner and the title starts after it (same pattern as BoomListener and Joule Arc).
 - Settings: the last card no longer touches the bottom navigation bar.

@@ -30,7 +30,7 @@ object FieldParser {
         val text: String,
     )
 
-    private val USER_WORDS = listOf("user", "usuario", "usuário", "login", "email", "e-mail", "mail", "cpf", "account", "conta")
+    private val USER_WORDS = listOf("user", "usuario", "usuário", "login", "email", "e-mail", "mail", "cpf", "account", "conta", "identifier")
 
     fun parse(structure: AssistStructure): ParsedForm? {
         val fields = ArrayList<Field>()
