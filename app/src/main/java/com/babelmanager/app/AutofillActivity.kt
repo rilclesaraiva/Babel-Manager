@@ -3,8 +3,6 @@ package com.babelmanager.app
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.os.Parcelable
-import android.service.autofill.FillResponse
 import android.view.WindowManager
 import android.view.autofill.AutofillId
 import android.view.autofill.AutofillManager
@@ -74,7 +72,6 @@ class AutofillActivity : FragmentActivity() {
         val pkg = intent.getStringExtra(EXTRA_PACKAGE)
         val domain = intent.getStringExtra(EXTRA_DOMAIN)
         val pickAny = intent.getBooleanExtra(EXTRA_PICK_ANY, false)
-        val datasetMode = intent.getBooleanExtra(EXTRA_DATASET_MODE, false)
         val form = ParsedForm(usernameId, passwordIds, pkg, domain)
 
         setContent {
@@ -85,7 +82,7 @@ class AutofillActivity : FragmentActivity() {
                     webDomain = domain,
                     // Uma única sugestão certa: preenche sem mostrar lista (a não ser que a pessoa tenha pedido "Outras").
                     autoPick = !pickAny,
-                    onPick = { entry -> deliver(entry, form, datasetMode) },
+                    onPick = { entry -> deliver(entry, form) },
                     onCancel = ::finish,
                 )
             }
@@ -103,16 +100,15 @@ class AutofillActivity : FragmentActivity() {
         if (!isChangingConfigurations) container.autoLock.onStop()
     }
 
-    private fun deliver(entry: Entry, form: ParsedForm, datasetMode: Boolean) {
+    private fun deliver(entry: Entry, form: ParsedForm) {
         val dataset = AutofillResponses.entryDataset(this, entry, form, null, 0)
         if (dataset == null) {
             setResult(Activity.RESULT_CANCELED)
             finish()
             return
         }
-        // Autenticação do item "Outras entradas…" devolve um Dataset; a da resposta inteira, um FillResponse.
-        val result: Parcelable = if (datasetMode) dataset else FillResponse.Builder().addDataset(dataset).build()
-        setResult(RESULT_OK, Intent().putExtra(AutofillManager.EXTRA_AUTHENTICATION_RESULT, result))
+        // A autenticação é do item (dataset) tocado, então o resultado é um Dataset, preenchido direto.
+        setResult(RESULT_OK, Intent().putExtra(AutofillManager.EXTRA_AUTHENTICATION_RESULT, dataset))
         finish()
     }
 
@@ -122,7 +118,6 @@ class AutofillActivity : FragmentActivity() {
         const val EXTRA_PACKAGE = "babel.autofill.package"
         const val EXTRA_DOMAIN = "babel.autofill.domain"
         const val EXTRA_PICK_ANY = "babel.autofill.pick_any"
-        const val EXTRA_DATASET_MODE = "babel.autofill.dataset_mode"
     }
 }
 

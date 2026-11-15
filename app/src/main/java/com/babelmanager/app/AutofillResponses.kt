@@ -58,14 +58,13 @@ internal object AutofillResponses {
     }
 
     /** Abre a [AutofillActivity] (desbloqueio e/ou escolha da entrada). */
-    private fun authSender(context: Context, form: ParsedForm, pickAny: Boolean, datasetMode: Boolean): IntentSender {
+    private fun authSender(context: Context, form: ParsedForm, pickAny: Boolean): IntentSender {
         val intent = Intent(context, AutofillActivity::class.java)
             .putExtra(AutofillActivity.EXTRA_USERNAME_ID, form.usernameId)
             .putParcelableArrayListExtra(AutofillActivity.EXTRA_PASSWORD_IDS, ArrayList(form.passwordIds))
             .putExtra(AutofillActivity.EXTRA_PACKAGE, form.packageName)
             .putExtra(AutofillActivity.EXTRA_DOMAIN, form.webDomain)
             .putExtra(AutofillActivity.EXTRA_PICK_ANY, pickAny)
-            .putExtra(AutofillActivity.EXTRA_DATASET_MODE, datasetMode)
         // O sistema acrescenta dados ao Intent: o PendingIntent precisa ser mutável.
         return PendingIntent.getActivity(
             context,
@@ -75,17 +74,15 @@ internal object AutofillResponses {
         ).intentSender
     }
 
-    /** Cofre trancado (ou sem sugestão): um único item que abre o app. */
-    fun authResponse(context: Context, form: ParsedForm, request: InlineSuggestionsRequest?): FillResponse {
-        val title = context.getString(R.string.autofill_presentation)
-        val ids = form.allIds.toTypedArray()
-        val sender = authSender(context, form, pickAny = false, datasetMode = false)
-        val builder = FillResponse.Builder()
-        val inline = inline(context, request, 0, title, null)
-        if (inline != null) builder.setAuthentication(ids, sender, view(context, title, null), inline)
-        else builder.setAuthentication(ids, sender, view(context, title, null))
-        return builder.build()
-    }
+    /**
+     * Cofre trancado (ou sem sugestão): um único item que abre o app. É um item com autenticação **do
+     * dataset** (e não da resposta inteira): assim o Android preenche direto o que o app devolver, sem
+     * mostrar a lista de novo para a pessoa tocar outra vez.
+     */
+    fun authResponse(context: Context, form: ParsedForm, request: InlineSuggestionsRequest?, pickAny: Boolean = false): FillResponse =
+        FillResponse.Builder()
+            .addDataset(authDataset(context, form, request, 0, context.getString(if (pickAny) R.string.autofill_other else R.string.autofill_presentation), pickAny))
+            .build()
 
     /** Dataset com os valores da entrada; null se a entrada não tem nada para esta tela. */
     fun entryDataset(
@@ -113,12 +110,11 @@ internal object AutofillResponses {
         return builder.build()
     }
 
-    /** Último item das sugestões: abre a lista completa do app. */
-    fun otherDataset(context: Context, form: ParsedForm, request: InlineSuggestionsRequest?, index: Int): Dataset {
-        val title = context.getString(R.string.autofill_other)
+    /** Item que abre o app: `pickAny` mostra a lista completa; senão o app escolhe sozinho se só houver uma sugestão. */
+    fun authDataset(context: Context, form: ParsedForm, request: InlineSuggestionsRequest?, index: Int, title: String, pickAny: Boolean): Dataset {
         val builder = Dataset.Builder(view(context, title, null))
         for (id in form.allIds) builder.setValue(id, null)
-        builder.setAuthentication(authSender(context, form, pickAny = true, datasetMode = true))
+        builder.setAuthentication(authSender(context, form, pickAny))
         inline(context, request, index, title, null)?.let(builder::setInlinePresentation)
         return builder.build()
     }

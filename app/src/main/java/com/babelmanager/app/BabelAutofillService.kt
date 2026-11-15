@@ -41,13 +41,15 @@ class BabelAutofillService : AutofillService() {
         val datasets = suggested.mapIndexedNotNull { i, entry -> AutofillResponses.entryDataset(this, entry, form, inline, i) }
             .take(MAX_SUGGESTIONS)
         if (datasets.isEmpty()) {
-            callback.onSuccess(AutofillResponses.authResponse(this, form, inline))
+            callback.onSuccess(AutofillResponses.authResponse(this, form, inline, pickAny = true))
             return
         }
 
         val response = FillResponse.Builder()
         datasets.forEach(response::addDataset)
-        response.addDataset(AutofillResponses.otherDataset(this, form, inline, datasets.size))
+        response.addDataset(
+            AutofillResponses.authDataset(this, form, inline, datasets.size, getString(R.string.autofill_other), pickAny = true),
+        )
         callback.onSuccess(response.build())
     }
 
