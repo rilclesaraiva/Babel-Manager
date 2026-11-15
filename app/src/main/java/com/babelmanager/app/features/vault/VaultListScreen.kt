@@ -3,6 +3,9 @@ package com.babelmanager.app.features.vault
 import com.babelmanager.app.core.ui.PageTitle
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.material3.Surface
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -20,8 +23,6 @@ import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.foundation.layout.statusBarsPadding
 import com.babelmanager.app.core.ui.FloatingCircleButton
-import com.babelmanager.app.core.ui.GroupItem
-import com.babelmanager.app.core.ui.GroupedItems
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.Card
@@ -91,22 +92,31 @@ fun VaultListScreen(
                 PageTitle(stringResource(R.string.app_name), endInset = 120.dp)
             }
             item {
-                GroupedItems(
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
-                    items = listOf(
-                        GroupItem(
-                            title = stringResource(R.string.tools_title),
-                            summary = stringResource(R.string.tools_summary),
-                            icon = Icons.Outlined.Build,
-                            badgeContainer = MaterialTheme.colorScheme.primaryContainer,
-                            badgeContent = MaterialTheme.colorScheme.onPrimaryContainer,
-                            onClick = onOpenTools,
-                            trailing = {
-                                Icon(Icons.AutoMirrored.Outlined.KeyboardArrowRight, contentDescription = null)
-                            },
-                        ),
-                    ),
-                )
+                // Cartão grande de destaque (como os da Play Store): abre gerador e check-up.
+                Surface(
+                    onClick = onOpenTools,
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
+                    shape = MaterialTheme.shapes.extraLarge,
+                    color = MaterialTheme.colorScheme.primaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                ) {
+                    Box(Modifier.fillMaxWidth().height(168.dp).padding(24.dp)) {
+                        Icon(
+                            Icons.Outlined.Build,
+                            contentDescription = null,
+                            modifier = Modifier.align(Alignment.TopStart).size(40.dp),
+                        )
+                        Icon(
+                            Icons.AutoMirrored.Outlined.KeyboardArrowRight,
+                            contentDescription = null,
+                            modifier = Modifier.align(Alignment.TopEnd).size(32.dp),
+                        )
+                        Column(Modifier.align(Alignment.BottomStart)) {
+                            Text(stringResource(R.string.tools_title), style = MaterialTheme.typography.headlineMedium)
+                            Text(stringResource(R.string.tools_summary), style = MaterialTheme.typography.bodyLarge)
+                        }
+                    }
+                }
             }
             item {
                 OutlinedTextField(
@@ -168,7 +178,7 @@ fun VaultListScreen(
                     supportingContent = {
                         if (entry.username.isNotEmpty()) Text(entry.username, maxLines = 1)
                     },
-                    leadingContent = { EntryAvatar(entry.title) },
+                    leadingContent = { EntryAvatar(entry.title, url = entry.url) },
                     colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surface),
                     modifier = Modifier.clickable { onOpen(entry) },
                 )

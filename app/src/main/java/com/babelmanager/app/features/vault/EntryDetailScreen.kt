@@ -92,7 +92,7 @@ fun EntryDetailScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
             ) {
-                EntryAvatar(entry.title, size = 56)
+                EntryAvatar(entry.title, size = 56, url = entry.url)
                 Text(entry.title, style = MaterialTheme.typography.headlineMedium)
             }
 

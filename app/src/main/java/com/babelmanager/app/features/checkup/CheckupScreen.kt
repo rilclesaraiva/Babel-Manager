@@ -118,7 +118,7 @@ private fun EntryRow(entry: Entry, onOpen: (Entry) -> Unit) {
     ListItem(
         headlineContent = { Text(entry.title, maxLines = 1) },
         supportingContent = { if (entry.username.isNotEmpty()) Text(entry.username, maxLines = 1) },
-        leadingContent = { EntryAvatar(entry.title) },
+        leadingContent = { EntryAvatar(entry.title, url = entry.url) },
         colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surface),
         modifier = Modifier.clickable { onOpen(entry) },
     )

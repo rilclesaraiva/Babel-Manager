@@ -268,7 +268,7 @@ private fun EmptyHint() {
 @Composable
 private fun ChooserRow(entry: Entry, onPick: (Entry) -> Unit) {
     ListItem(
-        leadingContent = { EntryAvatar(entry.title) },
+        leadingContent = { EntryAvatar(entry.title, url = entry.url) },
         headlineContent = { Text(entry.title, maxLines = 1) },
         supportingContent = if (entry.username.isNotEmpty()) ({ Text(entry.username, maxLines = 1) }) else null,
         colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surface),

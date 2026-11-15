@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -53,13 +54,14 @@ private const val EDIT = "edit?id={id}"
 private fun detailRoute(id: String) = "detail/$id"
 private fun editRoute(id: String?) = if (id == null) "edit" else "edit?id=$id"
 
-/** Só navega com a tela de cima parada (RESUMED): toque duplo não abre nem fecha duas vezes. */
+/** `launchSingleTop`: toque duplo não abre a mesma tela duas vezes. */
 private fun NavController.goOnce(route: String) {
-    if (currentBackStackEntry?.lifecycle?.currentState == Lifecycle.State.RESUMED) navigate(route)
+    navigate(route) { launchSingleTop = true }
 }
 
+/** Só volta se houver para onde (nunca esvazia a pilha); toque duplo no voltar não passa da home. */
 private fun NavController.popOnce() {
-    if (currentBackStackEntry?.lifecycle?.currentState == Lifecycle.State.RESUMED) popBackStack()
+    if (previousBackStackEntry != null) popBackStack()
 }
 
 /**
@@ -75,10 +77,11 @@ fun AppRoot(c: AppContainer) {
     val updateState by updateVm.state.collectAsStateWithLifecycle()
     LifecycleEventEffect(Lifecycle.Event.ON_START) { updateVm.onForeground() }
 
-    Box(
-        Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
+    // Surface define a cor do texto (onBackground): fora dela o padrão é preto e some no fundo escuro.
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background,
+        contentColor = MaterialTheme.colorScheme.onBackground,
     ) {
         if (vaultState == VaultRepository.State.Unlocked) {
             MainContent(c, updateVm, updateState)

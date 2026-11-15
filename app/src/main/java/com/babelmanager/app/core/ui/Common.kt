@@ -39,6 +39,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import com.babelmanager.app.data.apps.AppIcons
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.draw.clip
+import androidx.compose.runtime.produceState
+import androidx.compose.foundation.Image
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -157,8 +164,25 @@ fun StrengthIndicator(strength: Strength, modifier: Modifier = Modifier) {
     }
 }
 
+/**
+ * Avatar da entrada: o ícone do app quando a entrada é ligada a um app instalado ([url]); senão a inicial do título.
+ */
 @Composable
-fun EntryAvatar(title: String, modifier: Modifier = Modifier, size: Int = 40) {
+fun EntryAvatar(title: String, modifier: Modifier = Modifier, size: Int = 40, url: String = "") {
+    val context = LocalContext.current
+    val icon by produceState<ImageBitmap?>(null, url) {
+        value = AppIcons.load(context, url)?.asImageBitmap()
+    }
+    val image = icon
+    if (image != null) {
+        Image(
+            bitmap = image,
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = modifier.size(size.dp).clip(CircleShape),
+        )
+        return
+    }
     Surface(
         modifier = modifier.size(size.dp),
         shape = CircleShape,
