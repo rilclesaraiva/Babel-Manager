@@ -8,6 +8,7 @@ import android.service.autofill.FillRequest
 import android.service.autofill.FillResponse
 import android.service.autofill.SaveCallback
 import android.service.autofill.SaveRequest
+import com.babelmanager.app.data.autofill.AutofillDiagnostics
 import com.babelmanager.app.data.autofill.EntryMatcher
 import com.babelmanager.app.data.autofill.FieldParser
 import com.babelmanager.app.data.autofill.ParsedForm
@@ -26,8 +27,13 @@ class BabelAutofillService : AutofillService() {
     override fun onFillRequest(request: FillRequest, cancellationSignal: CancellationSignal, callback: FillCallback) {
         val structure = request.fillContexts.lastOrNull()?.structure
         val form = structure?.let(FieldParser::parse)
+        val diagnostics = (application as BabelApp).container.settings.current.autofillDiagnostics
+        fun reply(outcome: String, response: FillResponse?) {
+            if (diagnostics) AutofillDiagnostics.record(structure, form, outcome)
+            callback.onSuccess(response)
+        }
         if (form == null || form.packageName == packageName) {
-            callback.onSuccess(null)
+            reply("nada (sem formulario ou o proprio app)", null)
             return
         }
 
@@ -37,14 +43,15 @@ class BabelAutofillService : AutofillService() {
 
         // Já tem senha escrita: não há o que sugerir.
         if (form.passwordHasText) {
-            callback.onSuccess(null)
+            reply("nada (senha ja tem texto)", null)
             return
         }
         // Já tem texto no campo de usuário (ex.: e-mail que a página preencheu): só sugere o que começa com ele.
         val typed = form.usernameText.trim()
 
         if (container.vault.state.value != VaultRepository.State.Unlocked) {
-            callback.onSuccess(lockedResponse(container, form, inline, typed))
+            val locked = lockedResponse(container, form, inline, typed)
+            reply(if (locked == null) "nada (trancado, texto nao combina)" else "trancado: ofereceu itens", locked)
             return
         }
 
@@ -52,7 +59,7 @@ class BabelAutofillService : AutofillService() {
         val datasets = suggested.filter { startsLikeTyped(it, typed) }.mapIndexedNotNull { i, entry -> AutofillResponses.entryDataset(this, entry, form, inline, i) }
             .take(MAX_SUGGESTIONS)
         if (datasets.isEmpty()) {
-            callback.onSuccess(if (typed.isEmpty()) AutofillResponses.authResponse(this, form, inline, pickAny = true) else null)
+            reply(if (typed.isEmpty()) "aberto: so Outras entradas" else "nada (aberto, texto nao combina)", if (typed.isEmpty()) AutofillResponses.authResponse(this, form, inline, pickAny = true) else null)
             return
         }
 
@@ -63,7 +70,7 @@ class BabelAutofillService : AutofillService() {
                 AutofillResponses.authDataset(this, form, inline, datasets.size, getString(R.string.autofill_other), pickAny = true),
             )
         }
-        callback.onSuccess(response.build())
+        reply("aberto: ofereceu ${datasets.size} entrada(s)", response.build())
     }
 
     private fun startsLikeTyped(entry: Entry, typed: String): Boolean =

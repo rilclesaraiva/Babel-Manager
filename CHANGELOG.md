@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 ### Added
+- Settings → "Autofill diagnostics" (off by default): records in memory only, and shows with a copy button, what Android reports on each fill request (field types, hints, roles, whether a field was empty). Never typed text, passwords or vault data; nothing leaves the device.
 - Local encrypted vault (AES-256-GCM, PBKDF2-HMAC-SHA256 key derivation) stored only on the device; the master password is never stored.
 - Create or unlock the vault with a master password (12 characters minimum) or with strong biometrics.
 - Add, edit, search and delete passwords. Copy fields with a clipboard marked as sensitive and cleared after a chosen time.

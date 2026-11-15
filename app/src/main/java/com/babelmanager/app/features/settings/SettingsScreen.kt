@@ -70,6 +70,7 @@ import com.babelmanager.app.core.ui.TabScaffold
 import com.babelmanager.app.core.ui.UiMessage
 import com.babelmanager.app.core.ui.findActivity
 import com.babelmanager.app.core.ui.getString
+import com.babelmanager.app.data.autofill.AutofillDiagnostics
 import com.babelmanager.app.data.update.Postpone
 import com.babelmanager.app.data.update.PostponeKind
 import kotlinx.coroutines.flow.Flow
@@ -105,6 +106,7 @@ fun SettingsScreen(
     modifier: Modifier = Modifier,
 ) {
     var showNotices by rememberSaveable { mutableStateOf(false) }
+    var showDiag by rememberSaveable { mutableStateOf(false) }
     val context = LocalContext.current
     val activity = context.findActivity()
     val settings by vm.settings.collectAsStateWithLifecycle()
@@ -187,6 +189,20 @@ fun SettingsScreen(
                     )
                 },
             )
+            SettingsItem(
+                title = stringResource(R.string.settings_diag),
+                summary = stringResource(R.string.settings_diag_summary),
+                trailing = {
+                    Switch(checked = settings.autofillDiagnostics, onCheckedChange = vm::setAutofillDiagnostics)
+                },
+            )
+            if (settings.autofillDiagnostics) {
+                SettingsItem(
+                    title = stringResource(R.string.settings_diag_view),
+                    summary = null,
+                    onClick = { showDiag = true },
+                )
+            }
             SettingsItem(
                 title = stringResource(R.string.settings_block_screenshots),
                 summary = stringResource(R.string.settings_block_screenshots_summary),
@@ -340,6 +356,8 @@ fun SettingsScreen(
             Spacer(Modifier.height(32.dp))
         }
     }
+
+    if (showDiag) DiagnosticsDialog(onDismiss = { showDiag = false })
 
     if (showNotices) {
         val now = System.currentTimeMillis()
@@ -554,4 +572,39 @@ private fun NoticesSheet(selected: Int, onSelect: (Int) -> Unit, onDismiss: () -
             }
         }
     }
+}
+
+
+@Composable
+private fun DiagnosticsDialog(onDismiss: () -> Unit) {
+    val context = LocalContext.current
+    val records by AutofillDiagnostics.log.collectAsStateWithLifecycle()
+    val text = records.joinToString("\n\n")
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.settings_diag_view)) },
+        text = {
+            Column(Modifier.verticalScroll(rememberScrollState())) {
+                Text(
+                    text = text.ifEmpty { stringResource(R.string.diag_empty) },
+                    style = MaterialTheme.typography.bodySmall,
+                    fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace,
+                )
+            }
+        },
+        confirmButton = {
+            Row {
+                TextButton(onClick = { AutofillDiagnostics.clear() }) { Text(stringResource(R.string.diag_clear)) }
+                TextButton(
+                    enabled = text.isNotEmpty(),
+                    onClick = {
+                        // Texto comum: o diagnóstico não tem nada sigiloso (só tipos e dicas de campos).
+                        val cm = context.getSystemService(android.content.ClipboardManager::class.java)
+                        cm.setPrimaryClip(android.content.ClipData.newPlainText("autofill-diagnostics", text))
+                    },
+                ) { Text(stringResource(R.string.copy)) }
+            }
+        },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.diag_close)) } },
+    )
 }

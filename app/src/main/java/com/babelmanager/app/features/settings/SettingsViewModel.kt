@@ -17,6 +17,7 @@ import com.babelmanager.app.data.importer.PasswordImporter
 import com.babelmanager.app.data.session.AutoLock
 import com.babelmanager.app.data.settings.Settings
 import com.babelmanager.app.data.settings.SettingsStore
+import com.babelmanager.app.data.autofill.AutofillDiagnostics
 import com.babelmanager.app.data.vault.VaultRepository
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -48,6 +49,10 @@ class SettingsViewModel(
     fun setBlockScreenshots(value: Boolean) = store.update { it.copy(blockScreenshots = value) }
     fun setAutoBackup(value: Boolean) = store.update { it.copy(autoBackup = value) }
     fun setLockedSuggestions(value: Boolean) = store.update { it.copy(lockedSuggestions = value) }
+    fun setAutofillDiagnostics(value: Boolean) {
+        if (!value) AutofillDiagnostics.clear()
+        store.update { it.copy(autofillDiagnostics = value) }
+    }
 
     fun enableBiometric(activity: FragmentActivity) {
         val key = vault.exportKey() ?: return

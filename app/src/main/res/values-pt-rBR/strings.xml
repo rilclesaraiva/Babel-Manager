@@ -100,6 +100,12 @@
     <string name="settings_locked_suggestions">Sugestões com o cofre trancado</string>
     <string name="settings_locked_suggestions_summary">O preenchimento lista as entradas que combinam mesmo trancado e pede sua digital ou o PIN do aparelho. Guarda neste aparelho um índice cifrado de títulos, usuários e sites (nunca senhas).</string>
     <string name="settings_locked_suggestions_needs_biometric">Ligue antes o desbloqueio acima.</string>
+    <string name="settings_diag">Diagnóstico do preenchimento</string>
+    <string name="settings_diag_summary">Registra, só na memória, o que o Android informa em cada pedido de preenchimento (tipos e dicas dos campos, nunca texto digitado nem o cofre). Ligue só para investigar um problema.</string>
+    <string name="settings_diag_view">Ver registros do diagnóstico</string>
+    <string name="diag_empty">Nada registrado ainda. Abra uma tela de login em outro app e espere o Android pedir o preenchimento.</string>
+    <string name="diag_clear">Limpar</string>
+    <string name="diag_close">Fechar</string>
     <string name="settings_block_screenshots">Bloquear capturas de tela</string>
     <string name="settings_block_screenshots_summary">Também esconde o app na lista de apps recentes</string>
     <string name="settings_clipboard">Limpar área de transferência</string>

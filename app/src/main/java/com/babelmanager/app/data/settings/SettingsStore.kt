@@ -16,6 +16,7 @@ data class Settings(
     val lastBackupFailed: Boolean = false,
     val biometricEnabled: Boolean = false,
     val lockedSuggestions: Boolean = false,
+    val autofillDiagnostics: Boolean = false,
 )
 
 /** Preferências no aparelho. A biometria guarda aqui só a chave já cifrada pelo Keystore. */
@@ -36,6 +37,7 @@ class SettingsStore(private val prefs: SharedPreferences) {
             .putLong(LAST_BACKUP, next.lastBackupAt)
             .putBoolean(LAST_BACKUP_FAILED, next.lastBackupFailed)
             .putBoolean(LOCKED_SUGGESTIONS, next.lockedSuggestions)
+            .putBoolean(AUTOFILL_DIAGNOSTICS, next.autofillDiagnostics)
             .apply()
         _settings.value = next
     }
@@ -73,10 +75,12 @@ class SettingsStore(private val prefs: SharedPreferences) {
         lastBackupFailed = prefs.getBoolean(LAST_BACKUP_FAILED, false),
         biometricEnabled = prefs.contains(BIO_CT),
         lockedSuggestions = prefs.getBoolean(LOCKED_SUGGESTIONS, false),
+        autofillDiagnostics = prefs.getBoolean(AUTOFILL_DIAGNOSTICS, false),
     )
 
     private companion object {
         const val AUTO_LOCK = "auto_lock_seconds"
+        const val AUTOFILL_DIAGNOSTICS = "autofill_diagnostics"
         const val BLOCK_SCREENSHOTS = "block_screenshots"
         const val CLIPBOARD = "clipboard_clear_seconds"
         const val BACKUP_URI = "backup_uri"

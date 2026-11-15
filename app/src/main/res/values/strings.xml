@@ -100,6 +100,12 @@
     <string name="settings_locked_suggestions">Suggestions while locked</string>
     <string name="settings_locked_suggestions_summary">Autofill lists matching entries even when locked and asks for your fingerprint or device PIN. Keeps an encrypted index of titles, usernames and sites (never passwords) on this device.</string>
     <string name="settings_locked_suggestions_needs_biometric">Turn on the unlock above first.</string>
+    <string name="settings_diag">Autofill diagnostics</string>
+    <string name="settings_diag_summary">Records, in memory only, what Android reports for each fill request (field types and hints, never typed text or the vault). Turn on only to investigate a problem.</string>
+    <string name="settings_diag_view">View diagnostic records</string>
+    <string name="diag_empty">Nothing recorded yet. Open a login screen in another app and wait for Android to ask for autofill.</string>
+    <string name="diag_clear">Clear</string>
+    <string name="diag_close">Close</string>
     <string name="settings_block_screenshots">Block screenshots</string>
     <string name="settings_block_screenshots_summary">Also hides the app in the recent apps list</string>
     <string name="settings_clipboard">Clear clipboard</string>
