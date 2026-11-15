@@ -1,5 +1,10 @@
 package com.babelmanager.app.features.settings
 
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.Spacer
 import com.babelmanager.app.core.ui.PageTitle
@@ -330,13 +335,7 @@ fun SettingsScreen(
             PostponeKind.Snoozed -> if (updatePostpone.untilMillis - now <= 8L * 24 * 3600 * 1000) 7 else 30
             PostponeKind.Skipped -> -1
         }
-        ChoiceDialog(
-            title = stringResource(R.string.settings_update_notices),
-            options = listOf(
-                0 to stringResource(R.string.update_notices_normal),
-                7 to stringResource(R.string.update_notices_week),
-                30 to stringResource(R.string.update_notices_month),
-            ),
+        NoticesSheet(
             selected = current,
             onSelect = { days ->
                 showNotices = false
@@ -507,4 +506,39 @@ private fun ChangePasswordDialog(
         },
         dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) } },
     )
+}
+
+/** Painel que sobe de baixo (como nos outros apps do mantenedor) com as opções de aviso de atualização. */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun NoticesSheet(selected: Int, onSelect: (Int) -> Unit, onDismiss: () -> Unit) {
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+    ) {
+        Column(Modifier.fillMaxWidth().padding(bottom = 24.dp)) {
+            Text(
+                stringResource(R.string.settings_update_notices),
+                style = MaterialTheme.typography.headlineMedium,
+                modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp),
+            )
+            listOf(
+                0 to R.string.update_notices_normal,
+                7 to R.string.update_notices_week,
+                30 to R.string.update_notices_month,
+            ).forEach { (days, label) ->
+                Text(
+                    stringResource(label),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = if (days == selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { onSelect(days) }
+                        .padding(vertical = 20.dp),
+                )
+            }
+        }
+    }
 }
