@@ -129,9 +129,12 @@
     <string name="settings_check_updates">Check for updates</string>
     <string name="settings_check_updates_summary">Look for a newer version on GitHub</string>
     <string name="settings_update_notices">Update notices</string>
-    <string name="settings_update_notices_on">On: a notice appears when a new version is out</string>
-    <string name="settings_update_notices_snoozed">Snoozed until %1$s. Tap to turn back on.</string>
-    <string name="settings_update_notices_skipped">Skipping version %1$s. Tap to turn back on.</string>
+    <string name="settings_update_notices_on">On: a notice appears when a new version is out. Tap to change.</string>
+    <string name="settings_update_notices_snoozed">Snoozed until %1$s. Tap to change.</string>
+    <string name="settings_update_notices_skipped">Skipping version %1$s. Tap to change.</string>
+    <string name="update_notices_normal">Notify normally</string>
+    <string name="update_notices_week">Don\'t notify for a week</string>
+    <string name="update_notices_month">Don\'t notify for a month</string>
     <string name="settings_about_section">About</string>
     <string name="export_warning_title">Export without encryption?</string>
     <string name="export_warning_body">The CSV file will contain all your passwords in plain text. Anyone who gets it can read them. Delete it as soon as you are done.</string>

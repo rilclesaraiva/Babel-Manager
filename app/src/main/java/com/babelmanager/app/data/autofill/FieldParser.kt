@@ -59,25 +59,39 @@ object FieldParser {
         val hints = node.autofillHints?.map { it.lowercase() }.orEmpty()
         val inputClass = node.inputType and InputType.TYPE_MASK_CLASS
         val variation = node.inputType and InputType.TYPE_MASK_VARIATION
-        val htmlType = node.htmlInfo?.attributes?.firstOrNull { it.first.equals("type", ignoreCase = true) }?.second?.lowercase()
+        val html = node.htmlInfo
+        val attrs = html?.attributes?.associate { it.first.lowercase() to it.second.lowercase() }.orEmpty()
+        val htmlType = attrs["type"]
+        val isHtmlInput = html?.tag.equals("input", ignoreCase = true)
+        val autocomplete = attrs["autocomplete"].orEmpty()
 
         val password = View.AUTOFILL_HINT_PASSWORD.lowercase() in hints ||
             htmlType == "password" ||
+            "password" in autocomplete ||
             (inputClass == InputType.TYPE_CLASS_TEXT && variation in PASSWORD_VARIATIONS) ||
             (inputClass == InputType.TYPE_CLASS_NUMBER && variation == InputType.TYPE_NUMBER_VARIATION_PASSWORD)
         if (password) return Field(id, isPassword = true, isUsername = false, isText = false)
 
-        val text = inputClass == InputType.TYPE_CLASS_TEXT || htmlType == "text" || htmlType == "email" || htmlType == "tel"
+        // Em páginas web o <input> muitas vezes vem sem `type` (padrão = texto) e sem inputType.
+        val text = inputClass == InputType.TYPE_CLASS_TEXT ||
+            htmlType in TEXT_TYPES ||
+            (isHtmlInput && htmlType == null)
         if (!text) return null
-        val label = listOfNotNull(node.idEntry, node.hint, htmlType).joinToString(" ").lowercase()
+        val label = listOfNotNull(
+            node.idEntry, node.hint, htmlType,
+            attrs["name"], attrs["id"], attrs["placeholder"], attrs["aria-label"], node.contentDescription?.toString(),
+        ).joinToString(" ").lowercase()
         val username = View.AUTOFILL_HINT_USERNAME.lowercase() in hints ||
             View.AUTOFILL_HINT_EMAIL_ADDRESS.lowercase() in hints ||
+            "username" in autocomplete || "email" in autocomplete ||
             htmlType == "email" ||
             variation == InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS ||
             variation == InputType.TYPE_TEXT_VARIATION_WEB_EMAIL_ADDRESS ||
             USER_WORDS.any { it in label }
         return Field(id, isPassword = false, isUsername = username, isText = true)
     }
+
+    private val TEXT_TYPES = setOf("text", "email", "tel", "url", "search", "number")
 
     private val PASSWORD_VARIATIONS = setOf(
         InputType.TYPE_TEXT_VARIATION_PASSWORD,

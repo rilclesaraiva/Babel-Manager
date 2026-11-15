@@ -129,9 +129,12 @@
     <string name="settings_check_updates">Verificar atualizações</string>
     <string name="settings_check_updates_summary">Procurar uma versão mais nova no GitHub</string>
     <string name="settings_update_notices">Avisos de atualização</string>
-    <string name="settings_update_notices_on">Ligados: um aviso aparece quando sai versão nova</string>
-    <string name="settings_update_notices_snoozed">Adiados até %1$s. Toque para ligar de novo.</string>
-    <string name="settings_update_notices_skipped">Pulando a versão %1$s. Toque para ligar de novo.</string>
+    <string name="settings_update_notices_on">Ligados: um aviso aparece quando sai versão nova. Toque para mudar.</string>
+    <string name="settings_update_notices_snoozed">Adiados até %1$s. Toque para mudar.</string>
+    <string name="settings_update_notices_skipped">Pulando a versão %1$s. Toque para mudar.</string>
+    <string name="update_notices_normal">Avisar normalmente</string>
+    <string name="update_notices_week">Não avisar por uma semana</string>
+    <string name="update_notices_month">Não avisar por um mês</string>
     <string name="settings_about_section">Sobre</string>
     <string name="export_warning_title">Exportar sem criptografia?</string>
     <string name="export_warning_body">O arquivo CSV terá todas as suas senhas em texto puro. Quem o obtiver poderá lê-las. Apague-o assim que terminar.</string>

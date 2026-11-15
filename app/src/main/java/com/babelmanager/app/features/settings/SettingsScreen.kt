@@ -1,5 +1,7 @@
 package com.babelmanager.app.features.settings
 
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.Spacer
 import com.babelmanager.app.core.ui.PageTitle
 import android.content.ActivityNotFoundException
 import android.content.Intent
@@ -93,9 +95,11 @@ fun SettingsScreen(
     updateMessages: Flow<UiMessage>,
     onCheckUpdates: () -> Unit,
     onUndoPostpone: () -> Unit,
+    onSnooze: (Int) -> Unit,
     onAbout: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    var showNotices by rememberSaveable { mutableStateOf(false) }
     val context = LocalContext.current
     val activity = context.findActivity()
     val settings by vm.settings.collectAsStateWithLifecycle()
@@ -297,7 +301,7 @@ fun SettingsScreen(
                             )
                         },
                         icon = if (updatePostpone.kind == PostponeKind.None) Icons.Outlined.Notifications else Icons.Outlined.NotificationsOff,
-                        onClick = if (updatePostpone.kind != PostponeKind.None) onUndoPostpone else null,
+                        onClick = { showNotices = true },
                     ),
                 ),
             )
@@ -315,7 +319,31 @@ fun SettingsScreen(
                     ),
                 ),
             )
+            Spacer(Modifier.height(32.dp))
         }
+    }
+
+    if (showNotices) {
+        val now = System.currentTimeMillis()
+        val current = when (updatePostpone.kind) {
+            PostponeKind.None -> 0
+            PostponeKind.Snoozed -> if (updatePostpone.untilMillis - now <= 8L * 24 * 3600 * 1000) 7 else 30
+            PostponeKind.Skipped -> -1
+        }
+        ChoiceDialog(
+            title = stringResource(R.string.settings_update_notices),
+            options = listOf(
+                0 to stringResource(R.string.update_notices_normal),
+                7 to stringResource(R.string.update_notices_week),
+                30 to stringResource(R.string.update_notices_month),
+            ),
+            selected = current,
+            onSelect = { days ->
+                showNotices = false
+                if (days == 0) onUndoPostpone() else onSnooze(days)
+            },
+            onDismiss = { showNotices = false },
+        )
     }
 
     if (showAutoLock) {

@@ -166,6 +166,7 @@ private fun MainContent(c: AppContainer, updateVm: UpdateViewModel, updateState:
                         updateMessages = updateVm.messages,
                         onCheckUpdates = updateVm::checkNow,
                         onUndoPostpone = updateVm::undoPostpone,
+                        onSnooze = updateVm::snooze,
                         onAbout = { push(ABOUT) },
                     )
                 }
