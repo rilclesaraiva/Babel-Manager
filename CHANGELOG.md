@@ -23,7 +23,7 @@
 - Top of every screen: no more pinned top bar or floating back button covering titles. The title is now the first line of the page and scrolls with it; only the back button stays in the corner and the title starts after it (same pattern as BoomListener and Joule Arc).
 - Settings: the last card no longer touches the bottom navigation bar.
 - Update notices is now a bottom sheet with a choice (notify normally, not for a week, not for a month); before, tapping it did nothing when notices were on.
-- Autofill: login fields on web pages whose inputs have no explicit type (or only a name/placeholder/aria-label) are now recognized, so the username is filled too. The field you tap is used as the username when nothing else matches.
+- Autofill: login fields on web pages whose inputs have no explicit type (or only a name/placeholder/aria-label) are now recognized, so the username is filled too. Autofill is only offered on screens that look like a login (a password field, or a field that is clearly a username/email); search boxes and other plain text fields no longer get "Fill with Babel Manager".
 
 ### Known issues
 - Not compiled or tested outside CI yet.

@@ -22,21 +22,19 @@ object FieldParser {
 
     private val USER_WORDS = listOf("user", "usuario", "usuário", "login", "email", "e-mail", "mail", "cpf", "account", "conta")
 
-    fun parse(structure: AssistStructure, focusedId: AutofillId? = null): ParsedForm? {
+    fun parse(structure: AssistStructure): ParsedForm? {
         val fields = ArrayList<Field>()
         val domains = ArrayList<String>()
         for (i in 0 until structure.windowNodeCount) {
             walk(structure.getWindowNodeAt(i).rootViewNode, fields, domains, 0)
         }
         val firstPassword = fields.indexOfFirst { it.isPassword }
-        var username = if (firstPassword >= 0) {
+        val username = if (firstPassword >= 0) {
             val before = fields.subList(0, firstPassword)
             (before.lastOrNull { it.isUsername } ?: before.lastOrNull { it.isText })?.id
         } else {
             fields.firstOrNull { it.isUsername }?.id
         }
-        // Nada reconhecido como usuário, mas a pessoa tocou num campo de texto: é ele (ex.: página ainda carregando).
-        if (username == null) username = fields.firstOrNull { it.isText && it.id == focusedId }?.id
         val passwords = fields.filter { it.isPassword }.take(MAX_PASSWORD_FIELDS).map { it.id }
         if (username == null && passwords.isEmpty()) return null
         return ParsedForm(
@@ -83,6 +81,9 @@ object FieldParser {
             node.idEntry, node.hint, htmlType,
             attrs["name"], attrs["id"], attrs["placeholder"], attrs["aria-label"], node.contentDescription?.toString(),
         ).joinToString(" ").lowercase()
+        // Busca e afins nunca são login (a não ser que a página diga explicitamente que é usuário).
+        val explicitUser = View.AUTOFILL_HINT_USERNAME.lowercase() in hints || "username" in autocomplete
+        if (!explicitUser && SEARCH_WORDS.any { it in label }) return null
         val username = View.AUTOFILL_HINT_USERNAME.lowercase() in hints ||
             View.AUTOFILL_HINT_EMAIL_ADDRESS.lowercase() in hints ||
             "username" in autocomplete || "email" in autocomplete ||
@@ -93,7 +94,8 @@ object FieldParser {
         return Field(id, isPassword = false, isUsername = username, isText = true)
     }
 
-    private val TEXT_TYPES = setOf("text", "email", "tel", "url", "search", "number")
+    private val SEARCH_WORDS = listOf("search", "pesquis", "busca", "buscar")
+    private val TEXT_TYPES = setOf("text", "email", "tel", "url", "number")
 
     private val PASSWORD_VARIATIONS = setOf(
         InputType.TYPE_TEXT_VARIATION_PASSWORD,

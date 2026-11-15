@@ -24,8 +24,7 @@ class BabelAutofillService : AutofillService() {
 
     override fun onFillRequest(request: FillRequest, cancellationSignal: CancellationSignal, callback: FillCallback) {
         val structure = request.fillContexts.lastOrNull()?.structure
-        val focused = request.fillContexts.lastOrNull()?.focusedId
-        val form = structure?.let { FieldParser.parse(it, focused) }
+        val form = structure?.let(FieldParser::parse)
         if (form == null || form.packageName == packageName) {
             callback.onSuccess(null)
             return
