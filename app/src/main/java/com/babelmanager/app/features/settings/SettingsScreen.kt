@@ -179,6 +179,11 @@ fun SettingsScreen(
                     trailing = { Switch(checked = settings.dynamicColor, onCheckedChange = vm::setDynamicColor) },
                 )
             }
+            SettingsItem(
+                title = stringResource(R.string.settings_site_icons),
+                summary = stringResource(R.string.settings_site_icons_summary),
+                trailing = { Switch(checked = settings.siteIcons, onCheckedChange = { vm.setSiteIcons(context, it) }) },
+            )
             // ── Segurança ──
             SectionHeader(stringResource(R.string.settings_security))
             SettingsItem(

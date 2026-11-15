@@ -16,8 +16,22 @@ object AppIcons {
     private const val SIZE_PX = 144
     private val cache = LruCache<String, Bitmap>(64)
 
-    /** Ícone do app da [url], ou null se a entrada não é de app ou o app não está instalado/visível. */
-    suspend fun load(context: Context, url: String): Bitmap? {
+    /** Ícone da entrada: do app instalado (`androidapp://`) ou, se [sites] estiver ligado, o favicon do site. */
+    suspend fun load(context: Context, url: String, sites: Boolean): Bitmap? {
+        if (AppUri.packageOf(url) == null) return if (sites) loadSite(context, url) else null
+        return loadApp(context, url)
+    }
+
+    private suspend fun loadSite(context: Context, url: String): Bitmap? {
+        val icons = SiteIcons(context.applicationContext)
+        val host = icons.hostFor(url) ?: return null
+        cache.get("site:$host")?.let { return it }
+        return withContext(Dispatchers.IO) {
+            icons.fetch(host)?.also { cache.put("site:$host", it) }
+        }
+    }
+
+    private suspend fun loadApp(context: Context, url: String): Bitmap? {
         val pkg = AppUri.packageOf(url) ?: return null
         cache.get(pkg)?.let { return it }
         return withContext(Dispatchers.IO) {

@@ -88,7 +88,7 @@ class AutofillActivity : FragmentActivity() {
 
         setContent {
             val appearance by container.settings.settings.collectAsStateWithLifecycle()
-            BabelTheme(appearance.themeMode, appearance.dynamicColor) {
+            BabelTheme(appearance.themeMode, appearance.dynamicColor, appearance.siteIcons) {
                 AutofillRoot(
                     c = container,
                     packageName = pkg,

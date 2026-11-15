@@ -17,6 +17,7 @@ import com.babelmanager.app.data.importer.PasswordImporter
 import com.babelmanager.app.data.session.AutoLock
 import com.babelmanager.app.data.settings.Settings
 import com.babelmanager.app.data.settings.SettingsStore
+import com.babelmanager.app.data.apps.SiteIcons
 import com.babelmanager.app.data.autofill.AutofillDiagnostics
 import com.babelmanager.app.data.vault.VaultRepository
 import kotlinx.coroutines.CancellationException
@@ -50,6 +51,10 @@ class SettingsViewModel(
     fun setAutoBackup(value: Boolean) = store.update { it.copy(autoBackup = value) }
     fun setLockedSuggestions(value: Boolean) = store.update { it.copy(lockedSuggestions = value) }
     fun setThemeMode(mode: Int) = store.update { it.copy(themeMode = mode) }
+    fun setSiteIcons(context: android.content.Context, value: Boolean) {
+        if (!value) SiteIcons(context.applicationContext).clear()
+        store.update { it.copy(siteIcons = value) }
+    }
     fun setDynamicColor(value: Boolean) = store.update { it.copy(dynamicColor = value) }
     fun setAutofillDiagnostics(value: Boolean) {
         if (!value) AutofillDiagnostics.clear()

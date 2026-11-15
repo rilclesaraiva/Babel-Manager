@@ -44,6 +44,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.draw.clip
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.produceState
 import androidx.compose.foundation.Image
 import androidx.compose.ui.Modifier
@@ -167,11 +168,15 @@ fun StrengthIndicator(strength: Strength, modifier: Modifier = Modifier) {
 /**
  * Avatar da entrada: o ícone do app quando a entrada é ligada a um app instalado ([url]); senão a inicial do título.
  */
+/** Se o favicon dos sites pode ser baixado (ajuste do usuário); fornecido pelo tema. */
+val LocalSiteIcons = compositionLocalOf { true }
+
 @Composable
 fun EntryAvatar(title: String, modifier: Modifier = Modifier, size: Int = 40, url: String = "") {
     val context = LocalContext.current
-    val icon by produceState<ImageBitmap?>(null, url) {
-        value = AppIcons.load(context, url)?.asImageBitmap()
+    val sites = LocalSiteIcons.current
+    val icon by produceState<ImageBitmap?>(null, url, sites) {
+        value = AppIcons.load(context, url, sites)?.asImageBitmap()
     }
     val image = icon
     if (image != null) {

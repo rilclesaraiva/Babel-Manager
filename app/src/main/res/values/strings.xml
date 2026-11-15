@@ -117,6 +117,8 @@
     <string name="theme_amoled">AMOLED (pure black)</string>
     <string name="settings_dynamic_color">Use system colors</string>
     <string name="settings_dynamic_color_summary">Turn off to use the app\'s own colors</string>
+    <string name="settings_site_icons">Website icons</string>
+    <string name="settings_site_icons_summary">Downloads each site\'s own icon once and keeps it on this device</string>
     <string name="settings_clipboard">Clear clipboard</string>
     <string name="clipboard_never">Never</string>
     <string name="clipboard_15s">After 15 seconds</string>

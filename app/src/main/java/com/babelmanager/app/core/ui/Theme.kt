@@ -14,6 +14,7 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalContext
 
 // Mesmos pesos de fonte dos outros apps do mantenedor (Intruphon, BoomListener, Joule Arc).
@@ -65,7 +66,7 @@ private fun ColorScheme.amoled() = copy(
 /** [themeMode]: 0 sistema, 1 claro, 2 escuro, 3 AMOLED. */
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun BabelTheme(themeMode: Int, dynamicColor: Boolean, content: @Composable () -> Unit) {
+fun BabelTheme(themeMode: Int, dynamicColor: Boolean, siteIcons: Boolean, content: @Composable () -> Unit) {
     val dark = when (themeMode) {
         1 -> false
         2, 3 -> true
@@ -82,6 +83,7 @@ fun BabelTheme(themeMode: Int, dynamicColor: Boolean, content: @Composable () ->
         colorScheme = if (themeMode == 3) scheme.amoled() else scheme,
         motionScheme = MotionScheme.expressive(),
         typography = BabelTypography,
-        content = content,
-    )
+    ) {
+        CompositionLocalProvider(LocalSiteIcons provides siteIcons, content = content)
+    }
 }

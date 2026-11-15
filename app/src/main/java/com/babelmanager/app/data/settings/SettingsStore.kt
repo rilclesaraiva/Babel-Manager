@@ -20,7 +20,9 @@ data class Settings(
     /** 0 = sistema, 1 = claro, 2 = escuro, 3 = AMOLED (preto puro). */
     val themeMode: Int = 0,
     /** Usa as cores do Android (Material You) quando o aparelho tem; desligado = cores próprias do app. */
-    val dynamicColor: Boolean = true,
+    val dynamicColor: Boolean = false,
+    /** Baixa o favicon dos sites das entradas (uma vez; guardado no aparelho). */
+    val siteIcons: Boolean = true,
 )
 
 /** Preferências no aparelho. A biometria guarda aqui só a chave já cifrada pelo Keystore. */
@@ -44,6 +46,7 @@ class SettingsStore(private val prefs: SharedPreferences) {
             .putBoolean(AUTOFILL_DIAGNOSTICS, next.autofillDiagnostics)
             .putInt(THEME_MODE, next.themeMode)
             .putBoolean(DYNAMIC_COLOR, next.dynamicColor)
+            .putBoolean(SITE_ICONS, next.siteIcons)
             .apply()
         _settings.value = next
     }
@@ -83,13 +86,15 @@ class SettingsStore(private val prefs: SharedPreferences) {
         lockedSuggestions = prefs.getBoolean(LOCKED_SUGGESTIONS, false),
         autofillDiagnostics = prefs.getBoolean(AUTOFILL_DIAGNOSTICS, false),
         themeMode = prefs.getInt(THEME_MODE, 0),
-        dynamicColor = prefs.getBoolean(DYNAMIC_COLOR, true),
+        dynamicColor = prefs.getBoolean(DYNAMIC_COLOR, false),
+        siteIcons = prefs.getBoolean(SITE_ICONS, true),
     )
 
     private companion object {
         const val AUTO_LOCK = "auto_lock_seconds"
         const val THEME_MODE = "theme_mode"
         const val DYNAMIC_COLOR = "dynamic_color"
+        const val SITE_ICONS = "site_icons"
         const val AUTOFILL_DIAGNOSTICS = "autofill_diagnostics"
         const val BLOCK_SCREENSHOTS = "block_screenshots"
         const val CLIPBOARD = "clipboard_clear_seconds"
