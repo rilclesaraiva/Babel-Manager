@@ -11,6 +11,7 @@ import com.babelmanager.app.core.ui.PageTitle
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.provider.Settings as SystemSettings
 import android.view.autofill.AutofillManager
 import android.text.format.DateUtils
@@ -85,6 +86,13 @@ private val autoLockOptions = listOf(
     900 to R.string.autolock_15m,
 )
 
+private val themeOptions = listOf(
+    0 to R.string.theme_system,
+    1 to R.string.theme_light,
+    2 to R.string.theme_dark,
+    3 to R.string.theme_amoled,
+)
+
 private val clipboardOptions = listOf(
     0 to R.string.clipboard_never,
     15 to R.string.clipboard_15s,
@@ -123,6 +131,7 @@ fun SettingsScreen(
 
     var showAutoLock by rememberSaveable { mutableStateOf(false) }
     var showClipboard by rememberSaveable { mutableStateOf(false) }
+    var showTheme by rememberSaveable { mutableStateOf(false) }
     var showChangePassword by rememberSaveable { mutableStateOf(false) }
     var showExportWarning by rememberSaveable { mutableStateOf(false) }
     var showDeleteVault by rememberSaveable { mutableStateOf(false) }
@@ -156,6 +165,20 @@ fun SettingsScreen(
                 .verticalScroll(rememberScrollState()),
         ) {
             PageTitle(stringResource(R.string.tab_settings), hasBack = true)
+            // ── Aparência ──
+            SectionHeader(stringResource(R.string.settings_appearance))
+            SettingsItem(
+                title = stringResource(R.string.settings_theme),
+                summary = stringResource(themeOptions.first { it.first == settings.themeMode }.second),
+                onClick = { showTheme = true },
+            )
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                SettingsItem(
+                    title = stringResource(R.string.settings_dynamic_color),
+                    summary = stringResource(R.string.settings_dynamic_color_summary),
+                    trailing = { Switch(checked = settings.dynamicColor, onCheckedChange = vm::setDynamicColor) },
+                )
+            }
             // ── Segurança ──
             SectionHeader(stringResource(R.string.settings_security))
             SettingsItem(
@@ -385,6 +408,15 @@ fun SettingsScreen(
             selected = settings.autoLockSeconds,
             onSelect = { vm.setAutoLock(it); showAutoLock = false },
             onDismiss = { showAutoLock = false },
+        )
+    }
+    if (showTheme) {
+        ChoiceDialog(
+            title = stringResource(R.string.settings_theme),
+            options = themeOptions.map { it.first to stringResource(it.second) },
+            selected = settings.themeMode,
+            onSelect = { vm.setThemeMode(it); showTheme = false },
+            onDismiss = { showTheme = false },
         )
     }
     if (showClipboard) {

@@ -49,6 +49,8 @@ class SettingsViewModel(
     fun setBlockScreenshots(value: Boolean) = store.update { it.copy(blockScreenshots = value) }
     fun setAutoBackup(value: Boolean) = store.update { it.copy(autoBackup = value) }
     fun setLockedSuggestions(value: Boolean) = store.update { it.copy(lockedSuggestions = value) }
+    fun setThemeMode(mode: Int) = store.update { it.copy(themeMode = mode) }
+    fun setDynamicColor(value: Boolean) = store.update { it.copy(dynamicColor = value) }
     fun setAutofillDiagnostics(value: Boolean) {
         if (!value) AutofillDiagnostics.clear()
         store.update { it.copy(autofillDiagnostics = value) }

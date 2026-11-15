@@ -6,6 +6,8 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.babelmanager.app.core.ui.BabelTheme
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
@@ -33,7 +35,8 @@ class MainActivity : FragmentActivity() {
         }
 
         setContent {
-            BabelTheme { AppRoot(container) }
+            val appearance by container.settings.settings.collectAsStateWithLifecycle()
+            BabelTheme(appearance.themeMode, appearance.dynamicColor) { AppRoot(container) }
         }
     }
 

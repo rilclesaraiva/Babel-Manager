@@ -17,6 +17,10 @@ data class Settings(
     val biometricEnabled: Boolean = false,
     val lockedSuggestions: Boolean = false,
     val autofillDiagnostics: Boolean = false,
+    /** 0 = sistema, 1 = claro, 2 = escuro, 3 = AMOLED (preto puro). */
+    val themeMode: Int = 0,
+    /** Usa as cores do Android (Material You) quando o aparelho tem; desligado = cores próprias do app. */
+    val dynamicColor: Boolean = true,
 )
 
 /** Preferências no aparelho. A biometria guarda aqui só a chave já cifrada pelo Keystore. */
@@ -38,6 +42,8 @@ class SettingsStore(private val prefs: SharedPreferences) {
             .putBoolean(LAST_BACKUP_FAILED, next.lastBackupFailed)
             .putBoolean(LOCKED_SUGGESTIONS, next.lockedSuggestions)
             .putBoolean(AUTOFILL_DIAGNOSTICS, next.autofillDiagnostics)
+            .putInt(THEME_MODE, next.themeMode)
+            .putBoolean(DYNAMIC_COLOR, next.dynamicColor)
             .apply()
         _settings.value = next
     }
@@ -76,10 +82,14 @@ class SettingsStore(private val prefs: SharedPreferences) {
         biometricEnabled = prefs.contains(BIO_CT),
         lockedSuggestions = prefs.getBoolean(LOCKED_SUGGESTIONS, false),
         autofillDiagnostics = prefs.getBoolean(AUTOFILL_DIAGNOSTICS, false),
+        themeMode = prefs.getInt(THEME_MODE, 0),
+        dynamicColor = prefs.getBoolean(DYNAMIC_COLOR, true),
     )
 
     private companion object {
         const val AUTO_LOCK = "auto_lock_seconds"
+        const val THEME_MODE = "theme_mode"
+        const val DYNAMIC_COLOR = "dynamic_color"
         const val AUTOFILL_DIAGNOSTICS = "autofill_diagnostics"
         const val BLOCK_SCREENSHOTS = "block_screenshots"
         const val CLIPBOARD = "clipboard_clear_seconds"

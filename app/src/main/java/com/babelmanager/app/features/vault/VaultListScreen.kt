@@ -2,6 +2,11 @@ package com.babelmanager.app.features.vault
 
 import com.babelmanager.app.core.ui.PageTitle
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.Canvas
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.draw.rotate
+import androidx.compose.material.icons.outlined.Casino
+import androidx.compose.material.icons.outlined.VerifiedUser
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.material3.Surface
 import androidx.compose.foundation.layout.size
@@ -18,7 +23,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.Build
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -100,18 +104,14 @@ fun VaultListScreen(
                     color = MaterialTheme.colorScheme.primaryContainer,
                     contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                 ) {
-                    Box(Modifier.fillMaxWidth().height(168.dp).padding(24.dp)) {
-                        Icon(
-                            Icons.Outlined.Build,
-                            contentDescription = null,
-                            modifier = Modifier.align(Alignment.TopStart).size(40.dp),
-                        )
+                    Box(Modifier.fillMaxWidth().height(176.dp)) {
+                        ToolsArt(Modifier.matchParentSize())
                         Icon(
                             Icons.AutoMirrored.Outlined.KeyboardArrowRight,
                             contentDescription = null,
-                            modifier = Modifier.align(Alignment.TopEnd).size(32.dp),
+                            modifier = Modifier.align(Alignment.TopEnd).padding(20.dp).size(32.dp),
                         )
-                        Column(Modifier.align(Alignment.BottomStart)) {
+                        Column(Modifier.align(Alignment.BottomStart).padding(24.dp)) {
                             Text(stringResource(R.string.tools_title), style = MaterialTheme.typography.headlineMedium)
                             Text(stringResource(R.string.tools_summary), style = MaterialTheme.typography.bodyLarge)
                         }
@@ -192,5 +192,38 @@ fun VaultListScreen(
             FloatingCircleButton(Icons.Outlined.Settings, stringResource(R.string.tab_settings), onOpenSettings)
         }
         }
+    }
+}
+
+/** Arte do cartão de ferramentas: círculos concêntricos, um dado (gerador) e um escudo (check-up), só com as cores do tema. */
+@Composable
+private fun ToolsArt(modifier: Modifier = Modifier) {
+    val ink = MaterialTheme.colorScheme.onPrimaryContainer
+    val accent = MaterialTheme.colorScheme.tertiary
+    Box(modifier) {
+        Canvas(Modifier.matchParentSize()) {
+            val c = Offset(size.width * 0.82f, size.height * 0.28f)
+            listOf(1.0f, 0.75f, 0.5f, 0.28f).forEachIndexed { i, f ->
+                drawCircle(
+                    color = if (i % 2 == 0) ink.copy(alpha = 0.07f) else accent.copy(alpha = 0.14f),
+                    radius = size.height * 1.05f * f,
+                    center = c,
+                )
+            }
+            drawCircle(color = accent.copy(alpha = 0.25f), radius = size.height * 0.16f, center = Offset(size.width * 0.5f, size.height * 0.18f))
+            drawCircle(color = ink.copy(alpha = 0.1f), radius = size.height * 0.08f, center = Offset(size.width * 0.62f, size.height * 0.5f))
+        }
+        Icon(
+            Icons.Outlined.Casino,
+            contentDescription = null,
+            tint = ink.copy(alpha = 0.55f),
+            modifier = Modifier.align(Alignment.TopStart).padding(start = 24.dp, top = 22.dp).size(56.dp).rotate(-12f),
+        )
+        Icon(
+            Icons.Outlined.VerifiedUser,
+            contentDescription = null,
+            tint = accent,
+            modifier = Modifier.align(Alignment.CenterEnd).padding(end = 44.dp, top = 16.dp).size(76.dp).rotate(8f),
+        )
     }
 }

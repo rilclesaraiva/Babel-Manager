@@ -2,11 +2,12 @@
 
 ## [Unreleased]
 ### Changed
-- The Tools card on the home is now a large highlight card. Settings opens on the first tap. The locked screen text is readable again (it was black on black). Entries linked to an installed app show that app's icon instead of a letter (read from the device, no network).
+- The Tools card on the home is now a large illustrated highlight card. Settings opens on the first tap. The locked screen text is readable again (it was black on black). Entries linked to an installed app show that app's icon instead of a letter (read from the device, no network).
 - Home redesigned: no bottom tab bar. A "Tools" card at the top of the vault opens the password generator and the check-up on one screen; Settings is now a floating button in the top-right corner (next to Lock). Screens slide in and out, with the predictive back gesture.
 - The floating back button is back to 48 dp (it had grown to 56 dp).
 
 ### Added
+- Settings → Appearance: theme (system default, light, dark, AMOLED pure black) and a switch to use the app's own colors instead of the Android system colors.
 - Settings → "Autofill diagnostics" (off by default): records in memory only, and shows with a copy button, what Android reports on each fill request (field types, hints, roles, whether a field was empty). Never typed text, passwords or vault data; nothing leaves the device.
 - Local encrypted vault (AES-256-GCM, PBKDF2-HMAC-SHA256 key derivation) stored only on the device; the master password is never stored.
 - Create or unlock the vault with a master password (12 characters minimum) or with strong biometrics.

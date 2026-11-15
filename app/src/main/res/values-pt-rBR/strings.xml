@@ -109,6 +109,14 @@
     <string name="diag_close">Fechar</string>
     <string name="settings_block_screenshots">Bloquear capturas de tela</string>
     <string name="settings_block_screenshots_summary">Também esconde o app na lista de apps recentes</string>
+    <string name="settings_appearance">Aparência</string>
+    <string name="settings_theme">Tema</string>
+    <string name="theme_system">Padrão do sistema</string>
+    <string name="theme_light">Claro</string>
+    <string name="theme_dark">Escuro</string>
+    <string name="theme_amoled">AMOLED (preto puro)</string>
+    <string name="settings_dynamic_color">Usar cores do sistema</string>
+    <string name="settings_dynamic_color_summary">Desligue para usar as cores próprias do app</string>
     <string name="settings_clipboard">Limpar área de transferência</string>
     <string name="clipboard_never">Nunca</string>
     <string name="clipboard_15s">Após 15 segundos</string>
