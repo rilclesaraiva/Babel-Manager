@@ -1,6 +1,7 @@
 package com.babelmanager.app
 
 import java.util.regex.Pattern
+import android.service.autofill.Field
 import android.service.autofill.Presentations
 import android.os.Build
 import android.app.PendingIntent
@@ -142,7 +143,7 @@ internal object AutofillResponses {
             val builder = Dataset.Builder(presentations)
             for (id in form.allIds) {
                 val pattern = if (id == form.usernameId) startsLike(matchTexts) else EMPTY_ONLY
-                builder.setField(id, Dataset.Field.Builder().setFilter(pattern).build())
+                builder.setField(id, Field.Builder().setFilter(pattern).build())
             }
             builder.setAuthentication(sender)
             return builder.build()
