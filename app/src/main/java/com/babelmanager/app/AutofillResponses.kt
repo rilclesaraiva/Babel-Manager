@@ -1,5 +1,8 @@
 package com.babelmanager.app
 
+import java.util.regex.Pattern
+import android.service.autofill.Presentations
+import android.os.Build
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
@@ -111,7 +114,13 @@ internal object AutofillResponses {
         return builder.build()
     }
 
-    /** Item que abre o app: `pickAny` mostra a lista completa; senão o app escolhe sozinho se só houver uma sugestão. */
+    /**
+     * Item que abre o app: `pickAny` mostra a lista completa; senão o app escolhe sozinho se só houver uma sugestão.
+     *
+     * No Android 13+ o item some quando a pessoa já digitou algo: no campo de usuário só fica se o texto
+     * digitado for o começo do usuário/título de [matchTexts]; nos demais (e sem [matchTexts]) só com o campo vazio.
+     * Antes do Android 13 não há como filtrar item sem valor, então ele fica sempre à mostra.
+     */
     fun authDataset(
         context: Context,
         form: ParsedForm,
@@ -121,11 +130,42 @@ internal object AutofillResponses {
         pickAny: Boolean,
         subtitle: String? = null,
         entryId: String? = null,
+        matchTexts: List<String> = emptyList(),
     ): Dataset {
-        val builder = Dataset.Builder(view(context, title, subtitle))
+        val menu = view(context, title, subtitle)
+        val inlinePresentation = inline(context, request, index, title, subtitle)
+        val sender = authSender(context, form, pickAny, entryId)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val presentations = Presentations.Builder().setMenuPresentation(menu)
+                .also { b -> inlinePresentation?.let(b::setInlinePresentation) }
+                .build()
+            val builder = Dataset.Builder(presentations)
+            for (id in form.allIds) {
+                val pattern = if (id == form.usernameId) startsLike(matchTexts) else EMPTY_ONLY
+                builder.setField(id, Dataset.Field.Builder().setFilter(pattern).build())
+            }
+            builder.setAuthentication(sender)
+            return builder.build()
+        }
+        val builder = Dataset.Builder(menu)
         for (id in form.allIds) builder.setValue(id, null)
-        builder.setAuthentication(authSender(context, form, pickAny, entryId))
-        inline(context, request, index, title, subtitle)?.let(builder::setInlinePresentation)
+        builder.setAuthentication(sender)
+        inlinePresentation?.let(builder::setInlinePresentation)
         return builder.build()
     }
+
+    private val EMPTY_ONLY: Pattern = Pattern.compile("")
+
+    /** Casa com o texto vazio e com qualquer começo (sem diferenciar maiúsculas) de um dos [texts]. */
+    private fun startsLike(texts: List<String>): Pattern {
+        val alternatives = texts.filter { it.isNotBlank() }.map { text ->
+            var acc = ""
+            for (c in text.take(MAX_MATCH_CHARS).reversed()) acc = "(?:" + Pattern.quote(c.toString()) + acc + ")?"
+            acc
+        }
+        if (alternatives.isEmpty()) return EMPTY_ONLY
+        return Pattern.compile(alternatives.joinToString("|") { "(?:$it)" }, Pattern.CASE_INSENSITIVE)
+    }
+
+    private const val MAX_MATCH_CHARS = 64
 }

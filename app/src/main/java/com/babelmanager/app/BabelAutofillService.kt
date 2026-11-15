@@ -69,7 +69,7 @@ class BabelAutofillService : AutofillService() {
                 val shown = suggested.take(MAX_SUGGESTIONS)
                 shown.forEachIndexed { i, entry ->
                     response.addDataset(
-                        AutofillResponses.authDataset(this, form, inline, i, entry.title, pickAny = false, subtitle = entry.username, entryId = entry.id),
+                        AutofillResponses.authDataset(this, form, inline, i, entry.title, pickAny = false, subtitle = entry.username, entryId = entry.id, matchTexts = listOf(entry.username, entry.title)),
                     )
                 }
                 response.addDataset(
