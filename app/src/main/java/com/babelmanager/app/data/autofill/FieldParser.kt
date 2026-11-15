@@ -72,7 +72,8 @@ object FieldParser {
     private fun classify(node: AssistStructure.ViewNode, id: AutofillId): Field? {
         val hints = node.autofillHints?.map { it.lowercase() }.orEmpty()
         val value = node.autofillValue
-        val current = (if (value != null && value.isText) value.textValue else node.text)?.toString().orEmpty()
+        // Só o valor de autofill (o `text` do nó pode ser o rótulo/placeholder do campo vazio, não o que foi digitado).
+        val current = (if (value != null && value.isText) value.textValue.toString() else "").trim()
         val inputClass = node.inputType and InputType.TYPE_MASK_CLASS
         val variation = node.inputType and InputType.TYPE_MASK_VARIATION
         val html = node.htmlInfo
