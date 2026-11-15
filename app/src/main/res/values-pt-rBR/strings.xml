@@ -42,7 +42,6 @@
     <string name="error_invalid_backup">Este arquivo não é um backup válido do Babel Manager.</string>
     <string name="biometric_title">Desbloquear o Babel Manager</string>
     <string name="biometric_subtitle">Confirme que é você</string>
-    <string name="biometric_use_password">Usar senha mestra</string>
     <string name="lock_now">Bloquear agora</string>
     <string name="add_password">Adicionar senha</string>
     <string name="edit_password">Editar senha</string>
@@ -95,9 +94,12 @@
     <string name="autolock_1m">Após 1 minuto</string>
     <string name="autolock_5m">Após 5 minutos</string>
     <string name="autolock_15m">Após 15 minutos</string>
-    <string name="settings_biometric">Desbloquear com biometria</string>
-    <string name="settings_biometric_summary">Use digital ou rosto em vez de digitar a senha mestra</string>
-    <string name="settings_biometric_unavailable">Nenhuma biometria forte cadastrada neste aparelho</string>
+    <string name="settings_biometric">Desbloquear com biometria ou senha do aparelho</string>
+    <string name="settings_biometric_summary">Use digital, rosto ou a senha/PIN do aparelho em vez de digitar a senha mestra</string>
+    <string name="settings_biometric_unavailable">Nenhuma digital, rosto ou bloqueio de tela cadastrado neste aparelho</string>
+    <string name="settings_locked_suggestions">Sugestões com o cofre trancado</string>
+    <string name="settings_locked_suggestions_summary">O preenchimento lista as entradas que combinam mesmo trancado e pede sua digital ou o PIN do aparelho. Guarda neste aparelho um índice cifrado de títulos, usuários e sites (nunca senhas).</string>
+    <string name="settings_locked_suggestions_needs_biometric">Ligue antes o desbloqueio acima.</string>
     <string name="settings_block_screenshots">Bloquear capturas de tela</string>
     <string name="settings_block_screenshots_summary">Também esconde o app na lista de apps recentes</string>
     <string name="settings_clipboard">Limpar área de transferência</string>

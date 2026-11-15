@@ -9,6 +9,8 @@ import android.service.autofill.SaveCallback
 import android.service.autofill.SaveRequest
 import com.babelmanager.app.data.autofill.EntryMatcher
 import com.babelmanager.app.data.autofill.FieldParser
+import com.babelmanager.app.data.autofill.ParsedForm
+import android.view.inputmethod.InlineSuggestionsRequest
 import com.babelmanager.app.data.vault.VaultRepository
 
 /**
@@ -34,7 +36,7 @@ class BabelAutofillService : AutofillService() {
         val inline = request.inlineSuggestionsRequest
 
         if (container.vault.state.value != VaultRepository.State.Unlocked) {
-            callback.onSuccess(AutofillResponses.authResponse(this, form, inline))
+            callback.onSuccess(lockedResponse(container, form, inline))
             return
         }
 
@@ -52,6 +54,32 @@ class BabelAutofillService : AutofillService() {
             AutofillResponses.authDataset(this, form, inline, datasets.size, getString(R.string.autofill_other), pickAny = true),
         )
         callback.onSuccess(response.build())
+    }
+
+    /**
+     * Cofre trancado. Com "sugestões com o cofre trancado" (e biometria) ligadas, lista as entradas que
+     * combinam (do índice, sem senha); tocar numa delas abre só o painel do sistema (digital ou PIN).
+     * Sem isso, ou sem sugestão, fica o item "Preencher com o Babel Manager" que abre o app.
+     */
+    private fun lockedResponse(container: AppContainer, form: ParsedForm, inline: InlineSuggestionsRequest?): FillResponse {
+        val s = container.settings.current
+        if (s.lockedSuggestions && s.biometricEnabled) {
+            val (suggested, _) = EntryMatcher.split(container.suggestionIndex.load(), form.packageName, form.webDomain)
+            if (suggested.isNotEmpty()) {
+                val response = FillResponse.Builder()
+                val shown = suggested.take(MAX_SUGGESTIONS)
+                shown.forEachIndexed { i, entry ->
+                    response.addDataset(
+                        AutofillResponses.authDataset(this, form, inline, i, entry.title, pickAny = false, subtitle = entry.username, entryId = entry.id),
+                    )
+                }
+                response.addDataset(
+                    AutofillResponses.authDataset(this, form, inline, shown.size, getString(R.string.autofill_other), pickAny = true),
+                )
+                return response.build()
+            }
+        }
+        return AutofillResponses.authResponse(this, form, inline)
     }
 
     override fun onSaveRequest(request: SaveRequest, callback: SaveCallback) {

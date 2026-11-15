@@ -42,7 +42,6 @@
     <string name="error_invalid_backup">This file is not a valid Babel Manager backup.</string>
     <string name="biometric_title">Unlock Babel Manager</string>
     <string name="biometric_subtitle">Confirm it\'s you</string>
-    <string name="biometric_use_password">Use master password</string>
     <string name="lock_now">Lock now</string>
     <string name="add_password">Add password</string>
     <string name="edit_password">Edit password</string>
@@ -95,9 +94,12 @@
     <string name="autolock_1m">After 1 minute</string>
     <string name="autolock_5m">After 5 minutes</string>
     <string name="autolock_15m">After 15 minutes</string>
-    <string name="settings_biometric">Unlock with biometrics</string>
-    <string name="settings_biometric_summary">Use fingerprint or face instead of typing the master password</string>
-    <string name="settings_biometric_unavailable">No strong biometrics set up on this device</string>
+    <string name="settings_biometric">Unlock with biometrics or device PIN</string>
+    <string name="settings_biometric_summary">Use fingerprint, face or the device PIN/password instead of typing the master password</string>
+    <string name="settings_biometric_unavailable">No fingerprint, face or screen lock set up on this device</string>
+    <string name="settings_locked_suggestions">Suggestions while locked</string>
+    <string name="settings_locked_suggestions_summary">Autofill lists matching entries even when locked and asks for your fingerprint or device PIN. Keeps an encrypted index of titles, usernames and sites (never passwords) on this device.</string>
+    <string name="settings_locked_suggestions_needs_biometric">Turn on the unlock above first.</string>
     <string name="settings_block_screenshots">Block screenshots</string>
     <string name="settings_block_screenshots_summary">Also hides the app in the recent apps list</string>
     <string name="settings_clipboard">Clear clipboard</string>

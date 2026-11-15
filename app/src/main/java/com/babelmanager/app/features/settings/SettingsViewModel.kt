@@ -47,6 +47,7 @@ class SettingsViewModel(
     fun setClipboardClear(seconds: Int) = store.update { it.copy(clipboardClearSeconds = seconds) }
     fun setBlockScreenshots(value: Boolean) = store.update { it.copy(blockScreenshots = value) }
     fun setAutoBackup(value: Boolean) = store.update { it.copy(autoBackup = value) }
+    fun setLockedSuggestions(value: Boolean) = store.update { it.copy(lockedSuggestions = value) }
 
     fun enableBiometric(activity: FragmentActivity) {
         val key = vault.exportKey() ?: return

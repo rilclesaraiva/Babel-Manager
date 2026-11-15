@@ -58,13 +58,14 @@ internal object AutofillResponses {
     }
 
     /** Abre a [AutofillActivity] (desbloqueio e/ou escolha da entrada). */
-    private fun authSender(context: Context, form: ParsedForm, pickAny: Boolean): IntentSender {
+    private fun authSender(context: Context, form: ParsedForm, pickAny: Boolean, entryId: String? = null): IntentSender {
         val intent = Intent(context, AutofillActivity::class.java)
             .putExtra(AutofillActivity.EXTRA_USERNAME_ID, form.usernameId)
             .putParcelableArrayListExtra(AutofillActivity.EXTRA_PASSWORD_IDS, ArrayList(form.passwordIds))
             .putExtra(AutofillActivity.EXTRA_PACKAGE, form.packageName)
             .putExtra(AutofillActivity.EXTRA_DOMAIN, form.webDomain)
             .putExtra(AutofillActivity.EXTRA_PICK_ANY, pickAny)
+            .putExtra(AutofillActivity.EXTRA_ENTRY_ID, entryId)
         // O sistema acrescenta dados ao Intent: o PendingIntent precisa ser mutável.
         return PendingIntent.getActivity(
             context,
@@ -111,11 +112,20 @@ internal object AutofillResponses {
     }
 
     /** Item que abre o app: `pickAny` mostra a lista completa; senão o app escolhe sozinho se só houver uma sugestão. */
-    fun authDataset(context: Context, form: ParsedForm, request: InlineSuggestionsRequest?, index: Int, title: String, pickAny: Boolean): Dataset {
-        val builder = Dataset.Builder(view(context, title, null))
+    fun authDataset(
+        context: Context,
+        form: ParsedForm,
+        request: InlineSuggestionsRequest?,
+        index: Int,
+        title: String,
+        pickAny: Boolean,
+        subtitle: String? = null,
+        entryId: String? = null,
+    ): Dataset {
+        val builder = Dataset.Builder(view(context, title, subtitle))
         for (id in form.allIds) builder.setValue(id, null)
-        builder.setAuthentication(authSender(context, form, pickAny))
-        inline(context, request, index, title, null)?.let(builder::setInlinePresentation)
+        builder.setAuthentication(authSender(context, form, pickAny, entryId))
+        inline(context, request, index, title, subtitle)?.let(builder::setInlinePresentation)
         return builder.build()
     }
 }

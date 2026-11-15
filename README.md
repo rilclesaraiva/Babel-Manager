@@ -10,7 +10,7 @@ An Android password manager that keeps your vault encrypted on your device, and 
 - Password generator (random or memorable words) and a check-up for reused and weak passwords.
 - Backup to **a place you choose** (local folder, Google Drive or any Android document provider): an encrypted copy, saved after each change or on demand. Restore from a backup file.
 - Link an entry to an **app**: pick it from your installed apps (icon and name, with search) and autofill suggests the entry in that app.
-- Autofill service for apps and browsers: With the vault unlocked, matching entries appear right in Android's suggestions (and in the keyboard, when it supports it); when locked, Android asks you to unlock first. Saving new passwords from other apps is not supported yet.
+- Autofill service for apps and browsers: With the vault unlocked, matching entries appear right in Android's suggestions (and in the keyboard, when it supports it); when locked, Android asks you to unlock first (or, with the optional "Suggestions while locked" setting, lists the matching entries and asks for your fingerprint or device PIN in the system panel, without opening the app). Saving new passwords from other apps is not supported yet.
 - Import from CSV (Google Password Manager, Chrome, Bitwarden and similar) and Bitwarden JSON.
 - Auto-lock, screenshot blocking, Material 3 Expressive design, English and Brazilian Portuguese.
 

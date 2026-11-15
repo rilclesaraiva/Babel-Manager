@@ -1,5 +1,8 @@
 package com.babelmanager.app
 
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.CancellationException
+import androidx.lifecycle.lifecycleScope
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
@@ -62,6 +65,11 @@ class AutofillActivity : FragmentActivity() {
     private val container: AppContainer
         get() = (application as BabelApp).container
 
+    private var entryId: String? = null
+
+    // Falso enquanto só o painel do sistema (digital/PIN) aparece: a tela fica invisível.
+    private var showUi by mutableStateOf(true)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -73,6 +81,10 @@ class AutofillActivity : FragmentActivity() {
         val domain = intent.getStringExtra(EXTRA_DOMAIN)
         val pickAny = intent.getBooleanExtra(EXTRA_PICK_ANY, false)
         val form = ParsedForm(usernameId, passwordIds, pkg, domain)
+        entryId = intent.getStringExtra(EXTRA_ENTRY_ID)
+        val quick = entryId != null && !pickAny &&
+            container.vault.state.value == VaultRepository.State.Locked && container.settings.current.biometricEnabled
+        showUi = !quick
 
         setContent {
             BabelTheme {
@@ -82,11 +94,43 @@ class AutofillActivity : FragmentActivity() {
                     webDomain = domain,
                     // Uma única sugestão certa: preenche sem mostrar lista (a não ser que a pessoa tenha pedido "Outras").
                     autoPick = !pickAny,
+                    visible = showUi,
                     onPick = { entry -> deliver(entry, form) },
                     onCancel = ::finish,
                 )
             }
         }
+        if (quick) quickUnlock(form)
+    }
+
+    /**
+     * Sugestão tocada com o cofre trancado: só o painel do sistema (digital ou senha/PIN do aparelho),
+     * sem mostrar o app. Cancelou: fecha. Deu erro (ex.: chave invalidada): cai na tela de desbloqueio.
+     */
+    private fun quickUnlock(form: ParsedForm) {
+        container.biometric.unlock(
+            this,
+            onKey = { key ->
+                lifecycleScope.launch {
+                    try {
+                        container.vault.unlockWithKey(key)
+                        val entry = container.vault.entries.value.firstOrNull { it.id == entryId }
+                        if (entry != null) deliver(entry, form) else showUi = true
+                    } catch (e: CancellationException) {
+                        throw e
+                    } catch (e: Exception) {
+                        showUi = true
+                    } finally {
+                        key.fill(0)
+                    }
+                }
+            },
+            onFailure = { showUi = true },
+            onCanceled = {
+                setResult(Activity.RESULT_CANCELED)
+                finish()
+            },
+        )
     }
 
     override fun onStart() {
@@ -118,6 +162,7 @@ class AutofillActivity : FragmentActivity() {
         const val EXTRA_PACKAGE = "babel.autofill.package"
         const val EXTRA_DOMAIN = "babel.autofill.domain"
         const val EXTRA_PICK_ANY = "babel.autofill.pick_any"
+        const val EXTRA_ENTRY_ID = "babel.autofill.entry_id"
     }
 }
 
@@ -127,11 +172,14 @@ private fun AutofillRoot(
     packageName: String?,
     webDomain: String?,
     autoPick: Boolean,
+    visible: Boolean,
     onPick: (Entry) -> Unit,
     onCancel: () -> Unit,
 ) {
     val state by c.vault.state.collectAsStateWithLifecycle()
     val settings by c.settings.settings.collectAsStateWithLifecycle()
+    // Só o painel do sistema na frente: a janela é transparente e nada é desenhado.
+    if (!visible) return
     Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
         when (state) {
             VaultRepository.State.Unlocked -> {

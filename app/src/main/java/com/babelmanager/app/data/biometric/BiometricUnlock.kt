@@ -6,6 +6,7 @@ import android.security.keystore.KeyPermanentlyInvalidatedException
 import android.security.keystore.KeyProperties
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
+import androidx.biometric.BiometricManager.Authenticators.DEVICE_CREDENTIAL
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
@@ -19,7 +20,7 @@ import javax.crypto.SecretKey
 import javax.crypto.spec.GCMParameterSpec
 
 /**
- * Chave do Android Keystore que só é liberada com biometria forte. Ela cifra a chave do cofre;
+ * Chave do Android Keystore que só é liberada com biometria forte ou com a senha/PIN do aparelho. Ela cifra a chave do cofre;
  * o resultado cifrado fica nas preferências. Se as digitais/rostos cadastrados mudarem, o
  * Keystore invalida a chave e a pessoa volta a usar a senha mestra.
  */
@@ -47,6 +48,7 @@ class BiometricKeyStore {
 
     fun delete() {
         runCatching { keyStore.deleteEntry(ALIAS) }
+        runCatching { keyStore.deleteEntry(OLD_ALIAS) } // chave antiga (só digital), de versões anteriores
     }
 
     private fun getOrCreateKey(): SecretKey {
@@ -56,7 +58,7 @@ class BiometricKeyStore {
             .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
             .setKeySize(256)
             .setUserAuthenticationRequired(true)
-            .setUserAuthenticationParameters(0, KeyProperties.AUTH_BIOMETRIC_STRONG)
+            .setUserAuthenticationParameters(0, KeyProperties.AUTH_BIOMETRIC_STRONG or KeyProperties.AUTH_DEVICE_CREDENTIAL)
             .setInvalidatedByBiometricEnrollment(true)
             .build()
         return KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, "AndroidKeyStore")
@@ -65,7 +67,8 @@ class BiometricKeyStore {
     }
 
     private companion object {
-        const val ALIAS = "babel_biometric_key"
+        const val ALIAS = "babel_biometric_key_v2"
+        const val OLD_ALIAS = "babel_biometric_key"
         const val TRANSFORMATION = "AES/GCM/NoPadding"
     }
 }
@@ -75,10 +78,15 @@ class BiometricUnlock(
     private val keyStore: BiometricKeyStore,
 ) {
     fun isAvailable(context: Context): Boolean =
-        BiometricManager.from(context).canAuthenticate(BIOMETRIC_STRONG) == BiometricManager.BIOMETRIC_SUCCESS
+        BiometricManager.from(context).canAuthenticate(BIOMETRIC_STRONG or DEVICE_CREDENTIAL) == BiometricManager.BIOMETRIC_SUCCESS
 
     /** Pede a biometria e entrega a chave do cofre (a quem chamou cabe apagá-la da memória). */
-    fun unlock(activity: FragmentActivity, onKey: (ByteArray) -> Unit, onFailure: () -> Unit) {
+    fun unlock(
+        activity: FragmentActivity,
+        onKey: (ByteArray) -> Unit,
+        onFailure: () -> Unit,
+        onCanceled: () -> Unit = onFailure,
+    ) {
         val stored = settings.loadBiometric()
         val cipher = stored?.let { keyStore.newDecryptCipher(it.first) }
         if (stored == null || cipher == null) {
@@ -86,7 +94,7 @@ class BiometricUnlock(
             onFailure()
             return
         }
-        prompt(activity, cipher, onFailure) { result ->
+        prompt(activity, cipher, onFailure, onCanceled) { result ->
             try {
                 onKey(result.doFinal(stored.second))
             } catch (e: GeneralSecurityException) {
@@ -129,6 +137,7 @@ class BiometricUnlock(
         activity: FragmentActivity,
         cipher: Cipher,
         onFailure: () -> Unit,
+        onCanceled: () -> Unit = onFailure,
         onSuccess: (Cipher) -> Unit,
     ) {
         val callback = object : BiometricPrompt.AuthenticationCallback() {
@@ -138,14 +147,13 @@ class BiometricUnlock(
             }
 
             override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
-                onFailure()
+                if (errorCode == BiometricPrompt.ERROR_USER_CANCELED || errorCode == BiometricPrompt.ERROR_CANCELED) onCanceled() else onFailure()
             }
         }
         val info = BiometricPrompt.PromptInfo.Builder()
             .setTitle(activity.getString(R.string.biometric_title))
             .setSubtitle(activity.getString(R.string.biometric_subtitle))
-            .setNegativeButtonText(activity.getString(R.string.biometric_use_password))
-            .setAllowedAuthenticators(BIOMETRIC_STRONG)
+            .setAllowedAuthenticators(BIOMETRIC_STRONG or DEVICE_CREDENTIAL)
             .build()
         BiometricPrompt(activity, ContextCompat.getMainExecutor(activity), callback)
             .authenticate(info, BiometricPrompt.CryptoObject(cipher))

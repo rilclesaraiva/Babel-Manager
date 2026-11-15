@@ -175,6 +175,19 @@ fun SettingsScreen(
                 },
             )
             SettingsItem(
+                title = stringResource(R.string.settings_locked_suggestions),
+                summary = stringResource(
+                    if (settings.biometricEnabled) R.string.settings_locked_suggestions_summary else R.string.settings_locked_suggestions_needs_biometric,
+                ),
+                trailing = {
+                    Switch(
+                        checked = settings.lockedSuggestions && settings.biometricEnabled,
+                        enabled = settings.biometricEnabled,
+                        onCheckedChange = vm::setLockedSuggestions,
+                    )
+                },
+            )
+            SettingsItem(
                 title = stringResource(R.string.settings_block_screenshots),
                 summary = stringResource(R.string.settings_block_screenshots_summary),
                 trailing = {
