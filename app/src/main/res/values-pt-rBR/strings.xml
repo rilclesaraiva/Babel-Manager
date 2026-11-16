@@ -89,8 +89,12 @@
     <string name="checkup_weak_hint">Senhas fracas são fáceis de adivinhar. Troque por senhas geradas.</string>
     <string name="checkup_local_note">Senhas repetidas e fracas são encontradas neste aparelho. A verificação de vazamentos acima é a única parte que usa a internet.</string>
     <string name="checkup_leak_title">Vazamentos</string>
-    <string name="checkup_leak_hint">Compara suas senhas com a lista pública Have I Been Pwned. Só os 5 primeiros caracteres de um hash de cada senha são enviados; as senhas em si nunca saem deste aparelho.</string>
-    <string name="checkup_leak_button">Verificar vazamentos</string>
+    <string name="checkup_leak_hint">Roda uma vez por dia (no primeiro desbloqueio depois da meia-noite) e sempre que você toca no botão. Compara suas senhas com a lista pública Have I Been Pwned. Só os 5 primeiros caracteres de um hash de cada senha são enviados; as senhas em si nunca saem deste aparelho.</string>
+    <string name="checkup_leak_button">Verificar agora</string>
+    <string name="checkup_last_scan">Última varredura online: %1$s</string>
+    <string name="checkup_never_scanned">Nenhuma varredura online ainda.</string>
+    <string name="settings_auto_leak_scan">Varredura diária de vazamentos</string>
+    <string name="settings_auto_leak_scan_summary">Verifica suas senhas em vazamentos conhecidos uma vez por dia, no primeiro desbloqueio depois da meia-noite</string>
     <string name="checkup_leak_none">Nenhuma das suas senhas foi encontrada em vazamentos conhecidos.</string>
     <string name="checkup_leak_error">Não foi possível acessar o serviço. Verifique a conexão e tente de novo.</string>
     <string name="checkup_leak_found_hint">Troque estas senhas agora, em todos os lugares onde são usadas.</string>
@@ -165,7 +169,7 @@
     <string name="export_warning_body">O arquivo CSV terá todas as suas senhas em texto puro. Quem o obtiver poderá lê-las. Apague-o assim que terminar.</string>
     <string name="export_anyway">Exportar</string>
     <string name="delete_vault_title">Excluir o cofre?</string>
-    <string name="delete_vault_body">Todas as senhas deste aparelho serão apagadas. Cópias de backup feitas em outros lugares não são afetadas. Isso não pode ser desfeito.</string>
+    <string name="delete_vault_body">Todas as senhas deste aparelho serão apagadas. Cópias de backup feitas em outros lugares não são afetadas. Isso não pode ser desfeito. Digite a senha mestra para confirmar.</string>
     <string name="msg_biometric_enabled">Desbloqueio por biometria ligado.</string>
     <string name="msg_biometric_failed">Não foi possível ligar a biometria.</string>
     <string name="entry_app">App</string>

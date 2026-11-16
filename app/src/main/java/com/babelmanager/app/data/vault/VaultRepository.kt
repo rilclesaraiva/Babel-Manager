@@ -119,6 +119,14 @@ class VaultRepository(
         return added
     }
 
+    /** Confere a senha mestra com o cofre aberto (sem alterar nada). */
+    suspend fun verifyPassword(password: CharArray): Boolean = mutex.withLock {
+        val currentKey = key ?: return@withLock false
+        withContext(Dispatchers.Default) {
+            MessageDigest.isEqual(VaultCrypto.deriveKey(password, salt, iterations), currentKey)
+        }
+    }
+
     suspend fun changePassword(current: CharArray, new: CharArray) = mutex.withLock {
         val currentKey = key ?: throw VaultLockedException()
         withContext(Dispatchers.Default) {

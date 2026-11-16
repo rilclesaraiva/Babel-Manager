@@ -2,6 +2,13 @@ package com.babelmanager.app
 
 import android.app.Application
 import android.content.Context
+import com.babelmanager.app.data.apps.AppIcons
+import com.babelmanager.app.data.apps.SiteIcons
+import com.babelmanager.app.data.breach.LeakScanner
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import com.babelmanager.app.data.autofill.SuggestionIndex
 import com.babelmanager.app.data.backup.BackupRepository
 import com.babelmanager.app.data.biometric.BiometricKeyStore
@@ -43,8 +50,31 @@ class AppContainer(app: Application) {
         store = UpdateStore(app.getSharedPreferences("updates", Context.MODE_PRIVATE)),
     )
     val suggestionIndex = SuggestionIndex(File(app.filesDir, "autofill_index.babel"))
+    val leakScanner = LeakScanner(vault, settings)
 
     init {
+        // Excluir o cofre apaga também o que ele deixou para trás: resultado da varredura e ícones guardados.
+        scope.launch {
+            vault.state.collect { state ->
+                if (state == VaultRepository.State.Missing) {
+                    leakScanner.forget()
+                    SiteIcons(app).clear()
+                    AppIcons.clearStored(app)
+                }
+            }
+        }
+        // Varredura de vazamentos: uma vez por dia, com o cofre aberto (primeiro desbloqueio depois da meia-noite).
+        scope.launch {
+            combine(
+                vault.state,
+                settings.settings.map { it.autoLeakScan }.distinctUntilChanged(),
+                flow { while (true) { emit(Unit); delay(10 * 60 * 1000L) } },
+            ) { state, _, _ -> state }.collect { state ->
+                if (state == VaultRepository.State.Unlocked && vault.entries.value.isNotEmpty() &&
+                    leakScanner.dueNow(System.currentTimeMillis(), startOfToday())
+                ) leakScanner.scan()
+            }
+        }
         // Índice das sugestões com o cofre trancado: só existe com a opção e a biometria ligadas;
         // é atualizado a cada mudança com o cofre aberto (trancar não o esvazia).
         scope.launch {
@@ -59,3 +89,9 @@ class AppContainer(app: Application) {
         }
     }
 }
+
+/** Meia-noite (início de hoje) no fuso do aparelho, em milissegundos. */
+private fun startOfToday(): Long = java.util.Calendar.getInstance().apply {
+    set(java.util.Calendar.HOUR_OF_DAY, 0); set(java.util.Calendar.MINUTE, 0)
+    set(java.util.Calendar.SECOND, 0); set(java.util.Calendar.MILLISECOND, 0)
+}.timeInMillis

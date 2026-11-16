@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import com.babelmanager.app.core.ui.PageScaffold
 import com.babelmanager.app.core.ui.PageTitle
 import com.babelmanager.app.core.ui.SectionHeader
+import com.babelmanager.app.data.breach.LeakScanner
 import com.babelmanager.app.data.vault.Entry
 import com.babelmanager.app.features.checkup.CheckupSection
 import com.babelmanager.app.features.generator.GeneratorSection
@@ -27,6 +28,10 @@ fun ToolsScreen(
     clipboardSeconds: Int,
     entries: List<Entry>,
     onOpen: (Entry) -> Unit,
+    lastScanAt: Long,
+    leakedIds: Set<String>,
+    scanState: LeakScanner.State,
+    onScan: () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -41,7 +46,14 @@ fun ToolsScreen(
             SectionHeader(stringResource(R.string.tab_generator))
             GeneratorSection(clipboardSeconds)
             SectionHeader(stringResource(R.string.tab_checkup), modifier = Modifier.padding(top = 16.dp))
-            CheckupSection(entries = entries, onOpen = onOpen)
+            CheckupSection(
+                entries = entries,
+                onOpen = onOpen,
+                lastScanAt = lastScanAt,
+                leakedIds = leakedIds,
+                scanState = scanState,
+                onScan = onScan,
+            )
             Spacer(Modifier.height(32.dp))
         }
     }

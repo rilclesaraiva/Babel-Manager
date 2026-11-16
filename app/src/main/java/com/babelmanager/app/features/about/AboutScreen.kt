@@ -6,6 +6,11 @@ import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.clickable
+import com.babelmanager.app.core.ui.BabelMark
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -94,15 +99,14 @@ fun AboutScreen(onBack: () -> Unit, onLicenses: () -> Unit) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                Box(
+                // O ícone se monta ao abrir a tela; tocar nele toca a animação de novo.
+                var replay by remember { mutableIntStateOf(0) }
+                BabelMark(
                     modifier = Modifier
-                        .size(120.dp)
-                        .clip(CircleShape)
-                        .background(colorResource(R.color.ic_launcher_background)),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Image(painterResource(R.drawable.ic_launcher_foreground), contentDescription = null, modifier = Modifier.fillMaxSize().scale(1.35f))
-                }
+                        .size(132.dp)
+                        .clickable(interactionSource = remember { MutableInteractionSource() }, indication = null) { replay++ },
+                    replayKey = replay,
+                )
                 Text(stringResource(R.string.app_name), style = MaterialTheme.typography.displaySmall, textAlign = TextAlign.Center)
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     Pill(BuildConfig.VERSION_NAME)

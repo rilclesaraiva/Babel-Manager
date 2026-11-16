@@ -48,6 +48,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -68,6 +70,7 @@ fun VaultListScreen(
     onOpen: (Entry) -> Unit,
     onAdd: () -> Unit,
     onLock: () -> Unit,
+    leakedCount: Int,
     onOpenTools: () -> Unit,
     onOpenSettings: () -> Unit,
     modifier: Modifier = Modifier,
@@ -113,7 +116,15 @@ fun VaultListScreen(
                         )
                         Column(Modifier.align(Alignment.BottomStart).padding(24.dp)) {
                             Text(stringResource(R.string.tools_title), style = MaterialTheme.typography.headlineMedium)
-                            Text(stringResource(R.string.tools_summary), style = MaterialTheme.typography.bodyLarge)
+                            if (leakedCount > 0) {
+                                Text(
+                                    pluralStringResource(R.plurals.checkup_leaked, leakedCount, leakedCount),
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    fontWeight = FontWeight.Bold,
+                                )
+                            } else {
+                                Text(stringResource(R.string.tools_summary), style = MaterialTheme.typography.bodyLarge)
+                            }
                         }
                     }
                 }

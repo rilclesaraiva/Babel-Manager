@@ -3,7 +3,8 @@ package com.babelmanager.app.features.checkup
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import kotlinx.coroutines.launch
-import com.babelmanager.app.data.breach.PwnedPasswords
+import com.babelmanager.app.data.breach.LeakScanner
+import android.text.format.DateUtils
 import androidx.compose.ui.Alignment
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.rememberCoroutineScope
@@ -37,32 +38,34 @@ import com.babelmanager.app.core.ui.EntryAvatar
 import com.babelmanager.app.core.ui.SectionHeader
 import com.babelmanager.app.data.vault.Entry
 
-/** Resultado do check-up (senhas repetidas e fracas), para a tela de ferramentas. Sem rolagem própria. */
+/**
+ * Resultado do check-up (repetidas, fracas e vazadas), para a tela de ferramentas. Sem rolagem própria.
+ * A varredura de vazamentos é feita por `LeakScanner`; aqui só se mostra o resultado e o botão "Verificar agora".
+ */
 @Composable
 fun CheckupSection(
     entries: List<Entry>,
     onOpen: (Entry) -> Unit,
+    lastScanAt: Long,
+    leakedIds: Set<String>,
+    scanState: LeakScanner.State,
+    onScan: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val report = remember(entries) { PasswordHealth.analyze(entries) }
-    val scope = rememberCoroutineScope()
-    // Resultado só em memória (nunca salvo).
-    var leakState by remember(entries) { mutableStateOf<LeakState>(LeakState.Idle) }
+    // Entrada alterada depois da varredura: o resultado dela já não vale.
+    val leaked = remember(entries, leakedIds, lastScanAt) {
+        entries.filter { it.id in leakedIds && it.updatedAt <= lastScanAt }.sortedBy { it.title.lowercase() }
+    }
 
     Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(2.dp)) {
         SummaryCard(report)
         LeakCheck(
-            state = leakState,
+            scanState = scanState,
             enabled = report.checked > 0,
-            onStart = {
-                leakState = LeakState.Checking
-                scope.launch {
-                    val found = PwnedPasswords().check(entries.filter { it.password.isNotEmpty() }.map { it.password })
-                    leakState = if (found == null) LeakState.Failed else LeakState.Done(
-                        entries.filter { it.password in found }.sortedBy { it.title.lowercase() },
-                    )
-                }
-            },
+            lastScanAt = lastScanAt,
+            leaked = leaked,
+            onScan = onScan,
             onOpen = onOpen,
         )
         if (report.reusedGroups.isNotEmpty()) {
@@ -141,15 +144,15 @@ private fun SummaryCard(report: HealthReport) {
     }
 }
 
-private sealed interface LeakState {
-    data object Idle : LeakState
-    data object Checking : LeakState
-    data object Failed : LeakState
-    data class Done(val leaked: List<Entry>) : LeakState
-}
-
 @Composable
-private fun LeakCheck(state: LeakState, enabled: Boolean, onStart: () -> Unit, onOpen: (Entry) -> Unit) {
+private fun LeakCheck(
+    scanState: LeakScanner.State,
+    enabled: Boolean,
+    lastScanAt: Long,
+    leaked: List<Entry>,
+    onScan: () -> Unit,
+    onOpen: (Entry) -> Unit,
+) {
     SectionHeader(stringResource(R.string.checkup_leak_title), modifier = Modifier.padding(top = 8.dp))
     Text(
         stringResource(R.string.checkup_leak_hint),
@@ -157,25 +160,39 @@ private fun LeakCheck(state: LeakState, enabled: Boolean, onStart: () -> Unit, o
         style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
-    Row(Modifier.padding(horizontal = 16.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-        Button(onClick = onStart, enabled = enabled && state !is LeakState.Checking) {
+    Text(
+        text = if (lastScanAt > 0L) {
+            stringResource(
+                R.string.checkup_last_scan,
+                DateUtils.getRelativeTimeSpanString(lastScanAt, System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS).toString(),
+            )
+        } else {
+            stringResource(R.string.checkup_never_scanned)
+        },
+        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+        style = MaterialTheme.typography.labelLarge,
+    )
+    Row(Modifier.padding(horizontal = 16.dp, vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+        Button(onClick = onScan, enabled = enabled && scanState != LeakScanner.State.Running) {
             Text(stringResource(R.string.checkup_leak_button))
         }
-        if (state is LeakState.Checking) {
+        if (scanState == LeakScanner.State.Running) {
             CircularProgressIndicator(modifier = Modifier.padding(start = 16.dp).size(24.dp), strokeWidth = 3.dp)
         }
     }
-    when (state) {
-        LeakState.Failed -> Text(
+    if (scanState == LeakScanner.State.Failed) {
+        Text(
             stringResource(R.string.checkup_leak_error),
             modifier = Modifier.padding(horizontal = 16.dp),
             color = MaterialTheme.colorScheme.error,
         )
-        is LeakState.Done -> if (state.leaked.isEmpty()) {
+    }
+    if (lastScanAt > 0L) {
+        if (leaked.isEmpty()) {
             Text(stringResource(R.string.checkup_leak_none), modifier = Modifier.padding(horizontal = 16.dp))
         } else {
             Text(
-                pluralStringResource(R.plurals.checkup_leaked, state.leaked.size, state.leaked.size),
+                pluralStringResource(R.plurals.checkup_leaked, leaked.size, leaked.size),
                 modifier = Modifier.padding(horizontal = 16.dp),
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.error,
@@ -186,9 +203,8 @@ private fun LeakCheck(state: LeakState, enabled: Boolean, onStart: () -> Unit, o
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
-            state.leaked.forEach { EntryRow(it, onOpen) }
+            leaked.forEach { EntryRow(it, onOpen) }
         }
-        else -> Unit
     }
 }
 

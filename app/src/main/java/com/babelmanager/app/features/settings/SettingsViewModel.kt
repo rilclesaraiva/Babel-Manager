@@ -55,6 +55,7 @@ class SettingsViewModel(
         if (!value) SiteIcons(context.applicationContext).clear()
         store.update { it.copy(siteIcons = value) }
     }
+    fun setAutoLeakScan(value: Boolean) = store.update { it.copy(autoLeakScan = value) }
     fun setDynamicColor(value: Boolean) = store.update { it.copy(dynamicColor = value) }
     fun setAutofillDiagnostics(value: Boolean) {
         if (!value) AutofillDiagnostics.clear()
@@ -156,10 +157,15 @@ class SettingsViewModel(
         }
     }
 
-    fun deleteVault() {
+    /** Exclui o cofre só se a senha mestra estiver correta. */
+    fun deleteVault(password: String) {
         viewModelScope.launch {
-            vault.deleteVault()
-            biometric.disable()
+            if (vault.verifyPassword(password.toCharArray())) {
+                vault.deleteVault()
+                biometric.disable()
+            } else {
+                say(R.string.error_wrong_password)
+            }
         }
     }
 

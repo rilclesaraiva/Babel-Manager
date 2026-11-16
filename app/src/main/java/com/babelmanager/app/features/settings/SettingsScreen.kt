@@ -207,6 +207,11 @@ fun SettingsScreen(
                 },
             )
             SettingsItem(
+                title = stringResource(R.string.settings_auto_leak_scan),
+                summary = stringResource(R.string.settings_auto_leak_scan_summary),
+                trailing = { Switch(checked = settings.autoLeakScan, onCheckedChange = vm::setAutoLeakScan) },
+            )
+            SettingsItem(
                 title = stringResource(R.string.settings_locked_suggestions),
                 summary = stringResource(
                     if (settings.biometricEnabled) R.string.settings_locked_suggestions_summary else R.string.settings_locked_suggestions_needs_biometric,
@@ -482,14 +487,21 @@ fun SettingsScreen(
         )
     }
     if (showDeleteVault) {
+        var password by rememberSaveable { mutableStateOf("") }
         AlertDialog(
             onDismissRequest = { showDeleteVault = false },
             title = { Text(stringResource(R.string.delete_vault_title)) },
-            text = { Text(stringResource(R.string.delete_vault_body)) },
-            confirmButton = {
-                TextButton(onClick = { showDeleteVault = false; vm.deleteVault() }) {
-                    Text(stringResource(R.string.delete))
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Text(stringResource(R.string.delete_vault_body))
+                    PasswordField(password, { password = it }, stringResource(R.string.master_password))
                 }
+            },
+            confirmButton = {
+                TextButton(
+                    enabled = password.isNotEmpty(),
+                    onClick = { showDeleteVault = false; vm.deleteVault(password) },
+                ) { Text(stringResource(R.string.delete)) }
             },
             dismissButton = { TextButton(onClick = { showDeleteVault = false }) { Text(stringResource(R.string.cancel)) } },
         )

@@ -89,8 +89,12 @@
     <string name="checkup_weak_hint">Weak passwords are easy to guess. Replace them with generated ones.</string>
     <string name="checkup_local_note">Repeated and weak passwords are found on this device. The leak check above is the only part that uses the internet.</string>
     <string name="checkup_leak_title">Data breaches</string>
-    <string name="checkup_leak_hint">Checks your passwords against the public Have I Been Pwned list. Only the first 5 characters of a hash of each password are sent; the passwords themselves never leave this device.</string>
-    <string name="checkup_leak_button">Check for leaked passwords</string>
+    <string name="checkup_leak_hint">Runs once a day (the first time you unlock after midnight) and whenever you tap the button. It compares your passwords with the public Have I Been Pwned list. Only the first 5 characters of a hash of each password are sent; the passwords themselves never leave this device.</string>
+    <string name="checkup_leak_button">Check now</string>
+    <string name="checkup_last_scan">Last online scan: %1$s</string>
+    <string name="checkup_never_scanned">No online scan yet.</string>
+    <string name="settings_auto_leak_scan">Daily leak scan</string>
+    <string name="settings_auto_leak_scan_summary">Checks your passwords against known breaches once a day, the first time you unlock after midnight</string>
     <string name="checkup_leak_none">None of your passwords were found in known breaches.</string>
     <string name="checkup_leak_error">Could not reach the service. Check your connection and try again.</string>
     <string name="checkup_leak_found_hint">Change these passwords now, everywhere they are used.</string>
@@ -165,7 +169,7 @@
     <string name="export_warning_body">The CSV file will contain all your passwords in plain text. Anyone who gets it can read them. Delete it as soon as you are done.</string>
     <string name="export_anyway">Export</string>
     <string name="delete_vault_title">Delete the vault?</string>
-    <string name="delete_vault_body">All passwords on this device will be erased. Backup copies you made elsewhere are not touched. This can\'t be undone.</string>
+    <string name="delete_vault_body">All passwords on this device will be erased. Backup copies you made elsewhere are not touched. This can\'t be undone. Enter your master password to confirm.</string>
     <string name="msg_biometric_enabled">Biometric unlock is on.</string>
     <string name="msg_biometric_failed">Couldn\'t turn on biometric unlock.</string>
     <string name="entry_app">App</string>

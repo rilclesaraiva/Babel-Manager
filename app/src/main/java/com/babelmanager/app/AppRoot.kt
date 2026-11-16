@@ -7,6 +7,9 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import kotlinx.coroutines.launch
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.animation.core.FiniteAnimationSpec
@@ -122,6 +125,11 @@ private fun MainContent(c: AppContainer, updateVm: UpdateViewModel, updateState:
     val query by vaultVm.query.collectAsStateWithLifecycle()
 
     val nav = rememberNavController()
+    val scanState by c.leakScanner.state.collectAsStateWithLifecycle()
+    val scope = rememberCoroutineScope()
+    val leakedCount = remember(allEntries, settings.leakedIds, settings.lastLeakScanAt) {
+        allEntries.count { it.id in settings.leakedIds && it.updatedAt <= settings.lastLeakScanAt }
+    }
 
     // Telas de dentro entram deslizando por cima da anterior (que recua um pouco e esmaece) e saem de volta.
     // O "voltar" preditivo do sistema usa as mesmas animações de saída: a tela acompanha o dedo.
@@ -153,6 +161,7 @@ private fun MainContent(c: AppContainer, updateVm: UpdateViewModel, updateState:
                 onOpen = { nav.goOnce(detailRoute(it.id)) },
                 onAdd = { nav.goOnce(editRoute(null)) },
                 onLock = vaultVm::lock,
+                leakedCount = leakedCount,
                 onOpenTools = { nav.goOnce(TOOLS) },
                 onOpenSettings = { nav.goOnce(SETTINGS) },
             )
@@ -162,6 +171,10 @@ private fun MainContent(c: AppContainer, updateVm: UpdateViewModel, updateState:
                 clipboardSeconds = settings.clipboardClearSeconds,
                 entries = allEntries,
                 onOpen = { nav.goOnce(detailRoute(it.id)) },
+                lastScanAt = settings.lastLeakScanAt,
+                leakedIds = settings.leakedIds,
+                scanState = scanState,
+                onScan = { scope.launch { c.leakScanner.scan() } },
                 onBack = { nav.popOnce() },
             )
         }

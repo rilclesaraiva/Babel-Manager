@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 ### Changed
+- Deleting the vault now requires typing the master password.
+- "Website icons" and "Suggestions while locked" are on by default (the latter only works once biometric unlock is on). The one-time upgrade also turns them on for existing installs.
 - Entries imported from Chrome/Google with an `android://<hash>@<package>/` address are now recognized as app entries (app icon, autofill by app, open app).
 - Autofill diagnostics also records whether the username filter matches each typed prefix (0/1 only, no text).
 - "Use system colors" is now off by default, so the app has its own look.
@@ -10,6 +12,8 @@
 - The floating back button is back to 48 dp (it had grown to 56 dp).
 
 ### Added
+- New app icon: a hexagonal gallery (a nod to the Library of Babel) with a gold keyhole, scattered asterisks and letters from different alphabets. It builds itself with a quick impact animation on the About screen (tap it to replay; respects the system's "remove animations" setting).
+- Daily leak scan: runs once a day, the first time you unlock after midnight (turn off in Settings), plus a "Check now" button. The Check-up shows "Last online scan: ...", and the Tools card on the home shows how many passwords were found in breaches.
 - Check-up: "Check for leaked passwords" (on demand). Uses the Have I Been Pwned range API with k-anonymity: only the first 5 characters of each password's SHA-1 hash are sent, never the password. Privacy policy updated.
 - App icons are kept on the device after the app is uninstalled.
 - Website icons: entries show the site's own icon (found from the site's own home page, with apple-touch-icon / favicon.ico as fallback; downloaded once from the site itself and kept in the app's storage, not the cache). Can be turned off in Settings → Appearance; turning it off deletes them. Privacy policy updated.

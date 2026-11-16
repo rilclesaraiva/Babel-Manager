@@ -15,7 +15,7 @@ data class Settings(
     val lastBackupAt: Long = 0L,
     val lastBackupFailed: Boolean = false,
     val biometricEnabled: Boolean = false,
-    val lockedSuggestions: Boolean = false,
+    val lockedSuggestions: Boolean = true,
     val autofillDiagnostics: Boolean = false,
     /** 0 = sistema, 1 = claro, 2 = escuro, 3 = AMOLED (preto puro). */
     val themeMode: Int = 0,
@@ -23,6 +23,11 @@ data class Settings(
     val dynamicColor: Boolean = false,
     /** Baixa o favicon dos sites das entradas (uma vez; guardado no aparelho). */
     val siteIcons: Boolean = true,
+    /** Varredura online de vazamentos uma vez por dia (no primeiro desbloqueio depois da meia-noite). */
+    val autoLeakScan: Boolean = true,
+    val lastLeakScanAt: Long = 0L,
+    /** Ids (não senhas) das entradas cuja senha apareceu em vazamentos na última varredura. */
+    val leakedIds: Set<String> = emptySet(),
 )
 
 /** Preferências no aparelho. A biometria guarda aqui só a chave já cifrada pelo Keystore. */
@@ -47,6 +52,9 @@ class SettingsStore(private val prefs: SharedPreferences) {
             .putInt(THEME_MODE, next.themeMode)
             .putBoolean(DYNAMIC_COLOR, next.dynamicColor)
             .putBoolean(SITE_ICONS, next.siteIcons)
+            .putBoolean(AUTO_LEAK_SCAN, next.autoLeakScan)
+            .putLong(LAST_LEAK_SCAN, next.lastLeakScanAt)
+            .putStringSet(LEAKED_IDS, next.leakedIds)
             .apply()
         _settings.value = next
     }
@@ -74,7 +82,23 @@ class SettingsStore(private val prefs: SharedPreferences) {
         _settings.value = _settings.value.copy(biometricEnabled = false)
     }
 
-    private fun read() = Settings(
+    /** Padrões novos (v2) aplicados uma vez nos aparelhos que já tinham ajustes gravados. */
+    private fun migrate() {
+        if (prefs.getBoolean(DEFAULTS_V2, false)) return
+        prefs.edit()
+            .putBoolean(LOCKED_SUGGESTIONS, true)
+            .putBoolean(SITE_ICONS, true)
+            .putBoolean(DYNAMIC_COLOR, false)
+            .putBoolean(DEFAULTS_V2, true)
+            .apply()
+    }
+
+    private fun read(): Settings {
+        migrate()
+        return readNow()
+    }
+
+    private fun readNow() = Settings(
         autoLockSeconds = prefs.getInt(AUTO_LOCK, 60),
         blockScreenshots = prefs.getBoolean(BLOCK_SCREENSHOTS, true),
         clipboardClearSeconds = prefs.getInt(CLIPBOARD, 30),
@@ -83,11 +107,14 @@ class SettingsStore(private val prefs: SharedPreferences) {
         lastBackupAt = prefs.getLong(LAST_BACKUP, 0L),
         lastBackupFailed = prefs.getBoolean(LAST_BACKUP_FAILED, false),
         biometricEnabled = prefs.contains(BIO_CT),
-        lockedSuggestions = prefs.getBoolean(LOCKED_SUGGESTIONS, false),
+        lockedSuggestions = prefs.getBoolean(LOCKED_SUGGESTIONS, true),
         autofillDiagnostics = prefs.getBoolean(AUTOFILL_DIAGNOSTICS, false),
         themeMode = prefs.getInt(THEME_MODE, 0),
         dynamicColor = prefs.getBoolean(DYNAMIC_COLOR, false),
         siteIcons = prefs.getBoolean(SITE_ICONS, true),
+        autoLeakScan = prefs.getBoolean(AUTO_LEAK_SCAN, true),
+        lastLeakScanAt = prefs.getLong(LAST_LEAK_SCAN, 0L),
+        leakedIds = prefs.getStringSet(LEAKED_IDS, emptySet()).orEmpty().toSet(),
     )
 
     private companion object {
@@ -95,6 +122,10 @@ class SettingsStore(private val prefs: SharedPreferences) {
         const val THEME_MODE = "theme_mode"
         const val DYNAMIC_COLOR = "dynamic_color"
         const val SITE_ICONS = "site_icons"
+        const val AUTO_LEAK_SCAN = "auto_leak_scan"
+        const val LAST_LEAK_SCAN = "last_leak_scan"
+        const val LEAKED_IDS = "leaked_ids"
+        const val DEFAULTS_V2 = "defaults_v2"
         const val AUTOFILL_DIAGNOSTICS = "autofill_diagnostics"
         const val BLOCK_SCREENSHOTS = "block_screenshots"
         const val CLIPBOARD = "clipboard_clear_seconds"

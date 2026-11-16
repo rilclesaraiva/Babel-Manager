@@ -18,6 +18,12 @@ object AppIcons {
     private const val SIZE_PX = 144
     private val cache = LruCache<String, Bitmap>(64)
 
+    /** Apaga os ícones de apps guardados (ao excluir o cofre). */
+    fun clearStored(context: Context) {
+        File(context.filesDir, "app-icons").listFiles()?.forEach { it.delete() }
+        cache.evictAll()
+    }
+
     /** Ícone da entrada: do app instalado (`androidapp://`) ou, se [sites] estiver ligado, o favicon do site. */
     suspend fun load(context: Context, url: String, sites: Boolean): Bitmap? {
         if (AppUri.packageOf(url) == null) return if (sites) loadSite(context, url) else null
