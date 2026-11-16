@@ -87,7 +87,13 @@
     <string name="checkup_issues">Algumas senhas precisam de atenção.</string>
     <string name="checkup_reused_hint">Use uma senha exclusiva para cada site ou app. Se uma for descoberta, ela pode abrir suas outras contas.</string>
     <string name="checkup_weak_hint">Senhas fracas são fáceis de adivinhar. Troque por senhas geradas.</string>
-    <string name="checkup_local_note">A verificação roda neste aparelho. Ela procura só senhas repetidas e fracas; não verifica se uma senha vazou.</string>
+    <string name="checkup_local_note">Senhas repetidas e fracas são encontradas neste aparelho. A verificação de vazamentos acima é a única parte que usa a internet.</string>
+    <string name="checkup_leak_title">Vazamentos</string>
+    <string name="checkup_leak_hint">Compara suas senhas com a lista pública Have I Been Pwned. Só os 5 primeiros caracteres de um hash de cada senha são enviados; as senhas em si nunca saem deste aparelho.</string>
+    <string name="checkup_leak_button">Verificar vazamentos</string>
+    <string name="checkup_leak_none">Nenhuma das suas senhas foi encontrada em vazamentos conhecidos.</string>
+    <string name="checkup_leak_error">Não foi possível acessar o serviço. Verifique a conexão e tente de novo.</string>
+    <string name="checkup_leak_found_hint">Troque estas senhas agora, em todos os lugares onde são usadas.</string>
     <string name="settings_security">Segurança</string>
     <string name="settings_autolock">Bloquear automaticamente</string>
     <string name="autolock_immediately">Assim que eu sair do app</string>
@@ -227,6 +233,10 @@
     <plurals name="checkup_same_password">
         <item quantity="one">%1$d conta com esta senha</item>
         <item quantity="other">%1$d contas usando a mesma senha</item>
+    </plurals>
+    <plurals name="checkup_leaked">
+        <item quantity="one">%1$d senha encontrada em vazamento</item>
+        <item quantity="other">%1$d senhas encontradas em vazamentos</item>
     </plurals>
     <plurals name="checkup_weak">
         <item quantity="one">%1$d senha fraca</item>

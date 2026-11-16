@@ -87,7 +87,13 @@
     <string name="checkup_issues">Some passwords need attention.</string>
     <string name="checkup_reused_hint">Use a unique password for each site or app. If one is exposed, it can open your other accounts.</string>
     <string name="checkup_weak_hint">Weak passwords are easy to guess. Replace them with generated ones.</string>
-    <string name="checkup_local_note">The check runs on this device. It looks for repeated and weak passwords only; it does not check whether a password has been leaked.</string>
+    <string name="checkup_local_note">Repeated and weak passwords are found on this device. The leak check above is the only part that uses the internet.</string>
+    <string name="checkup_leak_title">Data breaches</string>
+    <string name="checkup_leak_hint">Checks your passwords against the public Have I Been Pwned list. Only the first 5 characters of a hash of each password are sent; the passwords themselves never leave this device.</string>
+    <string name="checkup_leak_button">Check for leaked passwords</string>
+    <string name="checkup_leak_none">None of your passwords were found in known breaches.</string>
+    <string name="checkup_leak_error">Could not reach the service. Check your connection and try again.</string>
+    <string name="checkup_leak_found_hint">Change these passwords now, everywhere they are used.</string>
     <string name="settings_security">Security</string>
     <string name="settings_autolock">Lock automatically</string>
     <string name="autolock_immediately">As soon as I leave the app</string>
@@ -227,6 +233,10 @@
     <plurals name="checkup_same_password">
         <item quantity="one">%1$d account with this password</item>
         <item quantity="other">%1$d accounts using the same password</item>
+    </plurals>
+    <plurals name="checkup_leaked">
+        <item quantity="one">%1$d password found in a data breach</item>
+        <item quantity="other">%1$d passwords found in data breaches</item>
     </plurals>
     <plurals name="checkup_weak">
         <item quantity="one">%1$d weak password</item>

@@ -2,9 +2,11 @@ package com.babelmanager.app.data.apps
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.util.LruCache
 import androidx.core.graphics.drawable.toBitmap
 import com.babelmanager.app.data.autofill.AppUri
+import java.io.File
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -31,12 +33,18 @@ object AppIcons {
         }
     }
 
+    /** Do app instalado; guardado em `filesDir/app-icons`, para continuar aparecendo depois de desinstalar o app. */
     private suspend fun loadApp(context: Context, url: String): Bitmap? {
         val pkg = AppUri.packageOf(url) ?: return null
         cache.get(pkg)?.let { return it }
         return withContext(Dispatchers.IO) {
-            val drawable = InstalledApps(context.packageManager, context.packageName).icon(pkg) ?: return@withContext null
-            runCatching { drawable.toBitmap(SIZE_PX, SIZE_PX) }.getOrNull()?.also { cache.put(pkg, it) }
+            val file = File(File(context.filesDir, "app-icons").apply { mkdirs() }, "$pkg.png")
+            val drawable = InstalledApps(context.packageManager, context.packageName).icon(pkg)
+            val fresh = drawable?.let { runCatching { it.toBitmap(SIZE_PX, SIZE_PX) }.getOrNull() }
+            if (fresh != null) {
+                runCatching { file.outputStream().use { fresh.compress(Bitmap.CompressFormat.PNG, 100, it) } }
+            }
+            (fresh ?: if (file.exists()) BitmapFactory.decodeFile(file.path) else null)?.also { cache.put(pkg, it) }
         }
     }
 }

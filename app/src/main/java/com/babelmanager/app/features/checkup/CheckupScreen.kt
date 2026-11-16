@@ -2,6 +2,17 @@ package com.babelmanager.app.features.checkup
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import kotlinx.coroutines.launch
+import com.babelmanager.app.data.breach.PwnedPasswords
+import androidx.compose.ui.Alignment
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Button
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -34,9 +45,26 @@ fun CheckupSection(
     modifier: Modifier = Modifier,
 ) {
     val report = remember(entries) { PasswordHealth.analyze(entries) }
+    val scope = rememberCoroutineScope()
+    // Resultado só em memória (nunca salvo).
+    var leakState by remember(entries) { mutableStateOf<LeakState>(LeakState.Idle) }
 
     Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(2.dp)) {
         SummaryCard(report)
+        LeakCheck(
+            state = leakState,
+            enabled = report.checked > 0,
+            onStart = {
+                leakState = LeakState.Checking
+                scope.launch {
+                    val found = PwnedPasswords().check(entries.filter { it.password.isNotEmpty() }.map { it.password })
+                    leakState = if (found == null) LeakState.Failed else LeakState.Done(
+                        entries.filter { it.password in found }.sortedBy { it.title.lowercase() },
+                    )
+                }
+            },
+            onOpen = onOpen,
+        )
         if (report.reusedGroups.isNotEmpty()) {
             SectionHeader(
                 pluralStringResource(R.plurals.checkup_reused, report.reusedCount, report.reusedCount),
@@ -110,6 +138,57 @@ private fun SummaryCard(report: HealthReport) {
                 style = MaterialTheme.typography.bodyMedium,
             )
         }
+    }
+}
+
+private sealed interface LeakState {
+    data object Idle : LeakState
+    data object Checking : LeakState
+    data object Failed : LeakState
+    data class Done(val leaked: List<Entry>) : LeakState
+}
+
+@Composable
+private fun LeakCheck(state: LeakState, enabled: Boolean, onStart: () -> Unit, onOpen: (Entry) -> Unit) {
+    SectionHeader(stringResource(R.string.checkup_leak_title), modifier = Modifier.padding(top = 8.dp))
+    Text(
+        stringResource(R.string.checkup_leak_hint),
+        modifier = Modifier.padding(horizontal = 16.dp),
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
+    Row(Modifier.padding(horizontal = 16.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+        Button(onClick = onStart, enabled = enabled && state !is LeakState.Checking) {
+            Text(stringResource(R.string.checkup_leak_button))
+        }
+        if (state is LeakState.Checking) {
+            CircularProgressIndicator(modifier = Modifier.padding(start = 16.dp).size(24.dp), strokeWidth = 3.dp)
+        }
+    }
+    when (state) {
+        LeakState.Failed -> Text(
+            stringResource(R.string.checkup_leak_error),
+            modifier = Modifier.padding(horizontal = 16.dp),
+            color = MaterialTheme.colorScheme.error,
+        )
+        is LeakState.Done -> if (state.leaked.isEmpty()) {
+            Text(stringResource(R.string.checkup_leak_none), modifier = Modifier.padding(horizontal = 16.dp))
+        } else {
+            Text(
+                pluralStringResource(R.plurals.checkup_leaked, state.leaked.size, state.leaked.size),
+                modifier = Modifier.padding(horizontal = 16.dp),
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.error,
+            )
+            Text(
+                stringResource(R.string.checkup_leak_found_hint),
+                modifier = Modifier.padding(horizontal = 16.dp),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            state.leaked.forEach { EntryRow(it, onOpen) }
+        }
+        else -> Unit
     }
 }
 

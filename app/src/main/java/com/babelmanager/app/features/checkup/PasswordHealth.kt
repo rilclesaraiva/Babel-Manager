@@ -14,7 +14,7 @@ data class HealthReport(
     val hasIssues: Boolean get() = reusedGroups.isNotEmpty() || weak.isNotEmpty()
 }
 
-/** Análise local: nada sai do aparelho. Não verifica vazamentos. */
+/** Análise local (repetidas e fracas): nada sai do aparelho. A checagem de vazamentos é à parte (`PwnedPasswords`). */
 object PasswordHealth {
     fun analyze(entries: List<Entry>): HealthReport {
         val withPassword = entries.filter { it.password.isNotEmpty() }

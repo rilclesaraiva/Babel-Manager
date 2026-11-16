@@ -10,6 +10,8 @@
 - The floating back button is back to 48 dp (it had grown to 56 dp).
 
 ### Added
+- Check-up: "Check for leaked passwords" (on demand). Uses the Have I Been Pwned range API with k-anonymity: only the first 5 characters of each password's SHA-1 hash are sent, never the password. Privacy policy updated.
+- App icons are kept on the device after the app is uninstalled.
 - Website icons: entries show the site's own icon (found from the site's own home page, with apple-touch-icon / favicon.ico as fallback; downloaded once from the site itself and kept in the app's storage, not the cache). Can be turned off in Settings → Appearance; turning it off deletes them. Privacy policy updated.
 - Settings → Appearance: theme (system default, light, dark, AMOLED pure black) and a switch to use the app's own colors instead of the Android system colors.
 - Settings → "Autofill diagnostics" (off by default): records in memory only, and shows with a copy button, what Android reports on each fill request (field types, hints, roles, whether a field was empty). Never typed text, passwords or vault data; nothing leaves the device.
