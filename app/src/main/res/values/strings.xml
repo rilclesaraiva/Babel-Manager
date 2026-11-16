@@ -97,7 +97,8 @@
     <string name="settings_auto_leak_scan_summary">Checks your passwords against known breaches once a day, the first time you unlock after midnight</string>
     <string name="checkup_leak_none">None of your passwords were found in known breaches.</string>
     <string name="checkup_leak_error">Could not reach the service. Check your connection and try again.</string>
-    <string name="checkup_leak_found_hint">Change these passwords now, everywhere they are used.</string>
+    <string name="checkup_leak_found_hint">These exact passwords appear in public lists of leaked passwords. That does not mean your account was hacked: short or numeric passwords are used by many people. If a site allows it, use a longer one.</string>
+    <string name="checkup_leak_seen">Seen %1$d times in public lists</string>
     <string name="settings_security">Security</string>
     <string name="settings_autolock">Lock automatically</string>
     <string name="autolock_immediately">As soon as I leave the app</string>
@@ -239,8 +240,8 @@
         <item quantity="other">%1$d accounts using the same password</item>
     </plurals>
     <plurals name="checkup_leaked">
-        <item quantity="one">%1$d password found in a data breach</item>
-        <item quantity="other">%1$d passwords found in data breaches</item>
+        <item quantity="one">%1$d password found in public leak lists</item>
+        <item quantity="other">%1$d passwords found in public leak lists</item>
     </plurals>
     <plurals name="checkup_weak">
         <item quantity="one">%1$d weak password</item>

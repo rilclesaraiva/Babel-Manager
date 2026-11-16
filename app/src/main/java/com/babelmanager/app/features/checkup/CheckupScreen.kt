@@ -54,8 +54,9 @@ fun CheckupSection(
 ) {
     val report = remember(entries) { PasswordHealth.analyze(entries) }
     // Entrada alterada depois da varredura: o resultado dela já não vale.
-    val leaked = remember(entries, leakedIds, lastScanAt) {
-        entries.filter { it.id in leakedIds && it.updatedAt <= lastScanAt }.sortedBy { it.title.lowercase() }
+    val leakedCounts = remember(leakedIds) { LeakScanner.parse(leakedIds) }
+    val leaked = remember(entries, leakedCounts, lastScanAt) {
+        entries.filter { it.id in leakedCounts && it.updatedAt <= lastScanAt }.sortedBy { it.title.lowercase() }
     }
 
     Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(2.dp)) {
@@ -65,6 +66,7 @@ fun CheckupSection(
             enabled = report.checked > 0,
             lastScanAt = lastScanAt,
             leaked = leaked,
+            leakedCounts = leakedCounts,
             onScan = onScan,
             onOpen = onOpen,
         )
@@ -150,6 +152,7 @@ private fun LeakCheck(
     enabled: Boolean,
     lastScanAt: Long,
     leaked: List<Entry>,
+    leakedCounts: Map<String, Int>,
     onScan: () -> Unit,
     onOpen: (Entry) -> Unit,
 ) {
@@ -203,16 +206,27 @@ private fun LeakCheck(
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
-            leaked.forEach { EntryRow(it, onOpen) }
+            leaked.forEach { EntryRow(it, onOpen, seenTimes = leakedCounts[it.id] ?: 0) }
         }
     }
 }
 
 @Composable
-private fun EntryRow(entry: Entry, onOpen: (Entry) -> Unit) {
+private fun EntryRow(entry: Entry, onOpen: (Entry) -> Unit, seenTimes: Int = 0) {
     ListItem(
         headlineContent = { Text(entry.title, maxLines = 1) },
-        supportingContent = { if (entry.username.isNotEmpty()) Text(entry.username, maxLines = 1) },
+        supportingContent = {
+            Column {
+                if (entry.username.isNotEmpty()) Text(entry.username, maxLines = 1)
+                if (seenTimes > 0) {
+                    Text(
+                        stringResource(R.string.checkup_leak_seen, seenTimes),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error,
+                    )
+                }
+            }
+        },
         leadingContent = { EntryAvatar(entry.title, url = entry.url) },
         colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surface),
         modifier = Modifier.clickable { onOpen(entry) },

@@ -97,7 +97,8 @@
     <string name="settings_auto_leak_scan_summary">Verifica suas senhas em vazamentos conhecidos uma vez por dia, no primeiro desbloqueio depois da meia-noite</string>
     <string name="checkup_leak_none">Nenhuma das suas senhas foi encontrada em vazamentos conhecidos.</string>
     <string name="checkup_leak_error">Não foi possível acessar o serviço. Verifique a conexão e tente de novo.</string>
-    <string name="checkup_leak_found_hint">Troque estas senhas agora, em todos os lugares onde são usadas.</string>
+    <string name="checkup_leak_found_hint">Estas senhas exatas aparecem em listas públicas de senhas vazadas. Isso não quer dizer que sua conta foi invadida: senhas curtas ou só de números são usadas por muita gente. Se o site permitir, use uma mais longa.</string>
+    <string name="checkup_leak_seen">Vista %1$d vezes em listas públicas</string>
     <string name="settings_security">Segurança</string>
     <string name="settings_autolock">Bloquear automaticamente</string>
     <string name="autolock_immediately">Assim que eu sair do app</string>
@@ -239,8 +240,8 @@
         <item quantity="other">%1$d contas usando a mesma senha</item>
     </plurals>
     <plurals name="checkup_leaked">
-        <item quantity="one">%1$d senha encontrada em vazamento</item>
-        <item quantity="other">%1$d senhas encontradas em vazamentos</item>
+        <item quantity="one">%1$d senha encontrada em listas públicas de vazamento</item>
+        <item quantity="other">%1$d senhas encontradas em listas públicas de vazamento</item>
     </plurals>
     <plurals name="checkup_weak">
         <item quantity="one">%1$d senha fraca</item>

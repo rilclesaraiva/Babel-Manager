@@ -31,6 +31,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.compose.runtime.LaunchedEffect
+import com.babelmanager.app.data.breach.LeakScanner
 import com.babelmanager.app.data.vault.VaultRepository
 import com.babelmanager.app.features.about.AboutScreen
 import com.babelmanager.app.features.about.LicensesScreen
@@ -128,7 +129,8 @@ private fun MainContent(c: AppContainer, updateVm: UpdateViewModel, updateState:
     val scanState by c.leakScanner.state.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
     val leakedCount = remember(allEntries, settings.leakedIds, settings.lastLeakScanAt) {
-        allEntries.count { it.id in settings.leakedIds && it.updatedAt <= settings.lastLeakScanAt }
+        val leakedMap = LeakScanner.parse(settings.leakedIds)
+        allEntries.count { it.id in leakedMap && it.updatedAt <= settings.lastLeakScanAt }
     }
 
     // Telas de dentro entram deslizando por cima da anterior (que recua um pouco e esmaece) e saem de volta.

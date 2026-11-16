@@ -43,7 +43,7 @@ class LeakScanner(
                 _state.value = State.Failed
                 return
             }
-            val ids = entries.filter { it.password in found }.mapTo(HashSet()) { it.id }
+            val ids = entries.filter { it.password in found }.mapTo(HashSet()) { "${it.id}:${found.getValue(it.password)}" }
             settings.update { it.copy(lastLeakScanAt = System.currentTimeMillis(), leakedIds = ids) }
             _state.value = State.Idle
         } finally {
@@ -56,7 +56,11 @@ class LeakScanner(
         settings.update { it.copy(lastLeakScanAt = 0L, leakedIds = emptySet()) }
     }
 
-    private companion object {
-        const val RETRY_AFTER_FAILURE_MS = 30L * 60 * 1000
+    companion object {
+        /** Lê o que foi guardado (`id:vezes`; o formato antigo, só o id, vale como 0) para um mapa id → vezes. */
+        fun parse(stored: Set<String>): Map<String, Int> =
+            stored.associate { it.substringBefore(':') to (it.substringAfter(':', "").toIntOrNull() ?: 0) }
+
+        private const val RETRY_AFTER_FAILURE_MS = 30L * 60 * 1000
     }
 }
