@@ -99,6 +99,21 @@
     <string name="checkup_leak_error">Could not reach the service. Check your connection and try again.</string>
     <string name="checkup_leak_found_hint">These exact passwords appear in public lists of leaked passwords. That does not mean your account was hacked: short or numeric passwords are used by many people. If a site allows it, use a longer one.</string>
     <string name="checkup_leak_seen">Seen %1$d times in public lists</string>
+    <string name="email_check_title">E-mail leak check</string>
+    <string name="email_check_entry_summary">Check if your e-mail addresses appear in known breaches</string>
+    <string name="email_check_privacy">Unlike the password check, this sends the whole e-mail address to a third-party service (XposedOrNot). Only the addresses you add here are sent, never passwords, usernames or anything else from your vault. They are stored encrypted on this device and nothing is checked until you tap the button (or turn on the daily check).</string>
+    <string name="email_check_field">E-mail address</string>
+    <string name="email_check_add">Add</string>
+    <string name="email_check_invalid">Enter a valid address that is not on the list yet (up to %1$d).</string>
+    <string name="email_check_remove">Remove e-mail</string>
+    <string name="email_check_unchecked">Not checked yet</string>
+    <string name="email_check_clean">Not found in known breaches</string>
+    <string name="email_check_button">Check now</string>
+    <string name="email_check_last">Last check: %1$s</string>
+    <string name="email_check_error">Could not check some addresses. Wait a moment and try again.</string>
+    <string name="email_check_auto">Daily check</string>
+    <string name="email_check_auto_summary">Checks your addresses once a day while the app is running</string>
+    <string name="email_check_source">Breach data from XposedOrNot (xposedornot.com).</string>
     <string name="settings_security">Security</string>
     <string name="settings_autolock">Lock automatically</string>
     <string name="autolock_immediately">As soon as I leave the app</string>
@@ -242,6 +257,10 @@
     <plurals name="checkup_leaked">
         <item quantity="one">%1$d password found in public leak lists</item>
         <item quantity="other">%1$d passwords found in public leak lists</item>
+    </plurals>
+    <plurals name="email_check_found">
+        <item quantity="one">Found in %1$d breach</item>
+        <item quantity="other">Found in %1$d breaches</item>
     </plurals>
     <plurals name="checkup_weak">
         <item quantity="one">%1$d weak password</item>

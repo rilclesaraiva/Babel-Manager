@@ -56,6 +56,7 @@ class SettingsViewModel(
         store.update { it.copy(siteIcons = value) }
     }
     fun setAutoLeakScan(value: Boolean) = store.update { it.copy(autoLeakScan = value) }
+    fun setAutoEmailCheck(value: Boolean) = store.update { it.copy(autoEmailCheck = value) }
     fun setDynamicColor(value: Boolean) = store.update { it.copy(dynamicColor = value) }
     fun setAutofillDiagnostics(value: Boolean) {
         if (!value) AutofillDiagnostics.clear()

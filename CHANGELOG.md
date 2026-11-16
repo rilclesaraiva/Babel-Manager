@@ -14,6 +14,7 @@
 - The floating back button is back to 48 dp (it had grown to 56 dp).
 
 ### Added
+- Settings → "E-mail leak check": add your e-mail addresses and see which known breaches they appear in (XposedOrNot). The whole address is sent to that service, which the screen explains up front; addresses and results are stored encrypted on the device. Manual button plus an optional daily check (off by default).
 - New app icon: a hexagonal gallery (a nod to the Library of Babel) with a gold keyhole, scattered asterisks and letters from different alphabets. It builds itself with a quick impact animation on the About screen (tap it to replay; respects the system's "remove animations" setting).
 - Daily leak scan: runs once a day, the first time you unlock after midnight (turn off in Settings), plus a "Check now" button. The Check-up shows "Last online scan: ...", and the Tools card on the home shows how many passwords were found in breaches.
 - Check-up: "Check for leaked passwords" (on demand). Uses the Have I Been Pwned range API with k-anonymity: only the first 5 characters of each password's SHA-1 hash are sent, never the password. Privacy policy updated.

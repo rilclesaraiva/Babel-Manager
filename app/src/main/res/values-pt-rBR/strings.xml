@@ -99,6 +99,21 @@
     <string name="checkup_leak_error">Não foi possível acessar o serviço. Verifique a conexão e tente de novo.</string>
     <string name="checkup_leak_found_hint">Estas senhas exatas aparecem em listas públicas de senhas vazadas. Isso não quer dizer que sua conta foi invadida: senhas curtas ou só de números são usadas por muita gente. Se o site permitir, use uma mais longa.</string>
     <string name="checkup_leak_seen">Vista %1$d vezes em listas públicas</string>
+    <string name="email_check_title">Vazamentos por e-mail</string>
+    <string name="email_check_entry_summary">Veja se seus e-mails aparecem em vazamentos conhecidos</string>
+    <string name="email_check_privacy">Diferente da verificação de senhas, esta envia o endereço de e-mail inteiro a um serviço de terceiros (XposedOrNot). Só os endereços que você cadastrar aqui são enviados, nunca senhas, usuários ou qualquer outra coisa do cofre. Eles ficam cifrados neste aparelho e nada é verificado até você tocar no botão (ou ligar a verificação diária).</string>
+    <string name="email_check_field">Endereço de e-mail</string>
+    <string name="email_check_add">Adicionar</string>
+    <string name="email_check_invalid">Digite um endereço válido que ainda não esteja na lista (até %1$d).</string>
+    <string name="email_check_remove">Remover e-mail</string>
+    <string name="email_check_unchecked">Ainda não verificado</string>
+    <string name="email_check_clean">Não encontrado em vazamentos conhecidos</string>
+    <string name="email_check_button">Verificar agora</string>
+    <string name="email_check_last">Última verificação: %1$s</string>
+    <string name="email_check_error">Não foi possível verificar alguns endereços. Espere um pouco e tente de novo.</string>
+    <string name="email_check_auto">Verificação diária</string>
+    <string name="email_check_auto_summary">Verifica seus endereços uma vez por dia, enquanto o app estiver em uso</string>
+    <string name="email_check_source">Dados de vazamentos do XposedOrNot (xposedornot.com).</string>
     <string name="settings_security">Segurança</string>
     <string name="settings_autolock">Bloquear automaticamente</string>
     <string name="autolock_immediately">Assim que eu sair do app</string>
@@ -242,6 +257,10 @@
     <plurals name="checkup_leaked">
         <item quantity="one">%1$d senha encontrada em listas públicas de vazamento</item>
         <item quantity="other">%1$d senhas encontradas em listas públicas de vazamento</item>
+    </plurals>
+    <plurals name="email_check_found">
+        <item quantity="one">Encontrado em %1$d vazamento</item>
+        <item quantity="other">Encontrado em %1$d vazamentos</item>
     </plurals>
     <plurals name="checkup_weak">
         <item quantity="one">%1$d senha fraca</item>

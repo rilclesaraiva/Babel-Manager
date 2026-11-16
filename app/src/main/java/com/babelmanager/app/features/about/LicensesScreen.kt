@@ -40,6 +40,7 @@ private val CREDITS = listOf(
     Credit("Jetpack Compose and Material 3", "Apache License 2.0", "https://developer.android.com/jetpack/compose"),
     Credit("Material Icons", "Apache License 2.0", "https://github.com/google/material-design-icons"),
     Credit("Kotlin and kotlinx.coroutines", "Apache License 2.0", "https://kotlinlang.org"),
+    Credit("XposedOrNot (e-mail leak check, optional)", "Free public API", "https://xposedornot.com"),
     Credit("GitHub (update check and developer photo)", "GitHub Terms of Service", "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service"),
 )
 

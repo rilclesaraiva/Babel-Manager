@@ -34,6 +34,7 @@ import androidx.compose.runtime.LaunchedEffect
 import com.babelmanager.app.data.breach.LeakScanner
 import com.babelmanager.app.data.vault.VaultRepository
 import com.babelmanager.app.features.about.AboutScreen
+import com.babelmanager.app.features.emailcheck.EmailCheckScreen
 import com.babelmanager.app.features.about.LicensesScreen
 import com.babelmanager.app.features.lock.LockScreen
 import com.babelmanager.app.features.lock.LockViewModel
@@ -51,6 +52,7 @@ private const val VAULT = "vault"
 private const val TOOLS = "tools"
 private const val SETTINGS = "settings"
 private const val ABOUT = "about"
+private const val EMAIL_CHECK = "email_check"
 private const val LICENSES = "licenses"
 private const val DETAIL = "detail/{id}"
 private const val EDIT = "edit?id={id}"
@@ -191,6 +193,7 @@ private fun MainContent(c: AppContainer, updateVm: UpdateViewModel, updateState:
                 onUndoPostpone = updateVm::undoPostpone,
                 onSnooze = updateVm::snooze,
                 onAbout = { nav.goOnce(ABOUT) },
+                onEmailCheck = { nav.goOnce(EMAIL_CHECK) },
                 onBack = { nav.popOnce() },
             )
         }
@@ -216,6 +219,20 @@ private fun MainContent(c: AppContainer, updateVm: UpdateViewModel, updateState:
                 initial = allEntries.firstOrNull { it.id == id },
                 onSave = { vaultVm.save(it); nav.popOnce() },
                 onClose = { nav.popOnce() },
+            )
+        }
+        composable(EMAIL_CHECK) {
+            val emailItems by c.emailChecker.items.collectAsStateWithLifecycle()
+            val emailState by c.emailChecker.state.collectAsStateWithLifecycle()
+            EmailCheckScreen(
+                items = emailItems,
+                state = emailState,
+                autoCheck = settings.autoEmailCheck,
+                onAutoCheck = settingsVm::setAutoEmailCheck,
+                onAdd = c.emailChecker::add,
+                onRemove = c.emailChecker::remove,
+                onCheck = { scope.launch { c.emailChecker.checkAll() } },
+                onBack = { nav.popOnce() },
             )
         }
         composable(ABOUT) { AboutScreen(onBack = { nav.popOnce() }, onLicenses = { nav.goOnce(LICENSES) }) }

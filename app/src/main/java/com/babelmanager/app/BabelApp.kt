@@ -4,6 +4,8 @@ import android.app.Application
 import android.content.Context
 import com.babelmanager.app.data.apps.AppIcons
 import com.babelmanager.app.data.apps.SiteIcons
+import com.babelmanager.app.data.breach.EmailChecker
+import com.babelmanager.app.data.breach.EmailStore
 import com.babelmanager.app.data.breach.LeakScanner
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -51,6 +53,7 @@ class AppContainer(app: Application) {
     )
     val suggestionIndex = SuggestionIndex(File(app.filesDir, "autofill_index.babel"))
     val leakScanner = LeakScanner(vault, settings)
+    val emailChecker = EmailChecker(EmailStore(File(app.filesDir, "emails.babel")), settings)
 
     init {
         // Excluir o cofre apaga também o que ele deixou para trás: resultado da varredura e ícones guardados.
@@ -58,6 +61,7 @@ class AppContainer(app: Application) {
             vault.state.collect { state ->
                 if (state == VaultRepository.State.Missing) {
                     leakScanner.forget()
+                    emailChecker.forget()
                     SiteIcons(app).clear()
                     AppIcons.clearStored(app)
                 }
@@ -73,6 +77,15 @@ class AppContainer(app: Application) {
                 if (state == VaultRepository.State.Unlocked && vault.entries.value.isNotEmpty() &&
                     leakScanner.dueNow(System.currentTimeMillis(), startOfToday())
                 ) leakScanner.scan()
+            }
+        }
+        // Verificação de e-mails: só com o ajuste ligado, uma vez por dia (não depende do cofre aberto).
+        scope.launch {
+            combine(
+                settings.settings.map { it.autoEmailCheck }.distinctUntilChanged(),
+                flow { while (true) { emit(Unit); delay(10 * 60 * 1000L) } },
+            ) { on, _ -> on }.collect { on ->
+                if (on && emailChecker.dueNow(System.currentTimeMillis(), startOfToday())) emailChecker.checkAll()
             }
         }
         // Índice das sugestões com o cofre trancado: só existe com a opção e a biometria ligadas;

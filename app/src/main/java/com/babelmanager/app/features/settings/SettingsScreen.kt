@@ -111,6 +111,7 @@ fun SettingsScreen(
     onUndoPostpone: () -> Unit,
     onSnooze: (Int) -> Unit,
     onAbout: () -> Unit,
+    onEmailCheck: () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -210,6 +211,12 @@ fun SettingsScreen(
                 title = stringResource(R.string.settings_auto_leak_scan),
                 summary = stringResource(R.string.settings_auto_leak_scan_summary),
                 trailing = { Switch(checked = settings.autoLeakScan, onCheckedChange = vm::setAutoLeakScan) },
+            )
+            SettingsItem(
+                title = stringResource(R.string.email_check_title),
+                summary = stringResource(R.string.email_check_entry_summary),
+                onClick = onEmailCheck,
+                trailing = { Icon(Icons.AutoMirrored.Outlined.KeyboardArrowRight, contentDescription = null) },
             )
             SettingsItem(
                 title = stringResource(R.string.settings_locked_suggestions),

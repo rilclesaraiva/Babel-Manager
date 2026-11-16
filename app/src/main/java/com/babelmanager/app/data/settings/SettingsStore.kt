@@ -28,6 +28,9 @@ data class Settings(
     val lastLeakScanAt: Long = 0L,
     /** Ids (não senhas) das entradas cuja senha apareceu em vazamentos na última varredura. */
     val leakedIds: Set<String> = emptySet(),
+    /** Verificação diária dos e-mails cadastrados (desligada por padrão: o e-mail inteiro vai ao serviço). */
+    val autoEmailCheck: Boolean = false,
+    val lastEmailCheckAt: Long = 0L,
 )
 
 /** Preferências no aparelho. A biometria guarda aqui só a chave já cifrada pelo Keystore. */
@@ -55,6 +58,8 @@ class SettingsStore(private val prefs: SharedPreferences) {
             .putBoolean(AUTO_LEAK_SCAN, next.autoLeakScan)
             .putLong(LAST_LEAK_SCAN, next.lastLeakScanAt)
             .putStringSet(LEAKED_IDS, next.leakedIds)
+            .putBoolean(AUTO_EMAIL_CHECK, next.autoEmailCheck)
+            .putLong(LAST_EMAIL_CHECK, next.lastEmailCheckAt)
             .apply()
         _settings.value = next
     }
@@ -115,6 +120,8 @@ class SettingsStore(private val prefs: SharedPreferences) {
         autoLeakScan = prefs.getBoolean(AUTO_LEAK_SCAN, true),
         lastLeakScanAt = prefs.getLong(LAST_LEAK_SCAN, 0L),
         leakedIds = prefs.getStringSet(LEAKED_IDS, emptySet()).orEmpty().toSet(),
+        autoEmailCheck = prefs.getBoolean(AUTO_EMAIL_CHECK, false),
+        lastEmailCheckAt = prefs.getLong(LAST_EMAIL_CHECK, 0L),
     )
 
     private companion object {
@@ -125,6 +132,8 @@ class SettingsStore(private val prefs: SharedPreferences) {
         const val AUTO_LEAK_SCAN = "auto_leak_scan"
         const val LAST_LEAK_SCAN = "last_leak_scan"
         const val LEAKED_IDS = "leaked_ids"
+        const val AUTO_EMAIL_CHECK = "auto_email_check"
+        const val LAST_EMAIL_CHECK = "last_email_check"
         const val DEFAULTS_V2 = "defaults_v2"
         const val AUTOFILL_DIAGNOSTICS = "autofill_diagnostics"
         const val BLOCK_SCREENSHOTS = "block_screenshots"
