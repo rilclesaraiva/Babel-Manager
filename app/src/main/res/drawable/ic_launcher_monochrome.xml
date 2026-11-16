@@ -4,6 +4,6 @@
     <group android:scaleX="0.78" android:scaleY="0.78" android:pivotX="54" android:pivotY="54">
         <path android:strokeColor="#000000" android:strokeWidth="3.5" android:strokeLineJoin="round" android:pathData="M54,14L88.64,34L88.64,74L54,94L19.36,74L19.36,34Z" />
         <path android:strokeColor="#000000" android:strokeWidth="3.5" android:strokeLineJoin="round" android:pathData="M54,26L78.25,40L78.25,68L54,82L29.75,68L29.75,40Z" />
-        <path android:fillColor="#000000" android:pathData="M48,51a6,6 0,1 0,12,0a6,6 0,1 0,-12,0ZM51.2,54.5L56.8,54.5L59.5,66.5L48.5,66.5Z" />
+        <path android:fillColor="#000000" android:pathData="M48,51a6,6 0,1 0,12,0a6,6 0,1 0,-12,0ZM51.2,54.5L48.5,66.5L59.5,66.5L56.8,54.5Z" />
     </group>
 </vector>

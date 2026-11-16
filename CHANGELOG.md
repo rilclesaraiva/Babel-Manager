@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 ### Changed
+- Fixed a dark band inside the keyhole of the app icon and the About mark (the keyhole head and stem overlapped with opposite winding).
 - Deleting the vault now requires typing the master password.
 - "Website icons" and "Suggestions while locked" are on by default (the latter only works once biometric unlock is on). The one-time upgrade also turns them on for existing installs.
 - Entries imported from Chrome/Google with an `android://<hash>@<package>/` address are now recognized as app entries (app icon, autofill by app, open app).

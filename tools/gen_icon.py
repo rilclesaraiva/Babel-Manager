@@ -37,7 +37,7 @@ def star(x, y, rot=0, r=4.5):
 def keyhole(cx=54, cy=51):
     r = 6
     circle = "M%s,%sa%s,%s 0,1 0,%s,0a%s,%s 0,1 0,-%s,0Z" % (f(cx - r), f(cy), r, r, 2 * r, r, r, 2 * r)
-    stem = "M%s,%sL%s,%sL%s,%sL%s,%sZ" % (f(cx - 2.8), f(cy + 3.5), f(cx + 2.8), f(cy + 3.5), f(cx + 5.5), f(cy + 15.5), f(cx - 5.5), f(cy + 15.5))
+    stem = "M%s,%sL%s,%sL%s,%sL%s,%sZ" % (f(cx - 2.8), f(cy + 3.5), f(cx - 5.5), f(cy + 15.5), f(cx + 5.5), f(cy + 15.5), f(cx + 2.8), f(cy + 3.5))
     return circle + stem
 
 BG, L1, L2, L3, L4, GOLD, MID, PALE = "#2F2A6B", "#C8C1FF", "#8F83F0", "#5B4BD6", "#1B1545", "#FFC857", "#5B4BD6", "#E3DFFF"
