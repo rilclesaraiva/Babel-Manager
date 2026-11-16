@@ -53,7 +53,7 @@ Babel Manager — gerenciador de senhas para Android. O cofre fica só no aparel
 ## Regras de segurança do produto
 - Nunca registrar (log) senha, chave ou conteúdo do cofre. Nunca enviar nada do cofre para fora do aparelho, exceto a cópia cifrada que a pessoa mandou gravar no local de backup que ela escolheu.
 - **Postura de privacidade do Babel (decisão do mantenedor):** este app não segue a privacidade ao pé da letra como os outros apps dele: recursos online úteis (vazamentos, ícones de sites, o que vier) são aceitos, porque sem eles perderíamos funções. O limite continua: nunca enviar senha, hash completo, usuário ou conteúdo do cofre; só o mínimo necessário, sempre declarado na política, e com ajuste para desligar quando fizer sentido.
-- `INTERNET` só serve para o aviso de atualização, para a foto pública do mantenedor na tela Sobre (`AvatarStore`, github.com/<usuário>.png, cache de 7 dias) para os ícones dos sites (`SiteIcons`) para a verificação de vazamentos sob demanda (`PwnedPasswords`) e para a verificação opcional de e-mails (`EmailBreaches`). Qualquer outra chamada de rede muda a política de privacidade no mesmo commit.
+- `INTERNET` só serve para o aviso de atualização, para a foto pública do mantenedor na tela Sobre (`AvatarStore`, github.com/<usuário>.png, cache de 7 dias), para os ícones dos sites (`SiteIcons`), para a verificação de vazamentos sob demanda (`PwnedPasswords`) e para a verificação opcional de e-mails (`EmailBreaches`). Qualquer outra chamada de rede muda a política de privacidade no mesmo commit.
 - O arquivo em disco nunca contém texto aberto. Exportar CSV é sempre uma ação explícita, com aviso. Excluir o cofre exige a senha mestra.
 
 ## Fluxo de trabalho
