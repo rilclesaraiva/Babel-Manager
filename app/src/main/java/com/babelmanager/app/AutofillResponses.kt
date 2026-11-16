@@ -59,7 +59,7 @@ internal object AutofillResponses {
     }
 
     /** Abre a [AutofillActivity] (desbloqueio e/ou escolha da entrada). */
-    private fun authSender(context: Context, form: ParsedForm, pickAny: Boolean, entryId: String? = null): IntentSender {
+    private fun authSender(context: Context, form: ParsedForm, pickAny: Boolean, entryId: String? = null, mode: String = AutofillActivity.MODE_PICK): IntentSender {
         val intent = Intent(context, AutofillActivity::class.java)
             .putExtra(AutofillActivity.EXTRA_USERNAME_ID, form.usernameId)
             .putParcelableArrayListExtra(AutofillActivity.EXTRA_PASSWORD_IDS, ArrayList(form.passwordIds))
@@ -67,6 +67,8 @@ internal object AutofillResponses {
             .putExtra(AutofillActivity.EXTRA_DOMAIN, form.webDomain)
             .putExtra(AutofillActivity.EXTRA_PICK_ANY, pickAny)
             .putExtra(AutofillActivity.EXTRA_ENTRY_ID, entryId)
+            .putExtra(AutofillActivity.EXTRA_MODE, mode)
+            .putExtra(AutofillActivity.EXTRA_USERNAME_TEXT, form.usernameText)
         // O sistema acrescenta dados ao Intent: o PendingIntent precisa ser mutável.
         return PendingIntent.getActivity(
             context,
@@ -75,16 +77,6 @@ internal object AutofillResponses {
             PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_MUTABLE,
         ).intentSender
     }
-
-    /**
-     * Cofre trancado (ou sem sugestão): um único item que abre o app. É um item com autenticação **do
-     * dataset** (e não da resposta inteira): assim o Android preenche direto o que o app devolver, sem
-     * mostrar a lista de novo para a pessoa tocar outra vez.
-     */
-    fun authResponse(context: Context, form: ParsedForm, request: InlineSuggestionsRequest?, pickAny: Boolean = false): FillResponse =
-        FillResponse.Builder()
-            .addDataset(authDataset(context, form, request, 0, context.getString(if (pickAny) R.string.autofill_other else R.string.autofill_presentation), pickAny))
-            .build()
 
     /** Dataset com os valores da entrada; null se a entrada não tem nada para esta tela. */
     fun entryDataset(
@@ -133,6 +125,7 @@ internal object AutofillResponses {
         subtitle: String? = null,
         entryId: String? = null,
         matchTexts: List<String> = emptyList(),
+        mode: String = AutofillActivity.MODE_PICK,
     ): Dataset {
         val builder = Dataset.Builder(view(context, title, subtitle))
         // setValue(id, null, filtro) existe desde o Android 8 e vale em qualquer versão: o sistema esconde o item
@@ -142,7 +135,7 @@ internal object AutofillResponses {
             @Suppress("DEPRECATION")
             builder.setValue(id, null, pattern)
         }
-        builder.setAuthentication(authSender(context, form, pickAny, entryId))
+        builder.setAuthentication(authSender(context, form, pickAny, entryId, mode))
         inline(context, request, index, title, subtitle)?.let(builder::setInlinePresentation)
         return builder.build()
     }

@@ -58,20 +58,44 @@ class BabelAutofillService : AutofillService() {
         val (suggested, _) = EntryMatcher.split(container.vault.entries.value, form.packageName, form.webDomain)
         val datasets = suggested.filter { startsLikeTyped(it, typed) }.mapIndexedNotNull { i, entry -> AutofillResponses.entryDataset(this, entry, form, inline, i) }
             .take(MAX_SUGGESTIONS)
-        if (datasets.isEmpty()) {
-            reply(if (typed.isEmpty()) "aberto: so Outras entradas" else "nada (aberto, texto nao combina)", if (typed.isEmpty()) AutofillResponses.authResponse(this, form, inline, pickAny = true) else null)
-            return
-        }
 
         val response = FillResponse.Builder()
         datasets.forEach(response::addDataset)
+        var count = datasets.size
         if (typed.isEmpty()) {
             response.addDataset(
-                AutofillResponses.authDataset(this, form, inline, datasets.size, getString(R.string.autofill_other), pickAny = true),
+                AutofillResponses.authDataset(this, form, inline, count, getString(R.string.autofill_other), pickAny = true),
             )
+            count++
+        }
+        count += addActions(response, form, inline, count, withManage = typed.isEmpty())
+        if (count == 0) {
+            reply("nada (aberto, texto nao combina)", null)
+            return
         }
         val check = if (diagnostics) suggested.firstOrNull { it.username.isNotEmpty() }?.let { "; " + AutofillResponses.filterSelfCheck(it) }.orEmpty() else ""
         reply("aberto: ofereceu ${datasets.size} entrada(s)$check", response.build())
+    }
+
+    /**
+     * Ações no fim da lista, como no gerenciador do Google: "Sugerir senha forte" (só com campo de senha; gera, salva e
+     * preenche) e "Gerenciar senhas" (abre o app). Devolve quantos itens foram acrescentados.
+     */
+    private fun addActions(response: FillResponse.Builder, form: ParsedForm, inline: InlineSuggestionsRequest?, startIndex: Int, withManage: Boolean): Int {
+        var n = 0
+        if (form.passwordIds.isNotEmpty()) {
+            response.addDataset(
+                AutofillResponses.authDataset(this, form, inline, startIndex + n, getString(R.string.autofill_suggest_strong), pickAny = false, mode = AutofillActivity.MODE_SUGGEST),
+            )
+            n++
+        }
+        if (withManage) {
+            response.addDataset(
+                AutofillResponses.authDataset(this, form, inline, startIndex + n, getString(R.string.autofill_manage), pickAny = false, mode = AutofillActivity.MODE_MANAGE),
+            )
+            n++
+        }
+        return n
     }
 
     private fun startsLikeTyped(entry: Entry, typed: String): Boolean =
@@ -95,15 +119,25 @@ class BabelAutofillService : AutofillService() {
                         AutofillResponses.authDataset(this, form, inline, i, entry.title, pickAny = false, subtitle = entry.username, entryId = entry.id, matchTexts = listOf(entry.username, entry.title)),
                     )
                 }
+                var count = shown.size
                 if (typed.isEmpty()) {
                     response.addDataset(
-                        AutofillResponses.authDataset(this, form, inline, shown.size, getString(R.string.autofill_other), pickAny = true),
+                        AutofillResponses.authDataset(this, form, inline, count, getString(R.string.autofill_other), pickAny = true),
                     )
+                    count++
                 }
+                addActions(response, form, inline, count, withManage = typed.isEmpty())
                 return response.build()
             }
         }
-        return if (typed.isEmpty()) AutofillResponses.authResponse(this, form, inline) else null
+        val response = FillResponse.Builder()
+        var count = 0
+        if (typed.isEmpty()) {
+            response.addDataset(AutofillResponses.authDataset(this, form, inline, 0, getString(R.string.autofill_presentation), pickAny = false))
+            count++
+        }
+        count += addActions(response, form, inline, count, withManage = typed.isEmpty())
+        return if (count == 0) null else response.build()
     }
 
     override fun onSaveRequest(request: SaveRequest, callback: SaveCallback) {

@@ -13,7 +13,17 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.material3.Button
+import androidx.compose.material3.TextButton
+import androidx.compose.ui.text.font.FontFamily
+import com.babelmanager.app.core.security.PasswordGenerator
+import com.babelmanager.app.core.security.RandomOptions
+import com.babelmanager.app.data.autofill.AppUri
+import java.util.UUID
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -80,7 +90,15 @@ class AutofillActivity : FragmentActivity() {
         val pkg = intent.getStringExtra(EXTRA_PACKAGE)
         val domain = intent.getStringExtra(EXTRA_DOMAIN)
         val pickAny = intent.getBooleanExtra(EXTRA_PICK_ANY, false)
-        val form = ParsedForm(usernameId, passwordIds, pkg, domain)
+        val mode = intent.getStringExtra(EXTRA_MODE) ?: MODE_PICK
+        // "Gerenciar senhas": só abre o app e fecha, sem preencher nada.
+        if (mode == MODE_MANAGE) {
+            startActivity(Intent(this, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+            setResult(Activity.RESULT_CANCELED)
+            finish()
+            return
+        }
+        val form = ParsedForm(usernameId, passwordIds, pkg, domain, usernameText = intent.getStringExtra(EXTRA_USERNAME_TEXT).orEmpty())
         entryId = intent.getStringExtra(EXTRA_ENTRY_ID)
         val quick = entryId != null && !pickAny &&
             container.vault.state.value == VaultRepository.State.Locked && container.settings.current.biometricEnabled
@@ -94,7 +112,9 @@ class AutofillActivity : FragmentActivity() {
                     packageName = pkg,
                     webDomain = domain,
                     // Uma única sugestão certa: preenche sem mostrar lista (a não ser que a pessoa tenha pedido "Outras").
-                    autoPick = !pickAny,
+                    autoPick = !pickAny && mode == MODE_PICK,
+                    suggest = mode == MODE_SUGGEST,
+                    onUseStrong = { password -> useStrong(password, form) },
                     visible = showUi,
                     onPick = { entry -> deliver(entry, form) },
                     onCancel = ::finish,
@@ -145,6 +165,40 @@ class AutofillActivity : FragmentActivity() {
         if (!isChangingConfigurations) container.autoLock.onStop()
     }
 
+    /** "Usar senha": guarda a entrada nova (site ou app + usuário já digitado) no cofre e devolve o preenchimento. */
+    private fun useStrong(password: String, form: ParsedForm) {
+        val pkg = form.packageName
+        val domain = form.webDomain
+        val title = when {
+            !domain.isNullOrBlank() -> domain
+            pkg != null -> runCatching { packageManager.getApplicationLabel(packageManager.getApplicationInfo(pkg, 0)).toString() }.getOrDefault(pkg)
+            else -> getString(R.string.app_name)
+        }
+        val url = when {
+            !domain.isNullOrBlank() -> domain
+            pkg != null -> AppUri.of(pkg)
+            else -> ""
+        }
+        val entry = Entry(
+            id = UUID.randomUUID().toString(),
+            title = title,
+            username = form.usernameText.trim(),
+            password = password,
+            url = url,
+        )
+        lifecycleScope.launch {
+            try {
+                container.vault.upsert(entry)
+                deliver(entry, form)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                setResult(Activity.RESULT_CANCELED)
+                finish()
+            }
+        }
+    }
+
     private fun deliver(entry: Entry, form: ParsedForm) {
         val dataset = AutofillResponses.entryDataset(this, entry, form, null, 0)
         if (dataset == null) {
@@ -164,6 +218,11 @@ class AutofillActivity : FragmentActivity() {
         const val EXTRA_DOMAIN = "babel.autofill.domain"
         const val EXTRA_PICK_ANY = "babel.autofill.pick_any"
         const val EXTRA_ENTRY_ID = "babel.autofill.entry_id"
+        const val EXTRA_MODE = "babel.autofill.mode"
+        const val EXTRA_USERNAME_TEXT = "babel.autofill.username_text"
+        const val MODE_PICK = "pick"
+        const val MODE_SUGGEST = "suggest"
+        const val MODE_MANAGE = "manage"
     }
 }
 
@@ -173,6 +232,8 @@ private fun AutofillRoot(
     packageName: String?,
     webDomain: String?,
     autoPick: Boolean,
+    suggest: Boolean,
+    onUseStrong: (String) -> Unit,
     visible: Boolean,
     onPick: (Entry) -> Unit,
     onCancel: () -> Unit,
@@ -185,6 +246,10 @@ private fun AutofillRoot(
         when (state) {
             VaultRepository.State.Unlocked -> {
                 val entries by c.vault.entries.collectAsStateWithLifecycle()
+                if (suggest) {
+                    StrongPasswordPanel(webDomain ?: packageName.orEmpty(), onUse = onUseStrong, onCancel = onCancel)
+                    return@Box
+                }
                 EntryChooser(entries, packageName, webDomain, autoPick, onPick)
             }
             VaultRepository.State.Locked -> {
@@ -195,6 +260,40 @@ private fun AutofillRoot(
             }
             // Sem cofre ainda: não há o que preencher.
             VaultRepository.State.Missing -> LaunchedEffect(Unit) { onCancel() }
+        }
+    }
+}
+
+/** Como o "Usar senha forte?" do gerenciador do Google: mostra a senha gerada e deixa usar, trocar ou recusar. */
+@Composable
+private fun StrongPasswordPanel(target: String, onUse: (String) -> Unit, onCancel: () -> Unit) {
+    val generator = remember { PasswordGenerator() }
+    // Fica só em memória (não em estado salvo): girar a tela gera outra.
+    var password by remember { mutableStateOf(generator.random(RandomOptions())) }
+    Column(
+        Modifier.fillMaxSize().windowInsetsPadding(WindowInsets.safeDrawing).padding(24.dp),
+        verticalArrangement = Arrangement.Center,
+    ) {
+        Text(stringResource(R.string.autofill_use_strong_title), style = MaterialTheme.typography.headlineSmall)
+        Text(
+            stringResource(R.string.autofill_use_strong_body, target.ifBlank { stringResource(R.string.app_name) }),
+            modifier = Modifier.padding(top = 8.dp),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Text(
+            password,
+            modifier = Modifier.padding(vertical = 24.dp),
+            style = MaterialTheme.typography.titleLarge,
+            fontFamily = FontFamily.Monospace,
+        )
+        TextButton(onClick = { password = generator.random(RandomOptions()) }) {
+            Text(stringResource(R.string.autofill_use_strong_another))
+        }
+        Row(Modifier.fillMaxWidth().padding(top = 16.dp), horizontalArrangement = Arrangement.End) {
+            TextButton(onClick = onCancel) { Text(stringResource(R.string.autofill_use_strong_not_now)) }
+            Button(onClick = { onUse(password) }, modifier = Modifier.padding(start = 8.dp)) {
+                Text(stringResource(R.string.autofill_use_strong_use))
+            }
         }
     }
 }

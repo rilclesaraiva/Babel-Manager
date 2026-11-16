@@ -194,6 +194,13 @@
     <string name="open_app">Abrir app</string>
     <string name="app_picker_empty">Nenhum app encontrado.</string>
     <string name="autofill_presentation">Preencher com o Babel Manager</string>
+    <string name="autofill_suggest_strong">Sugerir senha forte</string>
+    <string name="autofill_manage">Gerenciar senhas</string>
+    <string name="autofill_use_strong_title">Usar senha forte?</string>
+    <string name="autofill_use_strong_body">Ela será salva no Babel Manager para %1$s e preenchida.</string>
+    <string name="autofill_use_strong_another">Gerar outra</string>
+    <string name="autofill_use_strong_not_now">Agora não</string>
+    <string name="autofill_use_strong_use">Usar senha</string>
     <string name="autofill_pick_title">Escolha uma entrada</string>
     <string name="autofill_suggested">Sugeridas</string>
     <string name="autofill_other">Outras entradas…</string>

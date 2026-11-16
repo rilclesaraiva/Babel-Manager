@@ -194,6 +194,13 @@
     <string name="open_app">Open app</string>
     <string name="app_picker_empty">No apps found.</string>
     <string name="autofill_presentation">Fill with Babel Manager</string>
+    <string name="autofill_suggest_strong">Suggest strong password</string>
+    <string name="autofill_manage">Manage passwords</string>
+    <string name="autofill_use_strong_title">Use a strong password?</string>
+    <string name="autofill_use_strong_body">It will be saved in Babel Manager for %1$s and filled in.</string>
+    <string name="autofill_use_strong_another">Generate another</string>
+    <string name="autofill_use_strong_not_now">Not now</string>
+    <string name="autofill_use_strong_use">Use password</string>
     <string name="autofill_pick_title">Choose an entry</string>
     <string name="autofill_suggested">Suggested</string>
     <string name="autofill_other">Other entries…</string>
