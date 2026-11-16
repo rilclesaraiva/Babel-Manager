@@ -70,7 +70,8 @@ class BabelAutofillService : AutofillService() {
                 AutofillResponses.authDataset(this, form, inline, datasets.size, getString(R.string.autofill_other), pickAny = true),
             )
         }
-        reply("aberto: ofereceu ${datasets.size} entrada(s)", response.build())
+        val check = if (diagnostics) suggested.firstOrNull { it.username.isNotEmpty() }?.let { "; " + AutofillResponses.filterSelfCheck(it) }.orEmpty() else ""
+        reply("aberto: ofereceu ${datasets.size} entrada(s)$check", response.build())
     }
 
     private fun startsLikeTyped(entry: Entry, typed: String): Boolean =

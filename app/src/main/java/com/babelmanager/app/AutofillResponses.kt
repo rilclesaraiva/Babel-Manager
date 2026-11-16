@@ -153,6 +153,19 @@ internal object AutofillResponses {
      * Casa com o texto vazio e com qualquer começo (sem diferenciar maiúsculas) de um dos [texts].
      * Lista plana de prefixos, sem grupos aninhados: simples para qualquer motor de regex.
      */
+    /**
+     * Para o diagnóstico: testa, com o mesmo motor de regex do aparelho, se o filtro do nome de usuário casa com
+     * cada prefixo digitado (1 = casa, 0 = não). Não registra o texto, só 0/1 e o tamanho do padrão.
+     */
+    fun filterSelfCheck(entry: Entry): String {
+        val pattern = startsLike(listOf(entry.username, entry.title))
+        val user = entry.username.lowercase()
+        val marks = (1..minOf(user.length, 12)).joinToString("") { n ->
+            if (pattern.matcher(user.substring(0, n)).matches()) "1" else "0"
+        }
+        return "filtro prefixos=$marks tamanho=${pattern.pattern().length}"
+    }
+
     private fun startsLike(texts: List<String>): Pattern {
         val prefixes = LinkedHashSet<String>()
         for (text in texts.filter { it.isNotBlank() }) {

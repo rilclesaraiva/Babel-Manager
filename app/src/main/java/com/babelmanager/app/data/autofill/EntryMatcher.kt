@@ -11,13 +11,19 @@ import com.babelmanager.app.data.vault.Entry
 /** Endereço de entrada que aponta para um app Android: `androidapp://com.exemplo.app`. */
 object AppUri {
     const val PREFIX = "androidapp://"
+    private const val IMPORTED_PREFIX = "android://"
 
     fun of(packageName: String): String = PREFIX + packageName
 
     fun packageOf(url: String): String? {
         val t = url.trim()
-        if (!t.startsWith(PREFIX, ignoreCase = true)) return null
-        return t.substring(PREFIX.length).trim().ifEmpty { null }
+        if (t.startsWith(PREFIX, ignoreCase = true)) return t.substring(PREFIX.length).trim().ifEmpty { null }
+        // Formato de importação do Chrome/Google: android://<hash>@<pacote>/
+        if (t.startsWith(IMPORTED_PREFIX, ignoreCase = true) && '@' in t) {
+            val pkg = t.substringAfterLast('@').trim().trim('/')
+            return if ('.' in pkg && '/' !in pkg && pkg.none { it.isWhitespace() }) pkg else null
+        }
+        return null
     }
 }
 

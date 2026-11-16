@@ -43,6 +43,8 @@ class EntryMatcherTest {
         assertEquals("com.spotify.music", AppUri.packageOf(" androidapp://com.spotify.music "))
         assertEquals(null, AppUri.packageOf("https://spotify.com"))
         assertEquals(null, AppUri.packageOf("androidapp://"))
+        assertEquals("br.com.lojasrenner", AppUri.packageOf("android://1cmZvk4Jj_r0b==@br.com.lojasrenner/"))
+        assertEquals(null, AppUri.packageOf("android://sem-pacote"))
         val app = e("Spotify", AppUri.of("com.spotify.music"))
         assertTrue(EntryMatcher.matches(app, "com.spotify.music", null))
         assertFalse(EntryMatcher.matches(app, "com.spotify.lite", null))
