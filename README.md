@@ -17,7 +17,7 @@ An Android password manager that keeps your vault encrypted on your device, and 
 ## Privacy and permissions
 
 - Your vault is stored in the app's private storage, encrypted. There is no account and no server of its own.
-- Permissions: `INTERNET`, used only to ask GitHub for the latest public release (update notice) and to show the maintainer's public photo on the About screen, and `USE_BIOMETRIC`. If you pick Babel Manager as your autofill service, Android lets it read the login fields of the screen you are on, only to fill them; nothing is stored or sent.
+- Permissions: `INTERNET`, used to ask GitHub for the latest public release (update notice), to show the maintainer's public photo on the About screen, to download each site's own icon (can be turned off) and for the daily leaked-password check (Have I Been Pwned, k-anonymity: only the first 5 characters of a hash of each password are sent; can be turned off), and `USE_BIOMETRIC`. Passwords and vault contents are never sent. If you pick Babel Manager as your autofill service, Android lets it read the login fields of the screen you are on, only to fill them; nothing is stored or sent.
 - The backup copy is encrypted before it leaves the app, and it is written to the location you pick through Android's document picker. What that provider does with the file follows its own policy.
 - **There is no master password recovery.** If you forget it, nobody can open your vault.
 
