@@ -42,7 +42,9 @@
         <activity
             android:name=".QuickPanelActivity"
             android:exported="false"
-            android:theme="@style/Theme.BabelManager.Translucent"
+            android:theme="@style/Theme.BabelManager.QuickPanel"
+            android:taskAffinity=""
+            android:launchMode="singleInstance"
             android:excludeFromRecents="true" />
 
         <service

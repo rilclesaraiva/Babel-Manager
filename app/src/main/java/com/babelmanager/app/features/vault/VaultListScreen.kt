@@ -1,8 +1,11 @@
 package com.babelmanager.app.features.vault
 
 import com.babelmanager.app.core.ui.PageTitle
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.Canvas
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.draw.rotate
 import androidx.compose.material.icons.outlined.Casino
@@ -113,6 +116,18 @@ fun VaultListScreen(
                             Icons.AutoMirrored.Outlined.KeyboardArrowRight,
                             contentDescription = null,
                             modifier = Modifier.align(Alignment.TopEnd).padding(20.dp).size(32.dp),
+                        )
+                        // Esmaece a arte atrás do texto (círculos claros deixavam a letra quase da cor do fundo).
+                        Box(
+                            Modifier
+                                .align(Alignment.BottomCenter)
+                                .fillMaxWidth()
+                                .height(120.dp)
+                                .background(
+                                    Brush.verticalGradient(
+                                        listOf(Color.Transparent, MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.95f)),
+                                    ),
+                                ),
                         )
                         Column(Modifier.align(Alignment.BottomStart).padding(24.dp)) {
                             Text(stringResource(R.string.tools_title), style = MaterialTheme.typography.headlineMedium)
