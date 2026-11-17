@@ -41,6 +41,7 @@
 - Material 3 Expressive interface, English and Brazilian Portuguese.
 
 ### Fixed
+- Quick Settings panel: it now starts rising only after the system's own opening animation (the tile growing) has finished, so the slide-up is visible instead of appearing already open.
 - Quick Settings panel animation: now the same Material 3 modal bottom sheet used in BoomListener and Intruphon (transparent window, no window animation, back gesture slides the panel down before closing).
 - Quick Settings panel: now a bottom sheet that slides up (no floating-then-docking jump), runs in its own task so it no longer opens the app behind it, opens only once however many times the tile is tapped, and has the full generator (length, character types, memorable words) as in the app.
 - Tools card: the subtitle text is readable over the artwork (a fade behind the text).

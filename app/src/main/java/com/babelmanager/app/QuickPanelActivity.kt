@@ -20,6 +20,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
@@ -30,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.babelmanager.app.core.ui.BabelTheme
 import com.babelmanager.app.features.generator.GeneratorSection
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 /**
@@ -39,6 +44,15 @@ import kotlinx.coroutines.launch
  */
 class QuickPanelActivity : ComponentActivity() {
 
+    // O sistema abre a atividade com a animação do botão crescendo (e a janela de abertura); se o painel começasse a subir
+    // já nessa hora, ficaria escondido atrás dela e a pessoa só o veria pronto. Ele só entra depois que a janela tem foco.
+    private var windowFocused by mutableStateOf(false)
+
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (hasFocus) windowFocused = true
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -47,16 +61,30 @@ class QuickPanelActivity : ComponentActivity() {
         setContent {
             val appearance by container.settings.settings.collectAsStateWithLifecycle()
             BabelTheme(appearance.themeMode, appearance.dynamicColor, appearance.siteIcons) {
-                QuickPanelSheet(
-                    clipboardSeconds = container.settings.current.clipboardClearSeconds,
-                    onOpenApp = {
-                        startActivity(Intent(this, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
-                        finish()
-                    },
-                    onDismiss = ::finish,
-                )
+                var ready by remember { mutableStateOf(false) }
+                LaunchedEffect(windowFocused) {
+                    if (windowFocused) {
+                        delay(REVEAL_DELAY_MS)
+                        ready = true
+                    }
+                }
+                if (ready) {
+                    QuickPanelSheet(
+                        clipboardSeconds = container.settings.current.clipboardClearSeconds,
+                        onOpenApp = {
+                            startActivity(Intent(this, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+                            finish()
+                        },
+                        onDismiss = ::finish,
+                    )
+                }
             }
         }
+    }
+
+    private companion object {
+        /** Folga depois do foco para a animação de abertura do sistema terminar antes de o painel subir. */
+        const val REVEAL_DELAY_MS = 350L
     }
 }
 
