@@ -201,6 +201,8 @@
     <string name="autofill_use_strong_another">Gerar outra</string>
     <string name="autofill_use_strong_not_now">Agora não</string>
     <string name="autofill_use_strong_use">Usar senha</string>
+    <string name="quick_panel_title">Senha forte</string>
+    <string name="quick_panel_open">Abrir o Babel Manager</string>
     <string name="autofill_pick_title">Escolha uma entrada</string>
     <string name="autofill_suggested">Sugeridas</string>
     <string name="autofill_other">Outras entradas…</string>

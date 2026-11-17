@@ -14,6 +14,7 @@
 - The floating back button is back to 48 dp (it had grown to 56 dp).
 
 ### Added
+- Quick Settings tile "Babel Manager": opens a small panel to generate a strong password and copy it (marked sensitive, cleared after the usual time), or open the app. It does not touch the vault or ask to unlock.
 - Autofill list: "Suggest strong password" (generates one, saves a new entry for the site or app with the username you already typed, and fills it in) and "Manage passwords" (opens the app). Saving only happens after you tap "Use password".
 - Settings → "E-mail leak check": add your e-mail addresses and see which known breaches they appear in (XposedOrNot). The whole address is sent to that service, which the screen explains up front; addresses and results are stored encrypted on the device. Manual button plus an optional daily check (off by default).
 - New app icon: a hexagonal gallery (a nod to the Library of Babel) with a gold keyhole, scattered asterisks and letters from different alphabets. It builds itself with a quick impact animation on the About screen (tap it to replay; respects the system's "remove animations" setting).
