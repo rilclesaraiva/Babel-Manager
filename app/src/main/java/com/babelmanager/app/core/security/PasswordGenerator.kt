@@ -8,7 +8,7 @@ enum class Separator(val value: String) {
 }
 
 data class RandomOptions(
-    val length: Int = 20,
+    val length: Int = 16,
     val upper: Boolean = true,
     val lower: Boolean = true,
     val digits: Boolean = true,

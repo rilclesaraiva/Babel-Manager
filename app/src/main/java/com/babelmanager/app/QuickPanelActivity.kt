@@ -84,7 +84,7 @@ class QuickPanelActivity : ComponentActivity() {
 
     private companion object {
         /** Folga depois do foco para a animação de abertura do sistema terminar antes de o painel subir. */
-        const val REVEAL_DELAY_MS = 350L
+        const val REVEAL_DELAY_MS = 320L
     }
 }
 

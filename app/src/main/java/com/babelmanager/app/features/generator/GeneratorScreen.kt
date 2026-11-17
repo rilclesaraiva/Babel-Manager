@@ -62,7 +62,7 @@ fun GeneratorSection(clipboardSeconds: Int, modifier: Modifier = Modifier) {
     var memorable by rememberSaveable { mutableStateOf(false) }
     var seed by rememberSaveable { mutableIntStateOf(0) }
 
-    var length by rememberSaveable { mutableFloatStateOf(20f) }
+    var length by rememberSaveable { mutableFloatStateOf(RandomOptions().length.toFloat()) }
     var upper by rememberSaveable { mutableStateOf(true) }
     var lower by rememberSaveable { mutableStateOf(true) }
     var digits by rememberSaveable { mutableStateOf(true) }

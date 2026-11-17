@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 ### Changed
+- Password generator: the length slider now starts at 16 characters (app and Quick Settings panel; also the default for generated passwords elsewhere). Quick panel waits 320 ms before rising.
 - Leak check wording: it now says the password appears in public leak lists (not that your account was hacked), and each flagged entry shows how many times its password was seen. Short or numeric-only passwords are common, so hits are expected for them.
 - Fixed a dark band inside the keyhole of the app icon and the About mark (the keyhole head and stem overlapped with opposite winding).
 - Deleting the vault now requires typing the master password.
