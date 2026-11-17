@@ -82,6 +82,13 @@ class QuickPanelActivity : ComponentActivity() {
         }
     }
 
+    // Saiu da tela (home, recentes, tela apagada): fecha de vez, em vez de ficar parada nos recentes. Assim, ao tocar
+    // no botão de novo, o painel é criado do zero e sobe com a animação. Girar a tela não conta.
+    override fun onStop() {
+        super.onStop()
+        if (!isChangingConfigurations) finish()
+    }
+
     private companion object {
         /** Folga depois do foco para a animação de abertura do sistema terminar antes de o painel subir. */
         const val REVEAL_DELAY_MS = 320L
