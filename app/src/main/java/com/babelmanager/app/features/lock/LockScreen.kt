@@ -1,5 +1,8 @@
 package com.babelmanager.app.features.lock
 
+import kotlinx.coroutines.launch
+import androidx.compose.runtime.rememberCoroutineScope
+import com.babelmanager.app.core.ui.rememberKeyboardDismisser
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -69,6 +72,9 @@ fun LockScreen(
     var restoreUri by rememberSaveable { mutableStateOf<Uri?>(null) }
     var restorePassword by rememberSaveable { mutableStateOf("") }
     var autoPrompted by rememberSaveable { mutableStateOf(false) }
+
+    val scope = rememberCoroutineScope()
+    val dismissKeyboard = rememberKeyboardDismisser()
 
     val picker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
         if (uri != null) restoreUri = uri
@@ -161,7 +167,7 @@ fun LockScreen(
                 }
                 if (!creating && biometricEnabled && activity != null) {
                     FilledTonalButton(
-                        onClick = { vm.unlockWithBiometrics(activity) },
+                        onClick = { scope.launch { dismissKeyboard(); vm.unlockWithBiometrics(activity) } },
                         modifier = Modifier.fillMaxWidth(),
                     ) {
                         Icon(Icons.Outlined.Fingerprint, contentDescription = null, modifier = Modifier.size(20.dp))
@@ -170,8 +176,11 @@ fun LockScreen(
                 }
                 if (creating) {
                     TextButton(onClick = {
-                        onBeforePicker()
-                        picker.launch(arrayOf("*/*"))
+                        scope.launch {
+                            dismissKeyboard()
+                            onBeforePicker()
+                            picker.launch(arrayOf("*/*"))
+                        }
                     }) {
                         Text(stringResource(R.string.restore_from_backup))
                     }

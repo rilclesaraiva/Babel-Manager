@@ -1,5 +1,9 @@
 package com.babelmanager.app
 
+import com.babelmanager.app.core.ui.clearFocusOnTapOutside
+import com.babelmanager.app.core.ui.ClearFocusWhenKeyboardCloses
+import com.babelmanager.app.core.ui.trackFieldFocus
+import com.babelmanager.app.core.ui.FieldShape
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.CancellationException
 import androidx.lifecycle.lifecycleScope
@@ -323,8 +327,9 @@ private fun EntryChooser(
     fun Entry.matchesQuery() = title.contains(q, ignoreCase = true) || username.contains(q, ignoreCase = true)
     val searchResults = if (q.isEmpty()) emptyList() else (suggested + others).filter { it.matchesQuery() }
 
+    ClearFocusWhenKeyboardCloses()
     Scaffold(
-        modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing),
+        modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing).clearFocusOnTapOutside(),
         topBar = { TopAppBar(title = { Text(stringResource(R.string.autofill_pick_title)) }) },
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
     ) { padding ->
@@ -334,10 +339,12 @@ private fun EntryChooser(
                     value = query,
                     onValueChange = { query = it },
                     singleLine = true,
+                    shape = FieldShape,
                     placeholder = { Text(stringResource(R.string.search)) },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                        .trackFieldFocus(),
                 )
             }
             if (q.isNotEmpty()) {

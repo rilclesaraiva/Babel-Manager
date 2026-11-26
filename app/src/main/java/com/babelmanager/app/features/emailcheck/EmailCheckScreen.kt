@@ -1,5 +1,7 @@
 package com.babelmanager.app.features.emailcheck
 
+import com.babelmanager.app.core.ui.trackFieldFocus
+import com.babelmanager.app.core.ui.FieldShape
 import android.text.format.DateUtils
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -82,7 +84,8 @@ fun EmailCheckScreen(
                 OutlinedTextField(
                     value = text,
                     onValueChange = { text = it; invalid = false },
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.weight(1f).trackFieldFocus(),
+                    shape = FieldShape,
                     singleLine = true,
                     label = { Text(stringResource(R.string.email_check_field)) },
                     isError = invalid,

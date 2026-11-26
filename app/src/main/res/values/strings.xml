@@ -201,6 +201,7 @@
     <string name="autofill_use_strong_another">Generate another</string>
     <string name="autofill_use_strong_not_now">Not now</string>
     <string name="autofill_use_strong_use">Use password</string>
+    <string name="clear">Clear</string>
     <string name="quick_panel_title">Strong password</string>
     <string name="quick_panel_open">Open Babel Manager</string>
     <string name="autofill_pick_title">Choose an entry</string>

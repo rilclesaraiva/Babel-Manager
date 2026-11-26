@@ -1,5 +1,8 @@
 package com.babelmanager.app.features.vault
 
+import com.babelmanager.app.core.ui.trackFieldFocus
+import com.babelmanager.app.core.ui.MultiLineFieldShape
+import com.babelmanager.app.core.ui.FieldShape
 import androidx.compose.material3.Button
 import androidx.compose.foundation.layout.fillMaxSize
 import com.babelmanager.app.core.ui.PageTitle
@@ -110,7 +113,8 @@ fun EntryEditScreen(
             OutlinedTextField(
                 value = title,
                 onValueChange = { title = it },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().trackFieldFocus(),
+                shape = FieldShape,
                 label = { Text(stringResource(R.string.entry_name)) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
@@ -121,7 +125,8 @@ fun EntryEditScreen(
                 OutlinedTextField(
                     value = url,
                     onValueChange = { url = it },
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().trackFieldFocus(),
+                    shape = FieldShape,
                     label = { Text(stringResource(R.string.website)) },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri, imeAction = ImeAction.Next),
@@ -134,7 +139,8 @@ fun EntryEditScreen(
             OutlinedTextField(
                 value = username,
                 onValueChange = { username = it },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().trackFieldFocus(),
+                shape = FieldShape,
                 label = { Text(stringResource(R.string.username)) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.Next),
@@ -152,7 +158,8 @@ fun EntryEditScreen(
             OutlinedTextField(
                 value = note,
                 onValueChange = { note = it },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().trackFieldFocus(),
+                shape = MultiLineFieldShape,
                 label = { Text(stringResource(R.string.note)) },
                 minLines = 3,
             )

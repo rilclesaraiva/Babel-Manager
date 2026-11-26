@@ -1,5 +1,10 @@
 package com.babelmanager.app.features.vault
 
+import androidx.compose.material.icons.outlined.Search
+import com.babelmanager.app.core.ui.trackFieldFocus
+import com.babelmanager.app.core.ui.clearFocusOnTapOutside
+import com.babelmanager.app.core.ui.ClearFocusWhenKeyboardCloses
+import com.babelmanager.app.core.ui.FieldShape
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -102,13 +107,23 @@ fun AppPickerSheet(apps: InstalledApps, onPick: (AppInfo) -> Unit, onDismiss: ()
         onDismissRequest = onDismiss,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
     ) {
-        Column(Modifier.fillMaxHeight(0.85f)) {
+        ClearFocusWhenKeyboardCloses()
+        Column(Modifier.fillMaxHeight(0.85f).clearFocusOnTapOutside()) {
             OutlinedTextField(
                 value = query,
                 onValueChange = { query = it },
                 singleLine = true,
+                shape = FieldShape,
                 placeholder = { Text(stringResource(R.string.search)) },
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+                leadingIcon = { Icon(Icons.Outlined.Search, contentDescription = null) },
+                trailingIcon = {
+                    if (query.isNotEmpty()) {
+                        IconButton(onClick = { query = "" }) {
+                            Icon(Icons.Outlined.Close, contentDescription = stringResource(R.string.clear))
+                        }
+                    }
+                },
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp).trackFieldFocus(),
             )
             val all = list
             if (all == null) {

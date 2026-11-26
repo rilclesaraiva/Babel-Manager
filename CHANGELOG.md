@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 ### Changed
+- Text fields are now rounded pills (multi-line notes get very rounded corners), like the search bar in BoomListener. The vault and app-picker search also gained a clear (x) button.
+- Keyboard behavior, as in BoomListener: tapping outside a field takes its focus away and closes the keyboard (scrolling does not); closing the keyboard with Back or the gesture also removes the focus (no more blinking cursor); and the keyboard is closed before the biometric prompt and the backup file picker open, so it no longer lingers behind them.
 - Password generator: the length slider now starts at 16 characters (app and Quick Settings panel; also the default for generated passwords elsewhere). Quick panel waits 320 ms before rising.
 - Leak check wording: it now says the password appears in public leak lists (not that your account was hacked), and each flagged entry shows how many times its password was seen. Short or numeric-only passwords are common, so hits are expected for them.
 - Fixed a dark band inside the keyhole of the app icon and the About mark (the keyhole head and stem overlapped with opposite winding).

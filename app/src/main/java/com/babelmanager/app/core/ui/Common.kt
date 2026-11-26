@@ -111,7 +111,8 @@ fun PasswordField(
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth().trackFieldFocus(),
+        shape = FieldShape,
         label = { Text(label) },
         singleLine = true,
         isError = isError,

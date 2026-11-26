@@ -1,5 +1,8 @@
 package com.babelmanager.app.features.vault
 
+import androidx.compose.material.icons.outlined.Close
+import com.babelmanager.app.core.ui.trackFieldFocus
+import com.babelmanager.app.core.ui.FieldShape
 import com.babelmanager.app.core.ui.PageTitle
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -150,11 +153,19 @@ fun VaultListScreen(
                     onValueChange = onQueryChange,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 4.dp),
+                        .padding(horizontal = 16.dp, vertical = 4.dp)
+                        .trackFieldFocus(),
                     placeholder = { Text(stringResource(R.string.search)) },
                     leadingIcon = { Icon(Icons.Outlined.Search, contentDescription = null) },
+                    trailingIcon = {
+                        if (query.isNotEmpty()) {
+                            IconButton(onClick = { onQueryChange("") }) {
+                                Icon(Icons.Outlined.Close, contentDescription = stringResource(R.string.clear))
+                            }
+                        }
+                    },
                     singleLine = true,
-                    shape = CircleShape,
+                    shape = FieldShape,
                 )
             }
             if (showBackupBanner && !bannerDismissed) {

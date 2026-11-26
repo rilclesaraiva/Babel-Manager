@@ -1,5 +1,7 @@
 package com.babelmanager.app
 
+import com.babelmanager.app.core.ui.ClearFocusWhenKeyboardCloses
+import com.babelmanager.app.core.ui.clearFocusOnTapOutside
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -85,10 +87,11 @@ fun AppRoot(c: AppContainer) {
 
     // Surface define a cor do texto (onBackground): fora dela o padrão é preto e some no fundo escuro.
     Surface(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().clearFocusOnTapOutside(),
         color = MaterialTheme.colorScheme.background,
         contentColor = MaterialTheme.colorScheme.onBackground,
     ) {
+        ClearFocusWhenKeyboardCloses()
         if (vaultState == VaultRepository.State.Unlocked) {
             MainContent(c, updateVm, updateState)
         } else {
