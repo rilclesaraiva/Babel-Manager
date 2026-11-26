@@ -1,5 +1,6 @@
 package com.babelmanager.app.features.lock
 
+import com.babelmanager.app.core.ui.ConfirmPanel
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.rememberCoroutineScope
 import com.babelmanager.app.core.ui.rememberKeyboardDismisser
@@ -24,7 +25,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Fingerprint
 import androidx.compose.material.icons.outlined.Lock
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilledTonalButton
@@ -190,36 +190,21 @@ fun LockScreen(
     }
 
     restoreUri?.let { uri ->
-        AlertDialog(
-            onDismissRequest = { restoreUri = null; restorePassword = "" },
-            title = { Text(stringResource(R.string.restore_title)) },
-            text = {
-                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Text(stringResource(R.string.restore_password_hint))
-                    PasswordField(
-                        value = restorePassword,
-                        onValueChange = { restorePassword = it },
-                        label = stringResource(R.string.backup_password),
-                        imeAction = ImeAction.Done,
-                    )
-                }
-            },
-            confirmButton = {
-                TextButton(
-                    enabled = restorePassword.isNotEmpty(),
-                    onClick = {
-                        vm.restore(uri, restorePassword)
-                        restoreUri = null
-                        restorePassword = ""
-                    },
-                ) { Text(stringResource(R.string.restore)) }
-            },
-            dismissButton = {
-                TextButton(onClick = { restoreUri = null; restorePassword = "" }) {
-                    Text(stringResource(R.string.cancel))
-                }
-            },
-        )
+        ConfirmPanel(
+            title = stringResource(R.string.restore_title),
+            message = stringResource(R.string.restore_password_hint),
+            confirmLabel = stringResource(R.string.restore),
+            confirmEnabled = restorePassword.isNotEmpty(),
+            onConfirm = { vm.restore(uri, restorePassword) },
+            onDismiss = { restoreUri = null; restorePassword = "" },
+        ) {
+            PasswordField(
+                value = restorePassword,
+                onValueChange = { restorePassword = it },
+                label = stringResource(R.string.backup_password),
+                imeAction = ImeAction.Done,
+            )
+        }
     }
 }
 

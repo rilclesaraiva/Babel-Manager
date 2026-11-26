@@ -1,6 +1,9 @@
 package com.babelmanager.app.features.update
 
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.clickable
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import com.babelmanager.app.core.ui.BabelSheet
 import com.babelmanager.app.core.ui.FloatingCircleButton
 import com.babelmanager.app.core.ui.PageTitle
 import com.babelmanager.app.core.ui.PageScaffold
@@ -18,8 +21,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material3.Button
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -55,6 +56,32 @@ fun UpdatePrompt(
     val context = LocalContext.current
     var menu by remember { mutableStateOf(false) }
 
+    if (menu) {
+        BabelSheet(onDismiss = { menu = false }) {
+            Column(Modifier.fillMaxWidth().padding(bottom = 24.dp)) {
+                listOf(
+                    R.string.update_snooze_week to onSnoozeWeek,
+                    R.string.update_snooze_month to onSnoozeMonth,
+                    R.string.update_skip_version to onSkip,
+                ).forEach { (label, action) ->
+                    Text(
+                        stringResource(label),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                action()
+                                dismiss()
+                            }
+                            .padding(vertical = 20.dp),
+                    )
+                }
+            }
+        }
+    }
+
     Dialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(usePlatformDefaultWidth = false, decorFitsSystemWindows = false),
@@ -65,27 +92,11 @@ fun UpdatePrompt(
                 backIcon = Icons.Outlined.Close,
                 backDescription = stringResource(R.string.not_now),
                 floatingActions = {
-                    Box {
-                        FloatingCircleButton(
-                            icon = Icons.Outlined.Notifications,
-                            contentDescription = stringResource(R.string.update_remind_menu),
-                            onClick = { menu = true },
-                        )
-                        DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
-                            DropdownMenuItem(
-                                text = { Text(stringResource(R.string.update_snooze_week)) },
-                                onClick = { menu = false; onSnoozeWeek() },
-                            )
-                            DropdownMenuItem(
-                                text = { Text(stringResource(R.string.update_snooze_month)) },
-                                onClick = { menu = false; onSnoozeMonth() },
-                            )
-                            DropdownMenuItem(
-                                text = { Text(stringResource(R.string.update_skip_version)) },
-                                onClick = { menu = false; onSkip() },
-                            )
-                        }
-                    }
+                    FloatingCircleButton(
+                        icon = Icons.Outlined.Notifications,
+                        contentDescription = stringResource(R.string.update_remind_menu),
+                        onClick = { menu = true },
+                    )
                 },
             ) { padding ->
                 Column(

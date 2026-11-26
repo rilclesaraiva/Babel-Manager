@@ -1,5 +1,6 @@
 package com.babelmanager.app.features.vault
 
+import com.babelmanager.app.core.ui.ConfirmPanel
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.Spacer
@@ -21,7 +22,6 @@ import androidx.compose.material.icons.automirrored.outlined.OpenInNew
 import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material.icons.outlined.VisibilityOff
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -158,18 +158,13 @@ fun EntryDetailScreen(
     }
 
     if (confirmDelete) {
-        AlertDialog(
-            onDismissRequest = { confirmDelete = false },
-            title = { Text(stringResource(R.string.delete_confirm_title)) },
-            text = { Text(stringResource(R.string.delete_confirm_body, entry.title)) },
-            confirmButton = {
-                TextButton(onClick = { confirmDelete = false; onDelete(entry) }) {
-                    Text(stringResource(R.string.delete))
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { confirmDelete = false }) { Text(stringResource(R.string.cancel)) }
-            },
+        ConfirmPanel(
+            title = stringResource(R.string.delete_confirm_title),
+            message = stringResource(R.string.delete_confirm_body, entry.title),
+            confirmLabel = stringResource(R.string.delete),
+            destructive = true,
+            onConfirm = { onDelete(entry) },
+            onDismiss = { confirmDelete = false },
         )
     }
 }

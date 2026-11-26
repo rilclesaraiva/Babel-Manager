@@ -1,5 +1,6 @@
 package com.babelmanager.app.features.vault
 
+import com.babelmanager.app.core.ui.BabelSheet
 import androidx.compose.material.icons.outlined.Search
 import com.babelmanager.app.core.ui.trackFieldFocus
 import com.babelmanager.app.core.ui.clearFocusOnTapOutside
@@ -28,11 +29,9 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -103,12 +102,8 @@ fun AppPickerSheet(apps: InstalledApps, onPick: (AppInfo) -> Unit, onDismiss: ()
     var query by rememberSaveable { mutableStateOf("") }
     LaunchedEffect(Unit) { list = apps.launchable() }
 
-    ModalBottomSheet(
-        onDismissRequest = onDismiss,
-        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-    ) {
-        ClearFocusWhenKeyboardCloses()
-        Column(Modifier.fillMaxHeight(0.85f).clearFocusOnTapOutside()) {
+    BabelSheet(onDismiss = onDismiss) {
+        Column(Modifier.fillMaxHeight(0.85f)) {
             OutlinedTextField(
                 value = query,
                 onValueChange = { query = it },

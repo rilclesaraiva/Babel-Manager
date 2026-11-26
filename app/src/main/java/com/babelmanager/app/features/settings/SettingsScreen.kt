@@ -1,9 +1,10 @@
 package com.babelmanager.app.features.settings
 
+import androidx.compose.ui.text.input.ImeAction
+import com.babelmanager.app.core.ui.ConfirmPanel
+import com.babelmanager.app.core.ui.BabelSheet
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.material3.rememberModalBottomSheetState
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.Spacer
@@ -28,7 +29,6 @@ import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
@@ -456,62 +456,48 @@ fun SettingsScreen(
     }
     restoreUri?.let { uri ->
         var password by rememberSaveable { mutableStateOf("") }
-        AlertDialog(
-            onDismissRequest = { restoreUri = null },
-            title = { Text(stringResource(R.string.restore_title)) },
-            text = {
-                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Text(stringResource(R.string.restore_replace_warning))
-                    PasswordField(
-                        value = password,
-                        onValueChange = { password = it },
-                        label = stringResource(R.string.backup_password),
-                    )
-                }
-            },
-            confirmButton = {
-                TextButton(
-                    enabled = password.isNotEmpty(),
-                    onClick = { vm.restore(uri, password); restoreUri = null },
-                ) { Text(stringResource(R.string.restore)) }
-            },
-            dismissButton = { TextButton(onClick = { restoreUri = null }) { Text(stringResource(R.string.cancel)) } },
-        )
+        ConfirmPanel(
+            title = stringResource(R.string.restore_title),
+            message = stringResource(R.string.restore_replace_warning),
+            confirmLabel = stringResource(R.string.restore),
+            confirmEnabled = password.isNotEmpty(),
+            onConfirm = { vm.restore(uri, password) },
+            onDismiss = { restoreUri = null },
+        ) {
+            PasswordField(
+                value = password,
+                onValueChange = { password = it },
+                label = stringResource(R.string.backup_password),
+                imeAction = ImeAction.Done,
+            )
+        }
     }
     if (showExportWarning) {
-        AlertDialog(
-            onDismissRequest = { showExportWarning = false },
-            title = { Text(stringResource(R.string.export_warning_title)) },
-            text = { Text(stringResource(R.string.export_warning_body)) },
-            confirmButton = {
-                TextButton(onClick = {
-                    showExportWarning = false
-                    vm.beforePicker()
-                    exportPicker.launch("babelmanager-passwords.csv")
-                }) { Text(stringResource(R.string.export_anyway)) }
+        ConfirmPanel(
+            title = stringResource(R.string.export_warning_title),
+            message = stringResource(R.string.export_warning_body),
+            confirmLabel = stringResource(R.string.export_anyway),
+            destructive = true,
+            onConfirm = {
+                vm.beforePicker()
+                exportPicker.launch("babelmanager-passwords.csv")
             },
-            dismissButton = { TextButton(onClick = { showExportWarning = false }) { Text(stringResource(R.string.cancel)) } },
+            onDismiss = { showExportWarning = false },
         )
     }
     if (showDeleteVault) {
         var password by rememberSaveable { mutableStateOf("") }
-        AlertDialog(
-            onDismissRequest = { showDeleteVault = false },
-            title = { Text(stringResource(R.string.delete_vault_title)) },
-            text = {
-                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Text(stringResource(R.string.delete_vault_body))
-                    PasswordField(password, { password = it }, stringResource(R.string.master_password))
-                }
-            },
-            confirmButton = {
-                TextButton(
-                    enabled = password.isNotEmpty(),
-                    onClick = { showDeleteVault = false; vm.deleteVault(password) },
-                ) { Text(stringResource(R.string.delete)) }
-            },
-            dismissButton = { TextButton(onClick = { showDeleteVault = false }) { Text(stringResource(R.string.cancel)) } },
-        )
+        ConfirmPanel(
+            title = stringResource(R.string.delete_vault_title),
+            message = stringResource(R.string.delete_vault_body),
+            confirmLabel = stringResource(R.string.delete),
+            destructive = true,
+            confirmEnabled = password.isNotEmpty(),
+            onConfirm = { vm.deleteVault(password) },
+            onDismiss = { showDeleteVault = false },
+        ) {
+            PasswordField(password, { password = it }, stringResource(R.string.master_password), imeAction = ImeAction.Done)
+        }
     }
 }
 
@@ -539,29 +525,31 @@ private fun ChoiceDialog(
     onSelect: (Int) -> Unit,
     onDismiss: () -> Unit,
 ) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(title) },
-        text = {
-            Column {
-                options.forEach { (value, label) ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .selectable(selected = value == selected, onClick = { onSelect(value) })
-                            .padding(vertical = 12.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    ) {
-                        RadioButton(selected = value == selected, onClick = null)
-                        Text(label)
-                    }
-                }
+    BabelSheet(onDismiss = onDismiss) {
+        Column(Modifier.fillMaxWidth().padding(bottom = 24.dp)) {
+            Text(
+                title,
+                style = MaterialTheme.typography.headlineSmall,
+                modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp),
+            )
+            options.forEach { (value, label) ->
+                Text(
+                    label,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = if (value == selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            onSelect(value)
+                            dismiss()
+                        }
+                        .padding(vertical = 20.dp),
+                )
             }
-        },
-        confirmButton = {},
-        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) } },
-    )
+        }
+    }
 }
 
 @Composable
@@ -572,39 +560,29 @@ private fun ChangePasswordDialog(
     var current by rememberSaveable { mutableStateOf("") }
     var new by rememberSaveable { mutableStateOf("") }
     var confirm by rememberSaveable { mutableStateOf("") }
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.settings_change_password)) },
-        text = {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                PasswordField(current, { current = it }, stringResource(R.string.current_master_password))
-                PasswordField(new, { new = it }, stringResource(R.string.new_master_password))
-                PasswordField(confirm, { confirm = it }, stringResource(R.string.confirm_master_password))
-                Text(
-                    stringResource(R.string.change_password_biometric_note),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-        },
-        confirmButton = {
-            TextButton(
-                enabled = current.isNotEmpty() && new.isNotEmpty(),
-                onClick = { onConfirm(current, new, confirm) },
-            ) { Text(stringResource(R.string.save)) }
-        },
-        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) } },
-    )
+    ConfirmPanel(
+        title = stringResource(R.string.settings_change_password),
+        confirmLabel = stringResource(R.string.save),
+        confirmEnabled = current.isNotEmpty() && new.isNotEmpty(),
+        onConfirm = { onConfirm(current, new, confirm) },
+        onDismiss = onDismiss,
+    ) {
+        PasswordField(current, { current = it }, stringResource(R.string.current_master_password))
+        PasswordField(new, { new = it }, stringResource(R.string.new_master_password))
+        PasswordField(confirm, { confirm = it }, stringResource(R.string.confirm_master_password), imeAction = ImeAction.Done)
+        Text(
+            stringResource(R.string.change_password_biometric_note),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
 }
 
 /** Painel que sobe de baixo (como nos outros apps do mantenedor) com as opções de aviso de atualização. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun NoticesSheet(selected: Int, onSelect: (Int) -> Unit, onDismiss: () -> Unit) {
-    ModalBottomSheet(
-        onDismissRequest = onDismiss,
-        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-    ) {
+    BabelSheet(onDismiss = onDismiss) {
         Column(Modifier.fillMaxWidth().padding(bottom = 24.dp)) {
             Text(
                 stringResource(R.string.settings_update_notices),
@@ -624,7 +602,10 @@ private fun NoticesSheet(selected: Int, onSelect: (Int) -> Unit, onDismiss: () -
                     textAlign = TextAlign.Center,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { onSelect(days) }
+                        .clickable {
+                            onSelect(days)
+                            dismiss()
+                        }
                         .padding(vertical = 20.dp),
                 )
             }
@@ -638,20 +619,15 @@ private fun DiagnosticsDialog(onDismiss: () -> Unit) {
     val context = LocalContext.current
     val records by AutofillDiagnostics.log.collectAsStateWithLifecycle()
     val text = records.joinToString("\n\n")
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.settings_diag_view)) },
-        text = {
-            Column(Modifier.verticalScroll(rememberScrollState())) {
-                Text(
-                    text = text.ifEmpty { stringResource(R.string.diag_empty) },
-                    style = MaterialTheme.typography.bodySmall,
-                    fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace,
-                )
-            }
-        },
-        confirmButton = {
-            Row {
+    BabelSheet(onDismiss = onDismiss) {
+        Column(Modifier.fillMaxWidth().padding(horizontal = 24.dp).padding(bottom = 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Text(stringResource(R.string.settings_diag_view), style = MaterialTheme.typography.headlineSmall)
+            Text(
+                text = text.ifEmpty { stringResource(R.string.diag_empty) },
+                style = MaterialTheme.typography.bodySmall,
+                fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace,
+            )
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 TextButton(onClick = { AutofillDiagnostics.clear() }) { Text(stringResource(R.string.diag_clear)) }
                 TextButton(
                     enabled = text.isNotEmpty(),
@@ -661,8 +637,8 @@ private fun DiagnosticsDialog(onDismiss: () -> Unit) {
                         cm.setPrimaryClip(android.content.ClipData.newPlainText("autofill-diagnostics", text))
                     },
                 ) { Text(stringResource(R.string.copy)) }
+                TextButton(onClick = { dismiss() }) { Text(stringResource(R.string.diag_close)) }
             }
-        },
-        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.diag_close)) } },
-    )
+        }
+    }
 }
