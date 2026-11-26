@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 ### Changed
+- "Suggest strong password" no longer asks for fingerprint/PIN: it is offered even with the vault locked. With the vault locked, the new entry waits (encrypted on the device) and goes into the vault at the next unlock. Privacy policy updated.
+- The autofill picker has no fixed top bar anymore (the title scrolls with the list), like the rest of the app. The suggested password text was black on the dark background and is readable again.
 - Questions and choices no longer open as windows in the middle of the screen: restore backup, change/delete master password, export warning, delete entry, clipboard/auto-lock choices, diagnostics and the update reminder menu are now bottom panels that rise from below. Back (or the gesture) slides the panel down; panels scroll if tall, rise above the keyboard and close the keyboard when you tap outside a field.
 - Text fields are now rounded pills (multi-line notes get very rounded corners), like the search bar in BoomListener. The vault and app-picker search also gained a clear (x) button.
 - Keyboard behavior, as in BoomListener: tapping outside a field takes its focus away and closes the keyboard (scrolling does not); closing the keyboard with Back or the gesture also removes the focus (no more blinking cursor); and the keyboard is closed before the biometric prompt and the backup file picker open, so it no longer lingers behind them.

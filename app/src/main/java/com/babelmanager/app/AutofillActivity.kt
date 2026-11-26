@@ -41,9 +41,7 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -60,6 +58,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import androidx.compose.material3.Surface
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBars
+import com.babelmanager.app.core.ui.PageTitle
 import com.babelmanager.app.core.ui.BabelTheme
 import com.babelmanager.app.core.ui.EntryAvatar
 import com.babelmanager.app.core.ui.SectionHeader
@@ -192,7 +195,14 @@ class AutofillActivity : FragmentActivity() {
         )
         lifecycleScope.launch {
             try {
-                container.vault.upsert(entry)
+                if (container.vault.state.value == VaultRepository.State.Unlocked) {
+                    container.vault.upsert(entry)
+                } else if (!container.pendingEntries.add(entry)) {
+                    // Sem como guardar: não preenche uma senha que se perderia.
+                    setResult(Activity.RESULT_CANCELED)
+                    finish()
+                    return@launch
+                }
                 deliver(entry, form)
             } catch (e: CancellationException) {
                 throw e
@@ -246,14 +256,15 @@ private fun AutofillRoot(
     val settings by c.settings.settings.collectAsStateWithLifecycle()
     // Só o painel do sistema na frente: a janela é transparente e nada é desenhado.
     if (!visible) return
-    Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
+    Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background, contentColor = MaterialTheme.colorScheme.onBackground) {
+        // "Sugerir senha forte" não pede desbloqueio: com o cofre trancado a entrada espera o próximo desbloqueio.
+        if (suggest && state != VaultRepository.State.Missing) {
+            StrongPasswordPanel(webDomain ?: packageName.orEmpty(), onUse = onUseStrong, onCancel = onCancel)
+            return@Surface
+        }
         when (state) {
             VaultRepository.State.Unlocked -> {
                 val entries by c.vault.entries.collectAsStateWithLifecycle()
-                if (suggest) {
-                    StrongPasswordPanel(webDomain ?: packageName.orEmpty(), onUse = onUseStrong, onCancel = onCancel)
-                    return@Box
-                }
                 EntryChooser(entries, packageName, webDomain, autoPick, onPick)
             }
             VaultRepository.State.Locked -> {
@@ -328,12 +339,10 @@ private fun EntryChooser(
     val searchResults = if (q.isEmpty()) emptyList() else (suggested + others).filter { it.matchesQuery() }
 
     ClearFocusWhenKeyboardCloses()
-    Scaffold(
-        modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing).clearFocusOnTapOutside(),
-        topBar = { TopAppBar(title = { Text(stringResource(R.string.autofill_pick_title)) }) },
-        contentWindowInsets = WindowInsets(0, 0, 0, 0),
-    ) { padding ->
-        LazyColumn(Modifier.padding(padding)) {
+    // Sem barra presa (como no resto do app): o título é a primeira linha do que rola.
+    Box(Modifier.fillMaxSize().imePadding().clearFocusOnTapOutside()) {
+        LazyColumn(Modifier.fillMaxSize(), contentPadding = WindowInsets.navigationBars.asPaddingValues()) {
+            item { PageTitle(stringResource(R.string.autofill_pick_title)) }
             item {
                 OutlinedTextField(
                     value = query,

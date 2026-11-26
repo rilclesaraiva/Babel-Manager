@@ -11,6 +11,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import com.babelmanager.app.data.autofill.PendingEntries
 import com.babelmanager.app.data.autofill.SuggestionIndex
 import com.babelmanager.app.data.backup.BackupRepository
 import com.babelmanager.app.data.biometric.BiometricKeyStore
@@ -52,6 +53,7 @@ class AppContainer(app: Application) {
         store = UpdateStore(app.getSharedPreferences("updates", Context.MODE_PRIVATE)),
     )
     val suggestionIndex = SuggestionIndex(File(app.filesDir, "autofill_index.babel"))
+    val pendingEntries = PendingEntries(File(app.filesDir, "pending_entries.babel"))
     val leakScanner = LeakScanner(vault, settings)
     val emailChecker = EmailChecker(EmailStore(File(app.filesDir, "emails.babel")), settings)
 
@@ -60,10 +62,22 @@ class AppContainer(app: Application) {
         scope.launch {
             vault.state.collect { state ->
                 if (state == VaultRepository.State.Missing) {
+                    pendingEntries.clear()
                     leakScanner.forget()
                     emailChecker.forget()
                     SiteIcons(app).clear()
                     AppIcons.clearStored(app)
+                }
+            }
+        }
+        // Senhas sugeridas com o cofre trancado entram no cofre assim que ele abre.
+        scope.launch {
+            vault.state.collect { state ->
+                if (state == VaultRepository.State.Unlocked) {
+                    val pending = pendingEntries.load()
+                    if (pending.isNotEmpty()) {
+                        runCatching { pending.forEach { vault.upsert(it) } }.onSuccess { pendingEntries.clear() }
+                    }
                 }
             }
         }
