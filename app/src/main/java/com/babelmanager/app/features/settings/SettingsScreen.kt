@@ -543,7 +543,7 @@ private fun ChoiceDialog(
                         .fillMaxWidth()
                         .clickable {
                             onSelect(value)
-                            dismiss()
+                            this@BabelSheet.dismiss()
                         }
                         .padding(vertical = 20.dp),
                 )
@@ -604,7 +604,7 @@ private fun NoticesSheet(selected: Int, onSelect: (Int) -> Unit, onDismiss: () -
                         .fillMaxWidth()
                         .clickable {
                             onSelect(days)
-                            dismiss()
+                            this@BabelSheet.dismiss()
                         }
                         .padding(vertical = 20.dp),
                 )
@@ -637,7 +637,7 @@ private fun DiagnosticsDialog(onDismiss: () -> Unit) {
                         cm.setPrimaryClip(android.content.ClipData.newPlainText("autofill-diagnostics", text))
                     },
                 ) { Text(stringResource(R.string.copy)) }
-                TextButton(onClick = { dismiss() }) { Text(stringResource(R.string.diag_close)) }
+                TextButton(onClick = { this@BabelSheet.dismiss() }) { Text(stringResource(R.string.diag_close)) }
             }
         }
     }

@@ -73,7 +73,7 @@ fun UpdatePrompt(
                             .fillMaxWidth()
                             .clickable {
                                 action()
-                                dismiss()
+                                this@BabelSheet.dismiss()
                             }
                             .padding(vertical = 20.dp),
                     )

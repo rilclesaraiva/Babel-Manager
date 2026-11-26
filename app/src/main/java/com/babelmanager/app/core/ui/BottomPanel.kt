@@ -106,7 +106,7 @@ fun ConfirmPanel(
             Button(
                 onClick = {
                     onConfirm()
-                    dismiss()
+                    this@BabelSheet.dismiss()
                 },
                 enabled = confirmEnabled,
                 colors = if (destructive) {
@@ -119,7 +119,7 @@ fun ConfirmPanel(
                 },
                 modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
             ) { Text(confirmLabel) }
-            TextButton(onClick = { dismiss() }, modifier = Modifier.fillMaxWidth()) {
+            TextButton(onClick = { this@BabelSheet.dismiss() }, modifier = Modifier.fillMaxWidth()) {
                 Text(stringResource(R.string.cancel))
             }
         }
